@@ -13,8 +13,8 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Manufacturer)
 class ManufacturerAdmin(admin.ModelAdmin):
-    list_display = ('name', 'contact_email', 'created_at')
-    search_fields = ('name', 'contact_email')
+    list_display = ('name', 'description', 'contact_email', 'created_at', 'updated_at')
+    search_fields = ('name', 'description', 'contact_email')
     inlines = [ProductInline]
 
 @admin.register(Product)
