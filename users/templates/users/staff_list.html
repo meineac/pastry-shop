@@ -1,9 +1,9 @@
-<!DOCTYPE html>
-<html>
-<head><title>Staff List</title></head>
-<body>
+{% extends 'core/base.html' %}
+
+{% block title %}Staff List{% endblock %}
+
+{% block content %}
     <h1>Staff Members</h1>
-    <a href="{% url 'profile' %}">Back to Profile</a>
 
     {% if messages %}
         <ul class="messages">
@@ -32,5 +32,4 @@
             <li>No staff members found.</li>
         {% endfor %}
     </ul>
-</body>
-</html>
+{% endblock %}

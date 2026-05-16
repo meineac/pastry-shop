@@ -1,9 +1,9 @@
-<!DOCTYPE html>
-<html>
-<head><title>Staff Profile</title></head>
-<body>
+{% extends 'core/base.html' %}
+
+{% block title %}Staff Profile{% endblock %}
+
+{% block content %}
     <h1>Staff / Admin Profile</h1>
-    <a href="{% url 'logout' %}">Logout</a>
 
     <h2>User Information</h2>
     {% if profile %}
@@ -23,8 +23,5 @@
     {% if request.user.role == 'ADMIN' or request.user.is_superuser %}
         <h2>Admin Panel Access</h2>
         <a href="/admin/">Go to Admin Panel</a>
-        <br>
-        <a href="{% url 'staff_list' %}">Go to Staff List</a>
     {% endif %}
-</body>
-</html>
+{% endblock %}

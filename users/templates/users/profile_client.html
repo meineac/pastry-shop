@@ -1,9 +1,9 @@
-<!DOCTYPE html>
-<html>
-<head><title>Client Profile</title></head>
-<body>
+{% extends 'core/base.html' %}
+
+{% block title %}Client Profile{% endblock %}
+
+{% block content %}
     <h1>Client Profile</h1>
-    <a href="{% url 'logout' %}">Logout</a>
 
     <h2>User Information</h2>
     {% if profile %}
@@ -31,5 +31,4 @@
     </ul>
 
     <a href="{% url 'order_history' %}">View Order History</a>
-</body>
-</html>
+{% endblock %}

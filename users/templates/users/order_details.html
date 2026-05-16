@@ -1,7 +1,8 @@
-<!DOCTYPE html>
-<html>
-<head><title>Order Details</title></head>
-<body>
+{% extends 'core/base.html' %}
+
+{% block title %}Order Details{% endblock %}
+
+{% block content %}
     <h1>Order #{{ order.id }} Details</h1>
     <a href="{% url 'profile' %}">Back to Profile</a>
     <p>Status: {{ order.status }}</p>
@@ -20,5 +21,4 @@
             <li>No items found in this order.</li>
         {% endfor %}
     </ul>
-</body>
-</html>
+{% endblock %}
