@@ -7,8 +7,8 @@ class ProductInline(admin.TabularInline):
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('name', 'created_at')
-    search_fields = ('name',)
+    list_display = ('name', 'description', 'created_at', 'updated_at')
+    search_fields = ('name', 'description')
     inlines = [ProductInline]
 
 @admin.register(Manufacturer)
