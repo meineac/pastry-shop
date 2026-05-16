@@ -38,7 +38,6 @@ def register_view(request):
 
                 CustomerProfile.objects.create(
                     user=user,
-                    name=form.cleaned_data['name'],
                     date_of_birth=form.cleaned_data['date_of_birth'],
                     phone_number=form.cleaned_data['phone_number']
                 )

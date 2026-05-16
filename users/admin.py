@@ -12,10 +12,10 @@ class CustomUserAdmin(UserAdmin):
 
 @admin.register(CustomerProfile)
 class CustomerProfileAdmin(admin.ModelAdmin):
-    list_display = ('user', 'name', 'phone_number', 'date_of_birth')
-    search_fields = ('name', 'phone_number', 'user__username')
+    list_display = ('user', 'phone_number', 'date_of_birth')
+    search_fields = ('user__first_name', 'user__last_name', 'phone_number', 'user__username')
 
 @admin.register(StaffProfile)
 class StaffProfileAdmin(admin.ModelAdmin):
-    list_display = ('user', 'full_name', 'position', 'date_of_birth')
-    search_fields = ('full_name', 'position', 'user__username')
+    list_display = ('user', 'position', 'date_of_birth')
+    search_fields = ('user__first_name', 'user__last_name', 'position', 'user__username')

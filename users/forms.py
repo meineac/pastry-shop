@@ -32,13 +32,12 @@ class RegistrationForm(forms.ModelForm):
     password_confirm = forms.CharField(widget=forms.PasswordInput, label="Confirm Password")
 
     # CustomerProfile fields
-    name = forms.CharField(max_length=255, label="Full Name")
     date_of_birth = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}), validators=[validate_age_18_plus])
     phone_number = forms.CharField(max_length=20, validators=[phone_regex_validator], help_text="Format: +375 (29) XXX-XX-XX")
 
     class Meta:
         model = User
-        fields = ['username', 'email']
+        fields = ['username', 'first_name', 'last_name', 'email']
 
     def clean_password_confirm(self):
         password = self.cleaned_data.get("password")

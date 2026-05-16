@@ -7,7 +7,7 @@
 
     <h2>User Information</h2>
     {% if profile %}
-        <p>Name: {{ profile.full_name }}</p>
+        <p>Name: {{ request.user.get_full_name|default:request.user.username }}</p>
         <p>Username: {{ request.user.username }}</p>
         <p>Role: {{ user_role }}</p>
         <p>Contact Info: {{ profile.contact_details }}</p>
