@@ -1,0 +1,22 @@
+{% extends 'cms/base.html' %}
+
+{% block content %}
+    <h1>Contacts</h1>
+
+    <h2>Our Team</h2>
+    <ul>
+    {% for employee in employees %}
+        <li>
+            {% if employee.photo %}
+                <img src="{{ employee.photo.url }}" alt="{{ employee.user.get_full_name }}" width="100">
+            {% endif %}
+            <h3>{{ employee.user.get_full_name }}</h3>
+            <p><strong>Position:</strong> {{ employee.position }}</p>
+            <p><strong>Contact Details:</strong> {{ employee.contact_details }}</p>
+            <p><strong>Email:</strong> {{ employee.user.email }}</p>
+        </li>
+    {% empty %}
+        <li>No employees found.</li>
+    {% endfor %}
+    </ul>
+{% endblock %}

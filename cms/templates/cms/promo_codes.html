@@ -1,0 +1,17 @@
+{% extends 'cms/base.html' %}
+
+{% block content %}
+    <h1>Promo Codes and Coupons</h1>
+
+    <ul>
+    {% for promo in promo_codes %}
+        <li>
+            <h3>{{ promo.code }} ({{ promo.get_status_display }})</h3>
+            <p><strong>Expiration Date:</strong> {{ promo.expiration_date|date:"d/m/Y" }}</p>
+            <p><strong>Conditions:</strong> {{ promo.conditions_of_application }}</p>
+        </li>
+    {% empty %}
+        <li>No promo codes found.</li>
+    {% endfor %}
+    </ul>
+{% endblock %}

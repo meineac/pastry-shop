@@ -1,0 +1,21 @@
+{% extends 'cms/base.html' %}
+
+{% block content %}
+    <h1>{{ news_item.title }}</h1>
+    <p><strong>Date Added:</strong> {{ news_item.created_at|date:"d/m/Y" }}</p>
+    <p>
+        <strong>Tags:</strong>
+        {% for tag in news_item.tags.all %}
+            {{ tag.name }}{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+    </p>
+    {% if news_item.image %}
+        <img src="{{ news_item.image.url }}" alt="{{ news_item.title }}" width="300">
+    {% endif %}
+
+    <div>
+        <p>{{ news_item.full_text }}</p>
+    </div>
+
+    <a href="{% url 'cms:news_list' %}">Back to News</a>
+{% endblock %}

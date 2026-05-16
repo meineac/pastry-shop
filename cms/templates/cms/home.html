@@ -1,0 +1,26 @@
+{% extends 'cms/base.html' %}
+
+{% block content %}
+    <h1>Welcome to Pastry Shop</h1>
+
+    <h2>Latest News</h2>
+    {% if latest_news %}
+        <div>
+            {% if latest_news.image %}
+                <img src="{{ latest_news.image.url }}" alt="{{ latest_news.title }}" width="200">
+            {% endif %}
+            <h3>{{ latest_news.title }}</h3>
+            <p><strong>Date Added:</strong> {{ latest_news.created_at|date:"d/m/Y" }}</p>
+            <p>
+                <strong>Tags:</strong>
+                {% for tag in latest_news.tags.all %}
+                    {{ tag.name }}{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+            </p>
+            <p>{{ latest_news.short_summary }}</p>
+            <a href="{% url 'cms:news_detail' pk=latest_news.id %}">Read</a>
+        </div>
+    {% else %}
+        <p>No news available.</p>
+    {% endif %}
+{% endblock %}

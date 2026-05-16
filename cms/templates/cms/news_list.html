@@ -1,0 +1,40 @@
+{% extends 'cms/base.html' %}
+
+{% block content %}
+    <h1>News</h1>
+
+    <form method="GET" action="">
+        <input type="text" name="q" placeholder="Search news..." value="{{ query }}">
+        <select name="tag">
+            <option value="">All Tags</option>
+            {% for tag in tags %}
+                <option value="{{ tag.id }}" {% if current_tag == tag.id %}selected{% endif %}>{{ tag.name }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">Filter/Search</button>
+    </form>
+
+    <hr>
+
+    <ul>
+    {% for item in news %}
+        <li>
+            {% if item.image %}
+                <img src="{{ item.image.url }}" alt="{{ item.title }}" width="100">
+            {% endif %}
+            <h3>{{ item.title }}</h3>
+            <p><strong>Date Added:</strong> {{ item.created_at|date:"d/m/Y" }}</p>
+            <p>
+                <strong>Tags:</strong>
+                {% for tag in item.tags.all %}
+                    {{ tag.name }}{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+            </p>
+            <p>{{ item.short_summary }}</p>
+            <a href="{% url 'cms:news_detail' pk=item.id %}">Read</a>
+        </li>
+    {% empty %}
+        <li>No news found.</li>
+    {% endfor %}
+    </ul>
+{% endblock %}
