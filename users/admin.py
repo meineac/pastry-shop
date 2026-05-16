@@ -12,8 +12,8 @@ class CustomUserAdmin(UserAdmin):
 
 @admin.register(CustomerProfile)
 class CustomerProfileAdmin(admin.ModelAdmin):
-    list_display = ('user', 'name', 'phone_number', 'email', 'date_of_birth')
-    search_fields = ('name', 'phone_number', 'email', 'user__username')
+    list_display = ('user', 'name', 'phone_number', 'date_of_birth')
+    search_fields = ('name', 'phone_number', 'user__username')
 
 @admin.register(StaffProfile)
 class StaffProfileAdmin(admin.ModelAdmin):

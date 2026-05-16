@@ -11,7 +11,7 @@
         <p>Username: {{ request.user.username }}</p>
         <p>Date of Birth: {{ profile.date_of_birth|date:"d/m/Y" }}</p>
         <p>Phone: {{ profile.phone_number }}</p>
-        <p>Email: {{ profile.email }}</p>
+        <p>Email: {{ request.user.email }}</p>
     {% else %}
         <p>No profile information available.</p>
     {% endif %}

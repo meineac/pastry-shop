@@ -26,7 +26,6 @@ class CustomerProfile(TimestampedModel):
         validators=[phone_regex_validator],
         help_text="Format: +375 (29) XXX-XX-XX"
     )
-    email = models.EmailField()
 
     def __str__(self):
         return self.name
