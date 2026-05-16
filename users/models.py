@@ -14,6 +14,12 @@ class User(AbstractUser):
         default=Role.CUSTOMER
     )
 
+    def save(self, *args, **kwargs):
+        # All superusers must be ADMINs, never STAFF or CUSTOMER
+        if self.is_superuser and self.role != self.Role.ADMIN:
+            self.role = self.Role.ADMIN
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return self.username
 
