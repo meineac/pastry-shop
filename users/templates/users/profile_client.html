@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head><title>Client Profile</title></head>
+<body>
+    <h1>Client Profile</h1>
+    <a href="{% url 'logout' %}">Logout</a>
+
+    <h2>User Information</h2>
+    {% if profile %}
+        <p>Name: {{ profile.name }}</p>
+        <p>Username: {{ request.user.username }}</p>
+        <p>Date of Birth: {{ profile.date_of_birth|date:"d/m/Y" }}</p>
+        <p>Phone: {{ profile.phone_number }}</p>
+        <p>Email: {{ profile.email }}</p>
+    {% else %}
+        <p>No profile information available.</p>
+    {% endif %}
+
+    <h2>Current Orders</h2>
+    <ul>
+        {% for order in active_orders %}
+            <li>
+                Order #{{ order.id }} - {{ order.status }}
+                (Created: {{ order.created_at|date:"d/m/Y" }}, Updated: {{ order.updated_at|date:"d/m/Y" }})
+                - Total Price: Placeholder
+                <a href="{% url 'order_details' order.id %}"><button>Details</button></a>
+            </li>
+        {% empty %}
+            <li>No active orders.</li>
+        {% endfor %}
+    </ul>
+
+    <a href="{% url 'order_history' %}">View Order History</a>
+</body>
+</html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head><title>Staff Profile</title></head>
+<body>
+    <h1>Staff / Admin Profile</h1>
+    <a href="{% url 'logout' %}">Logout</a>
+
+    <h2>User Information</h2>
+    {% if profile %}
+        <p>Name: {{ profile.full_name }}</p>
+        <p>Username: {{ request.user.username }}</p>
+        <p>Role: {{ user_role }}</p>
+        <p>Contact Info: {{ profile.contact_details }}</p>
+        <p>Registration Date: {{ request.user.date_joined|date:"d/m/Y" }}</p>
+    {% else %}
+        <!-- For Superusers without StaffProfile -->
+        <p>Name: {{ request.user.get_full_name }}</p>
+        <p>Username: {{ request.user.username }}</p>
+        <p>Role: {{ user_role }}</p>
+        <p>Registration Date: {{ request.user.date_joined|date:"d/m/Y" }}</p>
+    {% endif %}
+
+    {% if request.user.role == 'ADMIN' or request.user.is_superuser %}
+        <h2>Admin Panel Access</h2>
+        <a href="/admin/">Go to Admin Panel</a>
+        <br>
+        <a href="{% url 'staff_list' %}">Go to Staff List</a>
+    {% endif %}
+</body>
+</html>

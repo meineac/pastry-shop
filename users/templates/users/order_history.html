@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head><title>Order History</title></head>
+<body>
+    <h1>Order History</h1>
+    <a href="{% url 'profile' %}">Back to Profile</a>
+
+    <ul>
+        {% for order in history_orders %}
+            <li>
+                Order #{{ order.id }} - {{ order.status }}
+                (Created: {{ order.created_at|date:"d/m/Y" }}, Updated: {{ order.updated_at|date:"d/m/Y" }})
+                - Total Price: Placeholder
+                <a href="{% url 'order_details' order.id %}"><button>Details</button></a>
+            </li>
+        {% empty %}
+            <li>No history orders.</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

@@ -39,6 +39,7 @@ class Order(TimestampedModel):
     class OrderStatus(models.TextChoices):
         PENDING = 'PENDING', 'Pending'
         PROCESSING = 'PROCESSING', 'Processing'
+        READY = 'READY', 'Ready'
         COMPLETED = 'COMPLETED', 'Completed'
         CANCELLED = 'CANCELLED', 'Cancelled'
 
