@@ -7,8 +7,13 @@ admin.site.register(VacancyTag)
 admin.site.register(QaATag)
 admin.site.register(ReviewTag)
 
+class DisplayTagsMixin:
+    def display_tags(self, obj):
+        return ", ".join([tag.name for tag in obj.tags.all()])
+    display_tags.short_description = "Tags"
+
 @admin.register(News)
-class NewsAdmin(admin.ModelAdmin):
+class NewsAdmin(admin.ModelAdmin, DisplayTagsMixin):
     list_display = ('title', 'image_preview', 'display_tags', 'short_summary', 'created_at', 'updated_at')
     search_fields = ('title', 'tags__name', 'short_summary')
     ordering = ('created_at', 'title')
@@ -21,46 +26,30 @@ class NewsAdmin(admin.ModelAdmin):
         return "No Image"
     image_preview.short_description = "Image Preview"
 
-    def display_tags(self, obj):
-        return ", ".join([tag.name for tag in obj.tags.all()])
-    display_tags.short_description = "Tags"
-
 @admin.register(CompanyInfo)
 class CompanyInfoAdmin(admin.ModelAdmin):
     list_display = ('__str__', 'created_at', 'updated_at')
 
 @admin.register(Vacancy)
-class VacancyAdmin(admin.ModelAdmin):
+class VacancyAdmin(admin.ModelAdmin, DisplayTagsMixin):
     list_display = ('title', 'description', 'display_tags', 'created_at', 'updated_at')
     search_fields = ('title', 'tags__name', 'description')
     ordering = ('created_at', 'updated_at', 'title')
     list_filter = ('tags',)
     filter_horizontal = ('tags',)
 
-    def display_tags(self, obj):
-        return ", ".join([tag.name for tag in obj.tags.all()])
-    display_tags.short_description = "Tags"
-
 @admin.register(QaA)
-class QaAAdmin(admin.ModelAdmin):
+class QaAAdmin(admin.ModelAdmin, DisplayTagsMixin):
     list_display = ('question_text', 'answer_text', 'display_tags', 'created_at', 'updated_at')
     search_fields = ('question_text', 'tags__name', 'answer_text')
     ordering = ('created_at', 'updated_at')
     list_filter = ('tags',)
     filter_horizontal = ('tags',)
 
-    def display_tags(self, obj):
-        return ", ".join([tag.name for tag in obj.tags.all()])
-    display_tags.short_description = "Tags"
-
 @admin.register(Review)
-class ReviewAdmin(admin.ModelAdmin):
+class ReviewAdmin(admin.ModelAdmin, DisplayTagsMixin):
     list_display = ('product', 'author', 'rating', 'review_text', 'display_tags', 'created_at', 'updated_at')
     search_fields = ('product__name', 'author__username')
     ordering = ('rating', 'created_at', 'updated_at')
     list_filter = ('tags',)
     filter_horizontal = ('tags',)
-
-    def display_tags(self, obj):
-        return ", ".join([tag.name for tag in obj.tags.all()])
-    display_tags.short_description = "Tags"
