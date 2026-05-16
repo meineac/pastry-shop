@@ -1,0 +1,24 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Order Details{% endblock %}
+
+{% block content %}
+    <h1>Order #{{ order.id }} Details</h1>
+    <a href="{% url 'profile' %}">Back to Profile</a>
+    <p>Status: {{ order.status }}</p>
+
+    <ul>
+        {% for item in items %}
+            <li>
+                {{ item.product.name }} - {{ item.quantity }} x {{ item.product.price }}
+                {% if item.product.photo %}
+                    <img src="{{ item.product.photo.url }}" alt="{{ item.product.name }}" width="100">
+                {% endif %}
+                <!-- Leave a review button (Placeholder link for Phase 3/4) -->
+                <button>Leave a Review</button>
+            </li>
+        {% empty %}
+            <li>No items found in this order.</li>
+        {% endfor %}
+    </ul>
+{% endblock %}
