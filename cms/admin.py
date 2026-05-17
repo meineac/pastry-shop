@@ -1,11 +1,9 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import NewsTag, VacancyTag, QaATag, ReviewTag, News, CompanyInfo, Vacancy, QaA, Review
+from core.models import Tag
+from .models import News, CompanyInfo, Vacancy, QaA, Review
 
-admin.site.register(NewsTag)
-admin.site.register(VacancyTag)
-admin.site.register(QaATag)
-admin.site.register(ReviewTag)
+admin.site.register(Tag)
 
 class DisplayTagsMixin:
     def display_tags(self, obj):
@@ -14,8 +12,9 @@ class DisplayTagsMixin:
 
 @admin.register(News)
 class NewsAdmin(admin.ModelAdmin, DisplayTagsMixin):
-    list_display = ('title', 'image_preview', 'display_tags', 'short_summary', 'created_at', 'updated_at')
+    list_display = ('title', 'image_preview', 'display_tags', 'is_hidden', 'short_summary', 'created_at', 'updated_at')
     search_fields = ('title', 'tags__name', 'short_summary')
+    list_filter = ('is_hidden', 'tags')
     ordering = ('created_at', 'title')
     filter_horizontal = ('tags',)
     readonly_fields = ('image_preview',)
@@ -28,22 +27,23 @@ class NewsAdmin(admin.ModelAdmin, DisplayTagsMixin):
 
 @admin.register(CompanyInfo)
 class CompanyInfoAdmin(admin.ModelAdmin):
-    list_display = ('__str__', 'created_at', 'updated_at')
+    list_display = ('__str__', 'is_hidden', 'created_at', 'updated_at')
+    list_filter = ('is_hidden',)
 
 @admin.register(Vacancy)
 class VacancyAdmin(admin.ModelAdmin, DisplayTagsMixin):
-    list_display = ('title', 'description', 'display_tags', 'created_at', 'updated_at')
+    list_display = ('title', 'description', 'display_tags', 'is_hidden', 'created_at', 'updated_at')
     search_fields = ('title', 'tags__name', 'description')
     ordering = ('created_at', 'updated_at', 'title')
-    list_filter = ('tags',)
+    list_filter = ('is_hidden', 'tags')
     filter_horizontal = ('tags',)
 
 @admin.register(QaA)
 class QaAAdmin(admin.ModelAdmin, DisplayTagsMixin):
-    list_display = ('question_text', 'answer_text', 'display_tags', 'created_at', 'updated_at')
+    list_display = ('question_text', 'answer_text', 'display_tags', 'is_hidden', 'created_at', 'updated_at')
     search_fields = ('question_text', 'tags__name', 'answer_text')
     ordering = ('created_at', 'updated_at')
-    list_filter = ('tags',)
+    list_filter = ('is_hidden', 'tags')
     filter_horizontal = ('tags',)
 
 @admin.register(Review)

@@ -1,0 +1,34 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+    <h1>Store Reviews</h1>
+
+    {% if not request.user.is_authenticated or request.user.role == 'CUSTOMER' %}
+    <p>
+        <a href="{% url 'cms:review_create' %}">
+            <button>Add Review</button>
+        </a>
+    </p>
+    {% endif %}
+
+    <hr>
+
+    <ul>
+    {% for review in reviews %}
+        <li>
+            <p><strong>Username:</strong> {{ review.author.username }}</p>
+            <p><strong>Date:</strong> {{ review.created_at|date:"d/m/Y" }}</p>
+            <p><strong>Rating:</strong> {{ review.rating }} / 5</p>
+            <p>
+                <strong>Tags:</strong>
+                {% for tag in review.tags.all %}
+                    {{ tag.name }}{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+            </p>
+            <p>{{ review.review_text }}</p>
+        </li>
+    {% empty %}
+        <li>No reviews found.</li>
+    {% endfor %}
+    </ul>
+{% endblock %}

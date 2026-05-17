@@ -1,0 +1,23 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+    <h1>About the Company</h1>
+    {% if request.user.role == 'ADMIN' %}
+        <p><a href="{% url 'cms:about_edit' %}"><button>Edit Company Info</button></a></p>
+    {% endif %}
+
+    {% if company_info %}
+        <div>
+            <h2>Company Details</h2>
+            <p>{{ company_info.company_details }}</p>
+
+            <h2>Text Information</h2>
+            <p>{{ company_info.text_information }}</p>
+
+            <h2>History by Years</h2>
+            <p>{{ company_info.history_by_years }}</p>
+        </div>
+    {% else %}
+        <p>No company information available.</p>
+    {% endif %}
+{% endblock %}

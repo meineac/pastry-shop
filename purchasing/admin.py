@@ -16,8 +16,8 @@ class PickupPointAdmin(admin.ModelAdmin):
 
 @admin.register(PromoCode)
 class PromoCodeAdmin(admin.ModelAdmin):
-    list_display = ('code', 'status', 'expiration_date', 'created_at', 'updated_at')
-    list_filter = ('status',)
+    list_display = ('code', 'status', 'is_hidden', 'expiration_date', 'created_at', 'updated_at')
+    list_filter = ('status', 'is_hidden')
     search_fields = ('code',)
 
 @admin.register(Order)
