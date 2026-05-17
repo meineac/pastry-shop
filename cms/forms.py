@@ -3,15 +3,6 @@ from .models import Review
 
 from core.models import Tag
 
-class ReviewForm(forms.ModelForm):
-    class Meta:
-        model = Review
-        fields = ['rating', 'review_text', 'tags']
-        widgets = {
-            'rating': forms.Select(attrs={'required': True}),
-            'review_text': forms.Textarea(attrs={'required': True, 'minlength': 1}),
-            'tags': forms.SelectMultiple(attrs={'required': False})
-        }
 from .models import CompanyInfo, News, Vacancy, QaA
 from purchasing.models import PromoCode
 
@@ -23,11 +14,17 @@ class TagMixinForm(forms.ModelForm):
     )
 
     def save(self, commit=True):
+        # Capture old tags if the instance already exists
+        old_tags = []
+        if self.instance.pk and hasattr(self.instance, 'tags'):
+            old_tags = list(self.instance.tags.all())
+
         instance = super().save(commit=False)
         if commit:
             instance.save()
             self.save_m2m()
             self.save_new_tags(instance)
+            self.cleanup_orphaned_tags(old_tags, instance)
         return instance
 
     def save_new_tags(self, instance):
@@ -37,6 +34,24 @@ class TagMixinForm(forms.ModelForm):
             for name in tag_names:
                 tag, created = Tag.objects.get_or_create(name=name)
                 instance.tags.add(tag)
+
+    def cleanup_orphaned_tags(self, old_tags, instance):
+        # Determine which tags were removed
+        current_tags = list(instance.tags.all())
+        removed_tags = [tag for tag in old_tags if tag not in current_tags]
+
+        # Check and delete orphaned tags
+        for tag in removed_tags:
+            is_orphaned = True
+            for related_object in tag._meta.related_objects:
+                accessor_name = related_object.get_accessor_name()
+                related_manager = getattr(tag, accessor_name, None)
+                if related_manager and related_manager.exists():
+                    is_orphaned = False
+                    break
+
+            if is_orphaned:
+                tag.delete()
 
 
 class CompanyInfoForm(forms.ModelForm):
@@ -74,4 +89,14 @@ class PromoCodeForm(forms.ModelForm):
         fields = ['code', 'expiration_date', 'status', 'conditions_of_application', 'is_hidden']
         widgets = {
             'expiration_date': forms.DateInput(attrs={'type': 'date', 'required': True})
+        }
+
+class ReviewForm(TagMixinForm):
+    class Meta:
+        model = Review
+        fields = ['rating', 'review_text', 'tags', 'new_tags']
+        widgets = {
+            'rating': forms.Select(attrs={'required': True}),
+            'review_text': forms.Textarea(attrs={'required': True, 'minlength': 1}),
+            'tags': forms.SelectMultiple(attrs={'required': False})
         }
