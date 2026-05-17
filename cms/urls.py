@@ -14,6 +14,8 @@ urlpatterns = [
     re_path(r'^privacy-policy/$', views.privacy_policy_view, name='privacy_policy'),
     re_path(r'^reviews/$', views.reviews_list_view, name='reviews'),
     re_path(r'^reviews/add/$', views.review_create_view, name='review_create'),
+    re_path(r'^reviews/(?P<pk>\d+)/edit/$', views.review_edit_view, name='review_edit'),
+    re_path(r'^reviews/(?P<pk>\d+)/delete/$', views.review_delete_view, name='review_delete'),
     re_path(r'^promo-codes/$', views.promo_codes_list_view, name='promo_codes'),
 ]
 

@@ -17,6 +17,12 @@
     {% for review in reviews %}
         <li>
             <p><strong>Username:</strong> {{ review.author.username }}</p>
+            {% if request.user == review.author %}
+                <p>
+                    <a href="{% url 'cms:review_edit' pk=review.id %}"><button>Edit</button></a>
+                    <a href="{% url 'cms:review_delete' pk=review.id %}"><button>Delete</button></a>
+                </p>
+            {% endif %}
             <p><strong>Date:</strong> {{ review.created_at|date:"d/m/Y" }}</p>
             <p><strong>Rating:</strong> {{ review.rating }} / 5</p>
             <p>

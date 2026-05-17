@@ -1,20 +1,70 @@
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Q
-from core.models import Tag
-from .models import News, CompanyInfo, Vacancy, QaA, Review
+
+from .models import News, CompanyInfo, Vacancy, QaA, Review, NewsTag, VacancyTag, QaATag, ReviewTag
+from .forms import ReviewForm, CompanyInfoForm, NewsForm, VacancyForm, QaAForm, PromoCodeForm
 from users.models import StaffProfile
 from purchasing.models import PromoCode
-from .forms import ReviewForm
+from users.decorators import role_required
 
+# --- GENERIC HELPERS ---
+def generic_create_view(request, form_class, redirect_url, title):
+    if request.method == 'POST':
+        form = form_class(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect(redirect_url)
+    else:
+        form = form_class()
+    return render(request, 'cms/generic_form.html', {'form': form, 'title': title})
+
+def generic_edit_view(request, model, form_class, redirect_url, title, pk):
+    obj = get_object_or_404(model, pk=pk)
+    if request.method == 'POST':
+        form = form_class(request.POST, request.FILES, instance=obj)
+        if form.is_valid():
+            form.save()
+            if callable(redirect_url):
+                res = redirect_url(obj)
+                if isinstance(res, tuple):
+                    return redirect(res[0], *res[1:])
+                return redirect(res)
+            return redirect(redirect_url)
+    else:
+        form = form_class(instance=obj)
+    return render(request, 'cms/generic_form.html', {'form': form, 'title': title})
+
+def generic_delete_view(request, model, redirect_url, title, pk):
+    obj = get_object_or_404(model, pk=pk)
+    if request.method == 'POST':
+        obj.delete()
+        return redirect(redirect_url)
+    return render(request, 'cms/generic_confirm_delete.html', {'object': obj, 'title': title, 'cancel_url': redirect_url})
+
+
+# --- HOME ---
 def home_view(request):
     latest_news = News.objects.filter(is_hidden=False).order_by('-created_at').first()
     return render(request, 'cms/home.html', {'latest_news': latest_news})
 
+# --- COMPANY INFO ---
 def about_company_view(request):
     company_info = CompanyInfo.objects.filter(is_hidden=False).first()
     return render(request, 'cms/about.html', {'company_info': company_info})
 
+@role_required(['ADMIN'])
+def about_company_edit_view(request):
+    company_info = CompanyInfo.objects.first()
+    if request.method == 'POST':
+        form = CompanyInfoForm(request.POST, instance=company_info)
+        if form.is_valid():
+            form.save()
+            return redirect('cms:about')
+    else:
+        form = CompanyInfoForm(instance=company_info)
+    return render(request, 'cms/generic_form.html', {'form': form, 'title': 'Edit About Company'})
+
+# --- NEWS ---
 def news_list_view(request):
     query = request.GET.get('q', '')
     tag_ids = request.GET.getlist('tags')
@@ -33,7 +83,7 @@ def news_list_view(request):
             Q(tags__name__icontains=query)
         ).distinct()
 
-    tags = Tag.objects.filter(news_articles__isnull=False).distinct()
+    tags = NewsTag.objects.filter(news_articles__isnull=False).distinct()
 
     return render(request, 'cms/news_list.html', {
         'news': news,
@@ -43,9 +93,22 @@ def news_list_view(request):
     })
 
 def news_detail_view(request, pk):
-    news_item = News.objects.get(pk=pk)
+    news_item = get_object_or_404(News, pk=pk)
     return render(request, 'cms/news_detail.html', {'news_item': news_item})
 
+@role_required(['ADMIN'])
+def news_create_view(request):
+    return generic_create_view(request, NewsForm, 'cms:news_list', 'Add News')
+
+@role_required(['ADMIN'])
+def news_edit_view(request, pk):
+    return generic_edit_view(request, News, NewsForm, lambda obj: ('cms:news_detail', getattr(obj, 'pk', obj.id)), 'Edit News', pk)
+
+@role_required(['ADMIN'])
+def news_delete_view(request, pk):
+    return generic_delete_view(request, News, 'cms:news_list', 'Delete News', pk)
+
+# --- VACANCIES ---
 def vacancies_list_view(request):
     query = request.GET.get('q', '')
     tag_ids = request.GET.getlist('tags')
@@ -64,7 +127,7 @@ def vacancies_list_view(request):
             Q(tags__name__icontains=query)
         ).distinct()
 
-    tags = Tag.objects.filter(vacancies__isnull=False).distinct()
+    tags = VacancyTag.objects.filter(vacancies__isnull=False).distinct()
 
     return render(request, 'cms/vacancies_list.html', {
         'vacancies': vacancies,
@@ -73,6 +136,19 @@ def vacancies_list_view(request):
         'query': query
     })
 
+@role_required(['ADMIN'])
+def vacancy_create_view(request):
+    return generic_create_view(request, VacancyForm, 'cms:vacancies_list', 'Add Vacancy')
+
+@role_required(['ADMIN'])
+def vacancy_edit_view(request, pk):
+    return generic_edit_view(request, Vacancy, VacancyForm, 'cms:vacancies_list', 'Edit Vacancy', pk)
+
+@role_required(['ADMIN'])
+def vacancy_delete_view(request, pk):
+    return generic_delete_view(request, Vacancy, 'cms:vacancies_list', 'Delete Vacancy', pk)
+
+# --- Q&A ---
 def qna_list_view(request):
     query = request.GET.get('q', '')
     tag_ids = request.GET.getlist('tags')
@@ -91,7 +167,7 @@ def qna_list_view(request):
             Q(tags__name__icontains=query)
         ).distinct()
 
-    tags = Tag.objects.filter(qnas__isnull=False).distinct()
+    tags = QaATag.objects.filter(qnas__isnull=False).distinct()
 
     return render(request, 'cms/qna_list.html', {
         'qna': qna,
@@ -100,20 +176,23 @@ def qna_list_view(request):
         'query': query
     })
 
-def contacts_list_view(request):
-    employees = StaffProfile.objects.all()
-    return render(request, 'cms/contacts.html', {'employees': employees})
+@role_required(['ADMIN'])
+def qna_create_view(request):
+    return generic_create_view(request, QaAForm, 'cms:qna_list', 'Add Q&A')
 
-def privacy_policy_view(request):
-    return render(request, 'cms/privacy_policy.html')
+@role_required(['ADMIN'])
+def qna_edit_view(request, pk):
+    return generic_edit_view(request, QaA, QaAForm, 'cms:qna_list', 'Edit Q&A', pk)
 
+@role_required(['ADMIN'])
+def qna_delete_view(request, pk):
+    return generic_delete_view(request, QaA, 'cms:qna_list', 'Delete Q&A', pk)
+
+# --- REVIEWS ---
 def reviews_list_view(request):
     reviews = Review.objects.filter(product__isnull=True).order_by('-created_at')
     return render(request, 'cms/reviews_list.html', {'reviews': reviews})
 
-from users.decorators import role_required
-
-@login_required(login_url='/login/')
 @role_required(['CUSTOMER'])
 def review_create_view(request):
     if request.method == 'POST':
@@ -126,162 +205,53 @@ def review_create_view(request):
             return redirect('cms:reviews')
     else:
         form = ReviewForm()
-    return render(request, 'cms/review_create.html', {'form': form})
+    return render(request, 'cms/review_create.html', {'form': form, 'title': 'Add a Store Review'})
 
+@role_required(['CUSTOMER'])
+def review_edit_view(request, pk):
+    review = get_object_or_404(Review, pk=pk, author=request.user)
+    if request.method == 'POST':
+        form = ReviewForm(request.POST, instance=review)
+        if form.is_valid():
+            form.save()
+            return redirect('cms:reviews')
+    else:
+        form = ReviewForm(instance=review)
+    return render(request, 'cms/generic_form.html', {'form': form, 'title': 'Edit Review'})
+
+@role_required(['CUSTOMER'])
+def review_delete_view(request, pk):
+    review = get_object_or_404(Review, pk=pk, author=request.user)
+    if request.method == 'POST':
+        review.delete()
+        return redirect('cms:reviews')
+    return render(request, 'cms/generic_confirm_delete.html', {'object': review, 'title': 'Delete Review', 'cancel_url': 'cms:reviews'})
+
+
+# --- PROMO CODES ---
 def promo_codes_list_view(request):
     promo_codes = PromoCode.objects.filter(is_hidden=False).order_by('-created_at')
     return render(request, 'cms/promo_codes.html', {'promo_codes': promo_codes})
 
-from .forms import CompanyInfoForm, NewsForm, VacancyForm, QaAForm, PromoCodeForm
-from django.shortcuts import get_object_or_404
-
-@login_required(login_url='/login/')
-@role_required(['ADMIN'])
-def about_company_edit_view(request):
-    company_info = CompanyInfo.objects.first()
-    if request.method == 'POST':
-        form = CompanyInfoForm(request.POST, instance=company_info)
-        if form.is_valid():
-            form.save()
-            return redirect('cms:about')
-    else:
-        form = CompanyInfoForm(instance=company_info)
-    return render(request, 'cms/generic_form.html', {'form': form, 'title': 'Edit About Company'})
-
-@login_required(login_url='/login/')
-@role_required(['ADMIN'])
-def news_create_view(request):
-    if request.method == 'POST':
-        form = NewsForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            return redirect('cms:news_list')
-    else:
-        form = NewsForm()
-    return render(request, 'cms/generic_form.html', {'form': form, 'title': 'Add News'})
-
-@login_required(login_url='/login/')
-@role_required(['ADMIN'])
-def news_edit_view(request, pk):
-    news_item = get_object_or_404(News, pk=pk)
-    if request.method == 'POST':
-        form = NewsForm(request.POST, request.FILES, instance=news_item)
-        if form.is_valid():
-            form.save()
-            return redirect('cms:news_detail', pk=pk)
-    else:
-        form = NewsForm(instance=news_item)
-    return render(request, 'cms/generic_form.html', {'form': form, 'title': 'Edit News'})
-
-@login_required(login_url='/login/')
-@role_required(['ADMIN'])
-def news_delete_view(request, pk):
-    news_item = get_object_or_404(News, pk=pk)
-    if request.method == 'POST':
-        news_item.delete()
-        return redirect('cms:news_list')
-    return render(request, 'cms/generic_confirm_delete.html', {'object': news_item, 'title': 'Delete News', 'cancel_url': 'cms:news_list'})
-
-
-@login_required(login_url='/login/')
-@role_required(['ADMIN'])
-def vacancy_create_view(request):
-    if request.method == 'POST':
-        form = VacancyForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('cms:vacancies_list')
-    else:
-        form = VacancyForm()
-    return render(request, 'cms/generic_form.html', {'form': form, 'title': 'Add Vacancy'})
-
-@login_required(login_url='/login/')
-@role_required(['ADMIN'])
-def vacancy_edit_view(request, pk):
-    vacancy = get_object_or_404(Vacancy, pk=pk)
-    if request.method == 'POST':
-        form = VacancyForm(request.POST, instance=vacancy)
-        if form.is_valid():
-            form.save()
-            return redirect('cms:vacancies_list')
-    else:
-        form = VacancyForm(instance=vacancy)
-    return render(request, 'cms/generic_form.html', {'form': form, 'title': 'Edit Vacancy'})
-
-@login_required(login_url='/login/')
-@role_required(['ADMIN'])
-def vacancy_delete_view(request, pk):
-    vacancy = get_object_or_404(Vacancy, pk=pk)
-    if request.method == 'POST':
-        vacancy.delete()
-        return redirect('cms:vacancies_list')
-    return render(request, 'cms/generic_confirm_delete.html', {'object': vacancy, 'title': 'Delete Vacancy', 'cancel_url': 'cms:vacancies_list'})
-
-
-@login_required(login_url='/login/')
-@role_required(['ADMIN'])
-def qna_create_view(request):
-    if request.method == 'POST':
-        form = QaAForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('cms:qna_list')
-    else:
-        form = QaAForm()
-    return render(request, 'cms/generic_form.html', {'form': form, 'title': 'Add Q&A'})
-
-@login_required(login_url='/login/')
-@role_required(['ADMIN'])
-def qna_edit_view(request, pk):
-    qna = get_object_or_404(QaA, pk=pk)
-    if request.method == 'POST':
-        form = QaAForm(request.POST, instance=qna)
-        if form.is_valid():
-            form.save()
-            return redirect('cms:qna_list')
-    else:
-        form = QaAForm(instance=qna)
-    return render(request, 'cms/generic_form.html', {'form': form, 'title': 'Edit Q&A'})
-
-@login_required(login_url='/login/')
-@role_required(['ADMIN'])
-def qna_delete_view(request, pk):
-    qna = get_object_or_404(QaA, pk=pk)
-    if request.method == 'POST':
-        qna.delete()
-        return redirect('cms:qna_list')
-    return render(request, 'cms/generic_confirm_delete.html', {'object': qna, 'title': 'Delete Q&A', 'cancel_url': 'cms:qna_list'})
-
-@login_required(login_url='/login/')
 @role_required(['ADMIN'])
 def promo_code_create_view(request):
-    if request.method == 'POST':
-        form = PromoCodeForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('cms:promo_codes')
-    else:
-        form = PromoCodeForm()
-    return render(request, 'cms/generic_form.html', {'form': form, 'title': 'Add Promo Code'})
+    return generic_create_view(request, PromoCodeForm, 'cms:promo_codes', 'Add Promo Code')
 
-@login_required(login_url='/login/')
 @role_required(['ADMIN'])
 def promo_code_edit_view(request, pk):
-    promo = get_object_or_404(PromoCode, pk=pk)
-    if request.method == 'POST':
-        form = PromoCodeForm(request.POST, instance=promo)
-        if form.is_valid():
-            form.save()
-            return redirect('cms:promo_codes')
-    else:
-        form = PromoCodeForm(instance=promo)
-    return render(request, 'cms/generic_form.html', {'form': form, 'title': 'Edit Promo Code'})
+    return generic_edit_view(request, PromoCode, PromoCodeForm, 'cms:promo_codes', 'Edit Promo Code', pk)
 
-@login_required(login_url='/login/')
 @role_required(['ADMIN'])
 def promo_code_delete_view(request, pk):
-    promo = get_object_or_404(PromoCode, pk=pk)
-    if request.method == 'POST':
-        promo.delete()
-        return redirect('cms:promo_codes')
-    return render(request, 'cms/generic_confirm_delete.html', {'object': promo, 'title': 'Delete Promo Code', 'cancel_url': 'cms:promo_codes'})
+    return generic_delete_view(request, PromoCode, 'cms:promo_codes', 'Delete Promo Code', pk)
+
+
+# --- CONTACTS ---
+def contacts_list_view(request):
+    employees = StaffProfile.objects.all()
+    return render(request, 'cms/contacts.html', {'employees': employees})
+
+
+# --- PRIVACY POLICY ---
+def privacy_policy_view(request):
+    return render(request, 'cms/privacy_policy.html')

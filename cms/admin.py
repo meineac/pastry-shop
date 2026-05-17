@@ -1,9 +1,11 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from core.models import Tag
-from .models import News, CompanyInfo, Vacancy, QaA, Review
+from .models import News, CompanyInfo, Vacancy, QaA, Review, NewsTag, VacancyTag, QaATag, ReviewTag
 
-admin.site.register(Tag)
+admin.site.register(NewsTag)
+admin.site.register(VacancyTag)
+admin.site.register(QaATag)
+admin.site.register(ReviewTag)
 
 class DisplayTagsMixin:
     def display_tags(self, obj):

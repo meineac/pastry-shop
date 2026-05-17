@@ -68,7 +68,6 @@ def profile_view(request):
     else:
         return render(request, 'users/profile_client.html', {'profile': None})
 
-@login_required
 @role_required([User.Role.CUSTOMER])
 def order_history_view(request):
     profile = getattr(request.user, 'customer_profile', None)
@@ -77,7 +76,6 @@ def order_history_view(request):
         history_orders = profile.orders.filter(status__in=[Order.OrderStatus.COMPLETED, Order.OrderStatus.CANCELLED]).order_by('-created_at')
     return render(request, 'users/order_history.html', {'history_orders': history_orders})
 
-@login_required
 @role_required([User.Role.CUSTOMER])
 def order_details_view(request, order_id):
     profile = getattr(request.user, 'customer_profile', None)
@@ -85,7 +83,6 @@ def order_details_view(request, order_id):
     items = order.items.all()
     return render(request, 'users/order_details.html', {'order': order, 'items': items})
 
-@login_required
 @role_required([User.Role.ADMIN])
 def staff_list_view(request):
     if request.method == 'POST':

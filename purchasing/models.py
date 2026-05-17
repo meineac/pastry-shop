@@ -52,7 +52,7 @@ class Order(TimestampedModel):
     promo_code = models.ForeignKey(PromoCode, on_delete=models.SET_NULL, null=True, blank=True, related_name='orders')
 
     def __str__(self):
-        return f"Order #{self.id} by {self.client.name}"
+        return f"Order #{self.id} by {self.client}"
 
 class OrderItem(TimestampedModel):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
@@ -66,7 +66,7 @@ class Cart(TimestampedModel):
     client = models.OneToOneField(CustomerProfile, on_delete=models.CASCADE, related_name='cart')
 
     def __str__(self):
-        return f"Cart of {self.client.name}"
+        return f"Cart of {self.client}"
 
 class CartItem(TimestampedModel):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items')
@@ -74,4 +74,4 @@ class CartItem(TimestampedModel):
     quantity = models.PositiveIntegerField(default=1)
 
     def __str__(self):
-        return f"{self.quantity} x {self.product.name} in Cart of {self.cart.client.name}"
+        return f"{self.quantity} x {self.product.name} in Cart of {self.cart.client}"
