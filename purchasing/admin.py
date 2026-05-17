@@ -22,8 +22,8 @@ class PromoCodeAdmin(admin.ModelAdmin):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('id', 'client', 'status', 'delivery_type', 'payment_type', 'created_at', 'updated_at')
-    list_filter = ('status', 'delivery_type', 'payment_type')
+    list_display = ('id', 'client', 'status', 'payment_type', 'created_at', 'updated_at')
+    list_filter = ('status', 'payment_type')
     search_fields = ('client__user__first_name', 'client__user__last_name', 'id')
     inlines = [OrderItemInline]
 

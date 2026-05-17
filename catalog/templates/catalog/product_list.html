@@ -1,0 +1,48 @@
+{% extends 'core/base.html' %}
+{% block title %}Catalog | Pastry Shop{% endblock %}
+
+{% block content %}
+<h2>Product Catalog</h2>
+
+<form method="GET" action="{% url 'catalog:product_list' %}">
+    <input type="text" name="q" value="{{ query }}" placeholder="Search by name or category">
+
+    <select name="category">
+        <option value="">All Categories</option>
+        {% for cat in categories %}
+            <option value="{{ cat.id }}" {% if category_id == cat.id|stringformat:"s" %}selected{% endif %}>{{ cat.name }}</option>
+        {% endfor %}
+    </select>
+
+    <select name="manufacturer">
+        <option value="">All Manufacturers</option>
+        {% for man in manufacturers %}
+            <option value="{{ man.id }}" {% if manufacturer_id == man.id|stringformat:"s" %}selected{% endif %}>{{ man.name }}</option>
+        {% endfor %}
+    </select>
+
+    <input type="number" name="min_price" value="{{ min_price }}" placeholder="Min Price" step="0.01">
+    <input type="number" name="max_price" value="{{ max_price }}" placeholder="Max Price" step="0.01">
+
+    <button type="submit">Filter</button>
+</form>
+
+<ul>
+    {% for product in products %}
+        <li>
+            {% if product.photo %}
+                <img src="{{ product.photo.url }}" alt="{{ product.name }}" width="100">
+            {% endif %}
+            <h3><a href="{% url 'catalog:product_detail' product_id=product.id %}">{{ product.name }}</a></h3>
+            <p>Category: {{ product.category.name }}</p>
+            <p>Price: ${{ product.price }}</p>
+            <form action="{% url 'purchasing:add_to_cart' product_id=product.id %}" method="POST">
+                {% csrf_token %}
+                <button type="submit">Add to Cart</button>
+            </form>
+        </li>
+    {% empty %}
+        <li>No products found.</li>
+    {% endfor %}
+</ul>
+{% endblock %}

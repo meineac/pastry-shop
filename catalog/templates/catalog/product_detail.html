@@ -1,0 +1,42 @@
+{% extends 'core/base.html' %}
+{% block title %}{{ product.name }} | Pastry Shop{% endblock %}
+
+{% block content %}
+<h2>{{ product.name }}</h2>
+
+{% if product.photo %}
+    <img src="{{ product.photo.url }}" alt="{{ product.name }}" width="300">
+{% endif %}
+
+<p><strong>Category:</strong> {{ product.category.name }}</p>
+<p><strong>Manufacturer:</strong> {{ product.manufacturer.name }}</p>
+<p><strong>Price:</strong> ${{ product.price }}</p>
+
+<h3>Description</h3>
+<p><strong>Ingredients:</strong> {{ product.ingredients }}</p>
+<p><strong>Quantity:</strong> {{ product.quantity }} {{ product.get_unit_of_measurement_display }}</p>
+
+<form action="{% url 'purchasing:add_to_cart' product_id=product.id %}" method="POST">
+    {% csrf_token %}
+    <button type="submit">Add to Cart</button>
+</form>
+
+<hr>
+
+<h3>Reviews</h3>
+<ul>
+    {% for review in reviews %}
+        <li>
+            <p><strong>{{ review.author.username }}</strong> rated it {{ review.rating }}/5 on {{ review.created_at|date:"d/m/Y" }}</p>
+            <p>{{ review.review_text }}</p>
+        </li>
+    {% empty %}
+        <li>No reviews yet.</li>
+    {% endfor %}
+</ul>
+
+{% if request.user.is_authenticated and request.user.role == 'CUSTOMER' %}
+    <a href="{% url 'cms:review_create' %}?product_id={{ product.id }}">Leave a Review</a>
+{% endif %}
+
+{% endblock %}

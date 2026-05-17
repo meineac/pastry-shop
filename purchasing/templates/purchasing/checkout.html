@@ -1,0 +1,73 @@
+{% extends 'core/base.html' %}
+{% block title %}Checkout | Pastry Shop{% endblock %}
+
+{% block content %}
+<h2>Checkout</h2>
+
+<div class="order-summary">
+    <h3>Order Summary</h3>
+    <ul>
+        {% for item in items %}
+            <li>
+                {{ item.quantity }} x
+                {% if item.product %}
+                    {{ item.product.name }}
+                {% else %}
+                    Unavailable Item
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+
+    <p>Subtotal: ${{ subtotal }}</p>
+
+    {% if promo_code %}
+        <p>Promo Code: {{ promo_code.code }} applied! (-${{ discount }})</p>
+    {% endif %}
+
+    <h3>Total: ${{ total }}</h3>
+</div>
+
+<div class="promo-code-section">
+    <h3>Apply Promo Code</h3>
+    {% if promo_error %}
+        <p style="color: red;">{{ promo_error }}</p>
+    {% endif %}
+    {% if promo_success %}
+        <p style="color: green;">{{ promo_success }}</p>
+    {% endif %}
+    <form action="{% url 'purchasing:apply_promo' %}" method="POST">
+        {% csrf_token %}
+        <input type="text" name="promo_code" placeholder="Enter promo code" required>
+        <button type="submit">Apply</button>
+    </form>
+</div>
+
+<hr>
+
+<div class="checkout-form">
+    <form action="{% url 'purchasing:place_order' %}" method="POST">
+        {% csrf_token %}
+
+        <h3>Pickup Point</h3>
+        <select name="pickup_point" required>
+            <option value="" disabled selected>Select a store</option>
+            {% for point in pickup_points %}
+                <option value="{{ point.id }}">{{ point.address }} ({{ point.working_hours }})</option>
+            {% endfor %}
+        </select>
+
+        <h3>Payment Method</h3>
+        <label>
+            <input type="radio" name="payment_type" value="CASH" required> Cash
+        </label>
+        <label>
+            <input type="radio" name="payment_type" value="CARD" required> Card
+        </label>
+
+        <br><br>
+        <button type="submit">Place Order</button>
+    </form>
+</div>
+
+{% endblock %}
