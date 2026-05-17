@@ -2,11 +2,20 @@
 
 {% block content %}
     <h1>Promo Codes and Coupons</h1>
+    {% if request.user.role == 'ADMIN' %}
+        <p><a href="{% url 'cms:promo_code_create' %}"><button>Add Promo Code</button></a></p>
+    {% endif %}
 
     <ul>
     {% for promo in promo_codes %}
         <li>
             <h3>{{ promo.code }} ({{ promo.get_status_display }})</h3>
+            {% if request.user.role == 'ADMIN' %}
+                <p>
+                    <a href="{% url 'cms:promo_code_edit' pk=promo.id %}"><button>Edit</button></a>
+                    <a href="{% url 'cms:promo_code_delete' pk=promo.id %}"><button>Delete</button></a>
+                </p>
+            {% endif %}
             <p><strong>Expiration Date:</strong> {{ promo.expiration_date|date:"d/m/Y" }}</p>
             <p><strong>Conditions:</strong> {{ promo.conditions_of_application }}</p>
         </li>

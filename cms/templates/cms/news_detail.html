@@ -2,6 +2,12 @@
 
 {% block content %}
     <h1>{{ news_item.title }}</h1>
+    {% if request.user.role == 'ADMIN' %}
+        <p>
+            <a href="{% url 'cms:news_edit' pk=news_item.id %}"><button>Edit</button></a>
+            <a href="{% url 'cms:news_delete' pk=news_item.id %}"><button>Delete</button></a>
+        </p>
+    {% endif %}
     <p><strong>Date Added:</strong> {{ news_item.created_at|date:"d/m/Y" }}</p>
     <p>
         <strong>Tags:</strong>

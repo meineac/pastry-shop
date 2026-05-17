@@ -2,6 +2,9 @@
 
 {% block content %}
     <h1>Vacancies</h1>
+    {% if request.user.role == 'ADMIN' %}
+        <p><a href="{% url 'cms:vacancy_create' %}"><button>Add Vacancy</button></a></p>
+    {% endif %}
 
     <form method="GET" action="">
         <input type="text" name="q" placeholder="Search vacancies..." value="{{ query }}">
@@ -20,6 +23,12 @@
     {% for vacancy in vacancies %}
         <li>
             <h3>{{ vacancy.title }}</h3>
+            {% if request.user.role == 'ADMIN' %}
+                <p>
+                    <a href="{% url 'cms:vacancy_edit' pk=vacancy.id %}"><button>Edit</button></a>
+                    <a href="{% url 'cms:vacancy_delete' pk=vacancy.id %}"><button>Delete</button></a>
+                </p>
+            {% endif %}
             <p><strong>Date Updated:</strong> {{ vacancy.updated_at|date:"d/m/Y" }}</p>
             <p>
                 <strong>Tags:</strong>

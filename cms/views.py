@@ -124,3 +124,157 @@ def review_create_view(request):
 def promo_codes_list_view(request):
     promo_codes = PromoCode.objects.filter(is_hidden=False).order_by('-created_at')
     return render(request, 'cms/promo_codes.html', {'promo_codes': promo_codes})
+
+from .forms import CompanyInfoForm, NewsForm, VacancyForm, QaAForm, PromoCodeForm
+from django.shortcuts import get_object_or_404
+
+@login_required(login_url='/login/')
+@role_required(['ADMIN'])
+def about_company_edit_view(request):
+    company_info = CompanyInfo.objects.first()
+    if request.method == 'POST':
+        form = CompanyInfoForm(request.POST, instance=company_info)
+        if form.is_valid():
+            form.save()
+            return redirect('cms:about')
+    else:
+        form = CompanyInfoForm(instance=company_info)
+    return render(request, 'cms/generic_form.html', {'form': form, 'title': 'Edit About Company'})
+
+@login_required(login_url='/login/')
+@role_required(['ADMIN'])
+def news_create_view(request):
+    if request.method == 'POST':
+        form = NewsForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('cms:news_list')
+    else:
+        form = NewsForm()
+    return render(request, 'cms/generic_form.html', {'form': form, 'title': 'Add News'})
+
+@login_required(login_url='/login/')
+@role_required(['ADMIN'])
+def news_edit_view(request, pk):
+    news_item = get_object_or_404(News, pk=pk)
+    if request.method == 'POST':
+        form = NewsForm(request.POST, request.FILES, instance=news_item)
+        if form.is_valid():
+            form.save()
+            return redirect('cms:news_detail', pk=pk)
+    else:
+        form = NewsForm(instance=news_item)
+    return render(request, 'cms/generic_form.html', {'form': form, 'title': 'Edit News'})
+
+@login_required(login_url='/login/')
+@role_required(['ADMIN'])
+def news_delete_view(request, pk):
+    news_item = get_object_or_404(News, pk=pk)
+    if request.method == 'POST':
+        news_item.delete()
+        return redirect('cms:news_list')
+    return render(request, 'cms/generic_confirm_delete.html', {'object': news_item, 'title': 'Delete News', 'cancel_url': 'cms:news_list'})
+
+
+@login_required(login_url='/login/')
+@role_required(['ADMIN'])
+def vacancy_create_view(request):
+    if request.method == 'POST':
+        form = VacancyForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('cms:vacancies_list')
+    else:
+        form = VacancyForm()
+    return render(request, 'cms/generic_form.html', {'form': form, 'title': 'Add Vacancy'})
+
+@login_required(login_url='/login/')
+@role_required(['ADMIN'])
+def vacancy_edit_view(request, pk):
+    vacancy = get_object_or_404(Vacancy, pk=pk)
+    if request.method == 'POST':
+        form = VacancyForm(request.POST, instance=vacancy)
+        if form.is_valid():
+            form.save()
+            return redirect('cms:vacancies_list')
+    else:
+        form = VacancyForm(instance=vacancy)
+    return render(request, 'cms/generic_form.html', {'form': form, 'title': 'Edit Vacancy'})
+
+@login_required(login_url='/login/')
+@role_required(['ADMIN'])
+def vacancy_delete_view(request, pk):
+    vacancy = get_object_or_404(Vacancy, pk=pk)
+    if request.method == 'POST':
+        vacancy.delete()
+        return redirect('cms:vacancies_list')
+    return render(request, 'cms/generic_confirm_delete.html', {'object': vacancy, 'title': 'Delete Vacancy', 'cancel_url': 'cms:vacancies_list'})
+
+
+@login_required(login_url='/login/')
+@role_required(['ADMIN'])
+def qna_create_view(request):
+    if request.method == 'POST':
+        form = QaAForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('cms:qna_list')
+    else:
+        form = QaAForm()
+    return render(request, 'cms/generic_form.html', {'form': form, 'title': 'Add Q&A'})
+
+@login_required(login_url='/login/')
+@role_required(['ADMIN'])
+def qna_edit_view(request, pk):
+    qna = get_object_or_404(QaA, pk=pk)
+    if request.method == 'POST':
+        form = QaAForm(request.POST, instance=qna)
+        if form.is_valid():
+            form.save()
+            return redirect('cms:qna_list')
+    else:
+        form = QaAForm(instance=qna)
+    return render(request, 'cms/generic_form.html', {'form': form, 'title': 'Edit Q&A'})
+
+@login_required(login_url='/login/')
+@role_required(['ADMIN'])
+def qna_delete_view(request, pk):
+    qna = get_object_or_404(QaA, pk=pk)
+    if request.method == 'POST':
+        qna.delete()
+        return redirect('cms:qna_list')
+    return render(request, 'cms/generic_confirm_delete.html', {'object': qna, 'title': 'Delete Q&A', 'cancel_url': 'cms:qna_list'})
+
+@login_required(login_url='/login/')
+@role_required(['ADMIN'])
+def promo_code_create_view(request):
+    if request.method == 'POST':
+        form = PromoCodeForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('cms:promo_codes')
+    else:
+        form = PromoCodeForm()
+    return render(request, 'cms/generic_form.html', {'form': form, 'title': 'Add Promo Code'})
+
+@login_required(login_url='/login/')
+@role_required(['ADMIN'])
+def promo_code_edit_view(request, pk):
+    promo = get_object_or_404(PromoCode, pk=pk)
+    if request.method == 'POST':
+        form = PromoCodeForm(request.POST, instance=promo)
+        if form.is_valid():
+            form.save()
+            return redirect('cms:promo_codes')
+    else:
+        form = PromoCodeForm(instance=promo)
+    return render(request, 'cms/generic_form.html', {'form': form, 'title': 'Edit Promo Code'})
+
+@login_required(login_url='/login/')
+@role_required(['ADMIN'])
+def promo_code_delete_view(request, pk):
+    promo = get_object_or_404(PromoCode, pk=pk)
+    if request.method == 'POST':
+        promo.delete()
+        return redirect('cms:promo_codes')
+    return render(request, 'cms/generic_confirm_delete.html', {'object': promo, 'title': 'Delete Promo Code', 'cancel_url': 'cms:promo_codes'})

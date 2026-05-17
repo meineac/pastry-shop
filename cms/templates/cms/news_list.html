@@ -2,6 +2,9 @@
 
 {% block content %}
     <h1>News</h1>
+    {% if request.user.role == 'ADMIN' %}
+        <p><a href="{% url 'cms:news_create' %}"><button>Add News</button></a></p>
+    {% endif %}
 
     <form method="GET" action="">
         <input type="text" name="q" placeholder="Search news..." value="{{ query }}">
