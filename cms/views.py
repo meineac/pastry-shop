@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
-from .models import News, CompanyInfo, Vacancy, QaA, Review, NewsTag, VacancyTag, QaATag, ReviewTag
+from core.models import Tag
+from .models import News, CompanyInfo, Vacancy, QaA, Review
 from users.models import StaffProfile
 from purchasing.models import PromoCode
 from .forms import ReviewForm
@@ -30,7 +31,7 @@ def news_list_view(request):
             Q(tags__name__icontains=query)
         ).distinct()
 
-    tags = NewsTag.objects.all()
+    tags = Tag.objects.filter(news_articles__isnull=False).distinct()
 
     return render(request, 'cms/news_list.html', {
         'news': news,
@@ -59,7 +60,7 @@ def vacancies_list_view(request):
             Q(tags__name__icontains=query)
         ).distinct()
 
-    tags = VacancyTag.objects.all()
+    tags = Tag.objects.filter(vacancies__isnull=False).distinct()
 
     return render(request, 'cms/vacancies_list.html', {
         'vacancies': vacancies,
@@ -84,7 +85,7 @@ def qna_list_view(request):
             Q(tags__name__icontains=query)
         ).distinct()
 
-    tags = QaATag.objects.all()
+    tags = Tag.objects.filter(qnas__isnull=False).distinct()
 
     return render(request, 'cms/qna_list.html', {
         'qna': qna,

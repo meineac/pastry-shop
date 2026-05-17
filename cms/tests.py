@@ -1,6 +1,7 @@
 from django.test import TestCase, Client
 from django.urls import reverse
-from .models import News, CompanyInfo, Vacancy, QaA, Review, NewsTag
+from .models import News, CompanyInfo, Vacancy, QaA, Review
+from core.models import Tag
 from users.models import User, CustomerProfile
 from datetime import date
 
@@ -14,7 +15,7 @@ class CMSViewsTests(TestCase):
             phone_number='+375 (29) 111-22-33'
         )
 
-        self.tag = NewsTag.objects.create(name='Test Tag')
+        self.tag = Tag.objects.create(name='Test Tag')
         self.news = News.objects.create(
             title='Test News',
             short_summary='Short',
