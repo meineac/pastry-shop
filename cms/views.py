@@ -17,12 +17,14 @@ def about_company_view(request):
 
 def news_list_view(request):
     query = request.GET.get('q', '')
-    tag_id = request.GET.get('tag', '')
+    tag_ids = request.GET.getlist('tags')
 
     news = News.objects.filter(is_hidden=False).order_by('-created_at')
 
-    if tag_id:
-        news = news.filter(tags__id=tag_id)
+    if tag_ids:
+        for tag_id in tag_ids:
+            if tag_id.isdigit():
+                news = news.filter(tags__id=tag_id)
 
     if query:
         news = news.filter(
@@ -36,7 +38,7 @@ def news_list_view(request):
     return render(request, 'cms/news_list.html', {
         'news': news,
         'tags': tags,
-        'current_tag': int(tag_id) if tag_id.isdigit() else '',
+        'current_tags': [int(t) for t in tag_ids if t.isdigit()],
         'query': query
     })
 
@@ -46,12 +48,14 @@ def news_detail_view(request, pk):
 
 def vacancies_list_view(request):
     query = request.GET.get('q', '')
-    tag_id = request.GET.get('tag', '')
+    tag_ids = request.GET.getlist('tags')
 
     vacancies = Vacancy.objects.filter(is_hidden=False).order_by('-updated_at')
 
-    if tag_id:
-        vacancies = vacancies.filter(tags__id=tag_id)
+    if tag_ids:
+        for tag_id in tag_ids:
+            if tag_id.isdigit():
+                vacancies = vacancies.filter(tags__id=tag_id)
 
     if query:
         vacancies = vacancies.filter(
@@ -65,18 +69,20 @@ def vacancies_list_view(request):
     return render(request, 'cms/vacancies_list.html', {
         'vacancies': vacancies,
         'tags': tags,
-        'current_tag': int(tag_id) if tag_id.isdigit() else '',
+        'current_tags': [int(t) for t in tag_ids if t.isdigit()],
         'query': query
     })
 
 def qna_list_view(request):
     query = request.GET.get('q', '')
-    tag_id = request.GET.get('tag', '')
+    tag_ids = request.GET.getlist('tags')
 
     qna = QaA.objects.filter(is_hidden=False).order_by('-created_at')
 
-    if tag_id:
-        qna = qna.filter(tags__id=tag_id)
+    if tag_ids:
+        for tag_id in tag_ids:
+            if tag_id.isdigit():
+                qna = qna.filter(tags__id=tag_id)
 
     if query:
         qna = qna.filter(
@@ -90,7 +96,7 @@ def qna_list_view(request):
     return render(request, 'cms/qna_list.html', {
         'qna': qna,
         'tags': tags,
-        'current_tag': int(tag_id) if tag_id.isdigit() else '',
+        'current_tags': [int(t) for t in tag_ids if t.isdigit()],
         'query': query
     })
 

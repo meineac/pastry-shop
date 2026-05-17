@@ -8,10 +8,9 @@
 
     <form method="GET" action="">
         <input type="text" name="q" placeholder="Search vacancies..." value="{{ query }}">
-        <select name="tag">
-            <option value="">All Tags</option>
+        <select name="tags" multiple>
             {% for tag in tags %}
-                <option value="{{ tag.id }}" {% if current_tag == tag.id %}selected{% endif %}>{{ tag.name }}</option>
+                <option value="{{ tag.id }}" {% if tag.id in current_tags %}selected{% endif %}>{{ tag.name }}</option>
             {% endfor %}
         </select>
         <button type="submit">Filter/Search</button>
