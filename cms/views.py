@@ -104,13 +104,11 @@ def reviews_list_view(request):
     reviews = Review.objects.filter(product__isnull=True).order_by('-created_at')
     return render(request, 'cms/reviews_list.html', {'reviews': reviews})
 
-from django.core.exceptions import PermissionDenied
+from users.decorators import role_required
 
 @login_required(login_url='/login/')
+@role_required(['CUSTOMER'])
 def review_create_view(request):
-    if request.user.role != 'CUSTOMER':
-        raise PermissionDenied("Only customers can create reviews.")
-
     if request.method == 'POST':
         form = ReviewForm(request.POST)
         if form.is_valid():
