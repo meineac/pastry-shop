@@ -4,7 +4,36 @@ from users.models import User
 from catalog.models import Product
 
 
-class News(TimestampedModel):
+class TagCleanupMixin(models.Model):
+    class Meta:
+        abstract = True
+
+    def delete(self, *args, **kwargs):
+        # Capture tags before deletion
+        tags_to_check = []
+        if hasattr(self, 'tags'):
+            tags_to_check = list(self.tags.all())
+
+        result = super().delete(*args, **kwargs)
+
+        # Check if tags are orphaned
+        for tag in tags_to_check:
+            is_orphaned = True
+            for related_object in tag._meta.related_objects:
+                accessor_name = related_object.get_accessor_name()
+                related_manager = getattr(tag, accessor_name, None)
+                if related_manager and related_manager.exists():
+                    is_orphaned = False
+                    break
+
+            if is_orphaned:
+                tag.delete()
+
+        return result
+
+
+
+class News(TagCleanupMixin, TimestampedModel):
     title = models.CharField(max_length=255)
     image = models.ImageField(upload_to='news/', null=True, blank=True)
     short_summary = models.TextField()
@@ -24,7 +53,7 @@ class CompanyInfo(TimestampedModel):
     def __str__(self):
         return "Company Info"
 
-class Vacancy(TimestampedModel):
+class Vacancy(TagCleanupMixin, TimestampedModel):
     title = models.CharField(max_length=255)
     description = models.TextField()
     tags = models.ManyToManyField(Tag, blank=True, related_name='vacancies')
@@ -33,7 +62,7 @@ class Vacancy(TimestampedModel):
     def __str__(self):
         return self.title
 
-class QaA(TimestampedModel):
+class QaA(TagCleanupMixin, TimestampedModel):
     question_text = models.TextField()
     answer_text = models.TextField()
     tags = models.ManyToManyField(Tag, blank=True, related_name='qnas')
@@ -42,7 +71,7 @@ class QaA(TimestampedModel):
     def __str__(self):
         return self.question_text[:50]
 
-class Review(TimestampedModel):
+class Review(TagCleanupMixin, TimestampedModel):
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reviews')
     rating = models.PositiveSmallIntegerField(choices=[(i, str(i)) for i in range(6)])
     review_text = models.TextField()
