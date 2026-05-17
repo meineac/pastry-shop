@@ -26,6 +26,7 @@ class News(TimestampedModel):
     short_summary = models.TextField()
     full_text = models.TextField()
     tags = models.ManyToManyField(NewsTag, blank=True)
+    is_hidden = models.BooleanField(default=False)
 
     def __str__(self):
         return self.title
@@ -34,6 +35,7 @@ class CompanyInfo(TimestampedModel):
     text_information = models.TextField()
     history_by_years = models.TextField()
     company_details = models.TextField()
+    is_hidden = models.BooleanField(default=False)
 
     def __str__(self):
         return "Company Info"
@@ -42,6 +44,7 @@ class Vacancy(TimestampedModel):
     title = models.CharField(max_length=255)
     description = models.TextField()
     tags = models.ManyToManyField(VacancyTag, blank=True)
+    is_hidden = models.BooleanField(default=False)
 
     def __str__(self):
         return self.title
@@ -50,6 +53,7 @@ class QaA(TimestampedModel):
     question_text = models.TextField()
     answer_text = models.TextField()
     tags = models.ManyToManyField(QaATag, blank=True)
+    is_hidden = models.BooleanField(default=False)
 
     def __str__(self):
         return self.question_text[:50]

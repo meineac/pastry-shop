@@ -7,18 +7,18 @@ from purchasing.models import PromoCode
 from .forms import ReviewForm
 
 def home_view(request):
-    latest_news = News.objects.order_by('-created_at').first()
+    latest_news = News.objects.filter(is_hidden=False).order_by('-created_at').first()
     return render(request, 'cms/home.html', {'latest_news': latest_news})
 
 def about_company_view(request):
-    company_info = CompanyInfo.objects.first()
+    company_info = CompanyInfo.objects.filter(is_hidden=False).first()
     return render(request, 'cms/about.html', {'company_info': company_info})
 
 def news_list_view(request):
     query = request.GET.get('q', '')
     tag_id = request.GET.get('tag', '')
 
-    news = News.objects.all().order_by('-created_at')
+    news = News.objects.filter(is_hidden=False).order_by('-created_at')
 
     if tag_id:
         news = news.filter(tags__id=tag_id)
@@ -47,7 +47,7 @@ def vacancies_list_view(request):
     query = request.GET.get('q', '')
     tag_id = request.GET.get('tag', '')
 
-    vacancies = Vacancy.objects.all().order_by('-updated_at')
+    vacancies = Vacancy.objects.filter(is_hidden=False).order_by('-updated_at')
 
     if tag_id:
         vacancies = vacancies.filter(tags__id=tag_id)
@@ -72,7 +72,7 @@ def qna_list_view(request):
     query = request.GET.get('q', '')
     tag_id = request.GET.get('tag', '')
 
-    qna = QaA.objects.all().order_by('-created_at')
+    qna = QaA.objects.filter(is_hidden=False).order_by('-created_at')
 
     if tag_id:
         qna = qna.filter(tags__id=tag_id)
@@ -122,5 +122,5 @@ def review_create_view(request):
     return render(request, 'cms/review_create.html', {'form': form})
 
 def promo_codes_list_view(request):
-    promo_codes = PromoCode.objects.all().order_by('-created_at')
+    promo_codes = PromoCode.objects.filter(is_hidden=False).order_by('-created_at')
     return render(request, 'cms/promo_codes.html', {'promo_codes': promo_codes})

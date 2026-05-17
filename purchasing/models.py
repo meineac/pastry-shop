@@ -23,6 +23,7 @@ class PromoCode(TimestampedModel):
         default=Status.ACTIVE
     )
     conditions_of_application = models.TextField()
+    is_hidden = models.BooleanField(default=False)
 
     def __str__(self):
         return self.code
