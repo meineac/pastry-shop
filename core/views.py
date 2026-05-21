@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 # Internal helpers
 # ---------------------------------------------------------------------------
 
-def _get_client_ip(request):
+def get_client_ip(request):
     """
     Return the real client IP, preferring X-Forwarded-For (set by proxies /
     load balancers).  Falls back to REMOTE_ADDR.
@@ -34,7 +34,7 @@ def _get_client_ip(request):
     return ip
 
 
-def _get_ipinfo(ip):
+def get_ipinfo(ip):
     """
     Query the IPinfo API for ``ip``.
     Returns a dict with at minimum ``timezone``, ``city``, ``country``.
@@ -59,7 +59,7 @@ def _get_ipinfo(ip):
         return {}
 
 
-def _get_weather(city, country):
+def get_weather(city, country):
     """
     Query the OpenWeatherMap current-weather endpoint.
     Returns a dict with ``temperature``, ``description``, ``humidity``, ``wind_speed``.
@@ -97,13 +97,13 @@ def _get_weather(city, country):
         return {}
 
 
-def _build_text_calendar(year, month):
+def build_text_calendar(year, month):
     """Return a plain-text calendar for *year*/*month* (uses Python stdlib)."""
     cal = calendar.TextCalendar(firstweekday=0)  # Monday first
     return cal.formatmonth(year, month)
 
 
-def _local_datetime(tz_name):
+def local_datetime(tz_name):
     """
     Return the current datetime in *tz_name* timezone.
     Falls back to UTC on unknown timezone names.
@@ -114,45 +114,4 @@ def _local_datetime(tz_name):
         logger.warning("Unknown timezone '%s', falling back to UTC.", tz_name)
         tz = pytz.utc
     return timezone.now().astimezone(tz)
-
-
 # ---------------------------------------------------------------------------
-# View
-# ---------------------------------------------------------------------------
-
-def user_location_view(request):
-    """
-    Display the visitor's detected location (via IPinfo), local time/timezone,
-    current weather (via OpenWeatherMap), and a text calendar.
-    """
-    ip = _get_client_ip(request)
-    location = _get_ipinfo(ip)
-
-    tz_name = location.get("timezone", "UTC") or "UTC"
-    city = location.get("city", "Unknown")
-    country = location.get("country", "Unknown")
-
-    local_dt = _local_datetime(tz_name)
-
-    weather = _get_weather(city, country)
-
-    text_calendar = _build_text_calendar(local_dt.year, local_dt.month)
-
-    # Dates MUST be in DD/MM/YYYY format (per agents.md rule #8)
-    local_date_display = local_dt.strftime("%d/%m/%Y")
-    local_time_display = local_dt.strftime("%H:%M:%S")
-    utc_now = timezone.now()
-    utc_date_display = utc_now.strftime("%d/%m/%Y")
-
-    context = {
-        "ip": ip,
-        "city": city,
-        "country": country,
-        "timezone": tz_name,
-        "local_date": local_date_display,
-        "local_time": local_time_display,
-        "utc_date": utc_date_display,
-        "weather": weather,
-        "text_calendar": text_calendar,
-    }
-    return render(request, "core/user_location.html", context)

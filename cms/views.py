@@ -8,7 +8,7 @@ from .forms import ReviewForm, CompanyInfoForm, NewsForm, VacancyForm, QaAForm, 
 from users.models import StaffProfile
 from purchasing.models import PromoCode, Order, OrderItem, Product
 from users.decorators import role_required
-from core.views import _get_client_ip, _get_ipinfo, _get_weather, _build_text_calendar, _local_datetime
+from core.views import get_client_ip, get_ipinfo, get_weather, build_text_calendar, local_datetime
 
 # --- GENERIC HELPERS ---
 def generic_create_view(request, form_class, redirect_url, title):
@@ -50,16 +50,16 @@ def home_view(request):
     latest_news = News.objects.filter(is_hidden=False).order_by('-created_at').first()
 
     # --- User location / timezone / weather / calendar ---
-    ip = _get_client_ip(request)
-    location = _get_ipinfo(ip)
+    ip = get_client_ip(request)
+    location = get_ipinfo(ip)
 
     tz_name = location.get("timezone", "UTC") or "UTC"
     city = location.get("city", "Unknown")
     country = location.get("country", "Unknown")
 
-    local_dt = _local_datetime(tz_name)
-    weather = _get_weather(city, country)
-    text_calendar = _build_text_calendar(local_dt.year, local_dt.month)
+    local_dt = local_datetime(tz_name)
+    weather = get_weather(city, country)
+    text_calendar = build_text_calendar(local_dt.year, local_dt.month)
 
     utc_now = dj_tz.now()
 

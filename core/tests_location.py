@@ -1,5 +1,5 @@
 """
-Tests for core/views.py (user_location_view) and helper utilities.
+Tests for core helper utilities (used by cms.views.home_view).
 
 All external HTTP calls (IPinfo SDK and requests.get for OpenWeather) are
 mocked so the test suite runs offline and deterministically.
@@ -56,10 +56,10 @@ FAKE_WEATHER_JSON = {
 # ---------------------------------------------------------------------------
 
 class GetClientIPTests(TestCase):
-    """Unit tests for _get_client_ip helper."""
+    """Unit tests for get_client_ip helper."""
 
     def _call(self, remote_addr=None, x_forwarded_for=None):
-        from core.views import _get_client_ip
+        from core.views import get_client_ip
         request = MagicMock()
         meta = {}
         if remote_addr:
@@ -67,7 +67,7 @@ class GetClientIPTests(TestCase):
         if x_forwarded_for:
             meta["HTTP_X_FORWARDED_FOR"] = x_forwarded_for
         request.META = meta
-        return _get_client_ip(request)
+        return get_client_ip(request)
 
     @override_settings(TEST_IP="1.2.3.4")
     def test_loopback_returns_test_ip(self):
@@ -89,38 +89,38 @@ class GetClientIPTests(TestCase):
 
 
 class BuildTextCalendarTests(TestCase):
-    """Unit tests for _build_text_calendar helper."""
+    """Unit tests for build_text_calendar helper."""
 
     def test_returns_string_with_month_name(self):
-        from core.views import _build_text_calendar
-        cal_str = _build_text_calendar(2025, 5)
+        from core.views import build_text_calendar
+        cal_str = build_text_calendar(2025, 5)
         self.assertIn("May", cal_str)
         self.assertIn("2025", cal_str)
 
     def test_calendar_contains_day_numbers(self):
-        from core.views import _build_text_calendar
-        cal_str = _build_text_calendar(2025, 1)
+        from core.views import build_text_calendar
+        cal_str = build_text_calendar(2025, 1)
         # January must show day 31
         self.assertIn("31", cal_str)
 
     def test_output_matches_stdlib(self):
-        from core.views import _build_text_calendar
+        from core.views import build_text_calendar
         expected = calendar.TextCalendar(firstweekday=0).formatmonth(2024, 12)
-        self.assertEqual(_build_text_calendar(2024, 12), expected)
+        self.assertEqual(build_text_calendar(2024, 12), expected)
 
 
 class LocalDatetimeTests(TestCase):
-    """Unit tests for _local_datetime helper."""
+    """Unit tests for local_datetime helper."""
 
     def test_valid_timezone(self):
-        from core.views import _local_datetime
-        dt = _local_datetime("Europe/London")
+        from core.views import local_datetime
+        dt = local_datetime("Europe/London")
         self.assertIsNotNone(dt)
         self.assertEqual(str(dt.tzinfo), "Europe/London")
 
     def test_invalid_timezone_falls_back_to_utc(self):
-        from core.views import _local_datetime
-        dt = _local_datetime("Invalid/Zone")
+        from core.views import local_datetime
+        dt = local_datetime("Invalid/Zone")
         self.assertIn("UTC", str(dt.tzinfo))
 
 
@@ -137,8 +137,8 @@ class GetIPInfoTests(TestCase):
         mock_handler.getDetails.return_value = FakeIPInfoDetails()
         mock_get_handler.return_value = mock_handler
 
-        from core.views import _get_ipinfo
-        result = _get_ipinfo("8.8.8.8")
+        from core.views import get_ipinfo
+        result = get_ipinfo("8.8.8.8")
 
         self.assertEqual(result["city"], "Mountain View")
         self.assertEqual(result["timezone"], "America/Los_Angeles")
@@ -148,8 +148,8 @@ class GetIPInfoTests(TestCase):
     def test_api_error_returns_empty_dict(self, mock_get_handler):
         mock_get_handler.side_effect = Exception("network error")
 
-        from core.views import _get_ipinfo
-        result = _get_ipinfo("8.8.8.8")
+        from core.views import get_ipinfo
+        result = get_ipinfo("8.8.8.8")
         self.assertEqual(result, {})
 
 
@@ -167,8 +167,8 @@ class GetWeatherTests(TestCase):
         mock_response.raise_for_status = MagicMock()
         mock_get.return_value = mock_response
 
-        from core.views import _get_weather
-        result = _get_weather("Mountain View", "US")
+        from core.views import get_weather
+        result = get_weather("Mountain View", "US")
 
         self.assertEqual(result["temperature"], 18)  # round(18.5) == 18 (banker's rounding)
         self.assertEqual(result["description"], "Clear sky")
@@ -181,19 +181,19 @@ class GetWeatherTests(TestCase):
         import requests as req_lib
         mock_get.side_effect = req_lib.RequestException("timeout")
 
-        from core.views import _get_weather
-        result = _get_weather("London", "GB")
+        from core.views import get_weather
+        result = get_weather("London", "GB")
         self.assertEqual(result, {})
 
     @override_settings(OPENWEATHER_API_KEY="")
     def test_missing_api_key_returns_empty_dict(self):
-        from core.views import _get_weather
-        result = _get_weather("London", "GB")
+        from core.views import get_weather
+        result = get_weather("London", "GB")
         self.assertEqual(result, {})
 
 
 # ---------------------------------------------------------------------------
-# Tests: user_location_view (integration)
+# Tests: home_view integration (using core helpers)
 # ---------------------------------------------------------------------------
 
 @override_settings(
@@ -362,7 +362,7 @@ class PopulateDbCommandTests(TestCase):
         call_command("populate_db", stdout=out)
 
         self.assertGreater(Manufacturer.objects.count(), 0)
-        self.assertIn("Done", out.getvalue())
+        self.assertIn("successfully populated", out.getvalue())
 
     def test_command_creates_categories(self):
         from io import StringIO
