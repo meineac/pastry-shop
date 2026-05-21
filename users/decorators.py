@@ -4,15 +4,17 @@ from functools import wraps
 from django.contrib import messages
 
 def role_required(allowed_roles):
+    allowed_roles_str = [str(role) for role in allowed_roles]
     def decorator(view_func):
         @wraps(view_func)
         def _wrapped_view(request, *args, **kwargs):
             if not request.user.is_authenticated:
                 return redirect('login')
-            if request.user.role in allowed_roles or request.user.is_superuser:
+            if str(request.user.role) in allowed_roles_str:
                 return view_func(request, *args, **kwargs)
-            else:
-                raise PermissionDenied
+            if request.user.is_superuser and ('ADMIN' in allowed_roles_str):
+                return view_func(request, *args, **kwargs)
+            raise PermissionDenied
         return _wrapped_view
     return decorator
 

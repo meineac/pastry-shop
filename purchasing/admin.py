@@ -11,7 +11,7 @@ class CartItemInline(admin.TabularInline):
 
 @admin.register(PickupPoint)
 class PickupPointAdmin(admin.ModelAdmin):
-    list_display = ('address', 'working_hours', 'created_at', 'updated_at')
+    list_display = ('address', 'price', 'working_hours', 'created_at', 'updated_at')
     search_fields = ('address',)
 
 @admin.register(PromoCode)
@@ -22,9 +22,9 @@ class PromoCodeAdmin(admin.ModelAdmin):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('id', 'client', 'status', 'payment_type', 'created_at', 'updated_at')
-    list_filter = ('status', 'payment_type')
-    search_fields = ('client__user__first_name', 'client__user__last_name', 'id')
+    list_display = ('id', 'client', 'delivery_type', 'delivery_price', 'status', 'payment_type', 'created_at', 'updated_at')
+    list_filter = ('status', 'payment_type', 'delivery_type')
+    search_fields = ('client__user__first_name', 'client__user__last_name', 'id', 'delivery_address')
     inlines = [OrderItemInline]
 
 @admin.register(Cart)

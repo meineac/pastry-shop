@@ -1,10 +1,11 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Q
+from django.contrib import messages
 
 from .models import News, CompanyInfo, Vacancy, QaA, Review, NewsTag, VacancyTag, QaATag, ReviewTag
 from .forms import ReviewForm, CompanyInfoForm, NewsForm, VacancyForm, QaAForm, PromoCodeForm
 from users.models import StaffProfile
-from purchasing.models import PromoCode
+from purchasing.models import PromoCode, Order, OrderItem, Product
 from users.decorators import role_required
 
 # --- GENERIC HELPERS ---
@@ -195,17 +196,51 @@ def reviews_list_view(request):
 
 @role_required(['CUSTOMER'])
 def review_create_view(request):
+    product_id = request.GET.get('product_id') or request.POST.get('product_id')
+    product = None
+    if product_id:
+        product = get_object_or_404(Product, id=product_id)
+        
+        if not hasattr(request.user, 'customer_profile'):
+            messages.error(request, "Only customer accounts can leave product reviews.")
+            return redirect('catalog:product_detail', product_id=product.id)
+            
+        has_received = OrderItem.objects.filter(
+            order__client=request.user.customer_profile,
+            order__status=Order.OrderStatus.COMPLETED,
+            product=product
+        ).exists()
+        
+        if not has_received:
+            messages.error(request, "You can only leave a review for a product after you have received it.")
+            return redirect('catalog:product_detail', product_id=product.id)
+            
+        already_reviewed = Review.objects.filter(
+            author=request.user,
+            product=product
+        ).exists()
+        
+        if already_reviewed:
+            messages.error(request, "You have already reviewed this product. You can only review a product once.")
+            return redirect('catalog:product_detail', product_id=product.id)
+
     if request.method == 'POST':
         form = ReviewForm(request.POST)
         if form.is_valid():
             review = form.save(commit=False)
             review.author = request.user
+            if product:
+                review.product = product
             review.save()
             form.save_m2m() # Save tags
+            if product:
+                return redirect('catalog:product_detail', product_id=product.id)
             return redirect('cms:reviews')
     else:
         form = ReviewForm()
-    return render(request, 'cms/review_create.html', {'form': form, 'title': 'Add a Store Review'})
+        
+    title = f"Leave a Review for {product.name}" if product else "Add a Store Review"
+    return render(request, 'cms/review_create.html', {'form': form, 'title': title, 'product': product})
 
 @role_required(['CUSTOMER'])
 def review_edit_view(request, pk):

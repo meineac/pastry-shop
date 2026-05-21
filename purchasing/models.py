@@ -6,9 +6,10 @@ from catalog.models import Product
 class PickupPoint(TimestampedModel):
     address = models.CharField(max_length=255)
     working_hours = models.CharField(max_length=255)
+    price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
 
     def __str__(self):
-        return self.address
+        return f"{self.address} (${self.price})"
 
 class PromoCode(TimestampedModel):
     class Status(models.TextChoices):
@@ -40,7 +41,14 @@ class Order(TimestampedModel):
         COMPLETED = 'COMPLETED', 'Completed'
         CANCELLED = 'CANCELLED', 'Cancelled'
 
+    class DeliveryType(models.TextChoices):
+        PICKUP = 'PICKUP', 'Pickup'
+        COURIER = 'COURIER', 'Courier'
+
     client = models.ForeignKey(CustomerProfile, on_delete=models.CASCADE, related_name='orders')
+    delivery_type = models.CharField(max_length=10, choices=DeliveryType.choices, default=DeliveryType.PICKUP)
+    delivery_address = models.CharField(max_length=255, blank=True, null=True)
+    delivery_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     pickup_point = models.ForeignKey(PickupPoint, on_delete=models.SET_NULL, null=True, blank=True, related_name='orders')
     payment_type = models.CharField(max_length=10, choices=PaymentType.choices)
     status = models.CharField(max_length=15, choices=OrderStatus.choices, default=OrderStatus.PENDING)

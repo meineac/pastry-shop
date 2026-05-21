@@ -4,6 +4,10 @@
 {% block content %}
 <h2>Product Catalog</h2>
 
+{% if request.user.is_authenticated and request.user.role == 'ADMIN' or request.user.is_authenticated and request.user.role == 'STAFF' %}
+    <p><a href="{% url 'catalog:product_create' %}"><button>Create New Product</button></a></p>
+{% endif %}
+
 <form method="GET" action="{% url 'catalog:product_list' %}">
     <input type="text" name="q" value="{{ query }}" placeholder="Search by name or category">
 
@@ -33,13 +37,28 @@
             {% if product.photo %}
                 <img src="{{ product.photo.url }}" alt="{{ product.name }}" width="100">
             {% endif %}
-            <h3><a href="{% url 'catalog:product_detail' product_id=product.id %}">{{ product.name }}</a></h3>
+            <h3>
+                <a href="{% url 'catalog:product_detail' product_id=product.id %}">{{ product.name }}</a>
+                {% if not product.is_active %}
+                    <span>[Inactive / Hidden]</span>
+                {% endif %}
+            </h3>
             <p>Category: {{ product.category.name }}</p>
             <p>Price: ${{ product.price }}</p>
-            <form action="{% url 'purchasing:add_to_cart' product_id=product.id %}" method="POST">
-                {% csrf_token %}
-                <button type="submit">Add to Cart</button>
-            </form>
+            
+            {% if request.user.is_authenticated and request.user.role == 'ADMIN' or request.user.is_authenticated and request.user.role == 'STAFF' %}
+                <p>
+                    <a href="{% url 'catalog:product_edit' product_id=product.id %}"><button>Edit</button></a>
+                    <a href="{% url 'catalog:product_delete' product_id=product.id %}"><button>Delete</button></a>
+                </p>
+            {% endif %}
+
+            {% if not request.user.is_authenticated or request.user.role == 'CUSTOMER' %}
+                <form action="{% url 'purchasing:add_to_cart' product_id=product.id %}" method="POST">
+                    {% csrf_token %}
+                    <button type="submit">Add to Cart</button>
+                </form>
+            {% endif %}
         </li>
     {% empty %}
         <li>No products found.</li>

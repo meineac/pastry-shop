@@ -1,13 +1,17 @@
 {% extends 'core/base.html' %}
 
 {% block content %}
-    <h1>Add a Store Review</h1>
+    <h1>{{ title }}</h1>
 
-    <form method="POST" action="">
+    <form method="POST" action="{% if product %}?product_id={{ product.id }}{% endif %}">
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit">Submit Review</button>
     </form>
 
-    <p><a href="{% url 'cms:reviews' %}">Back to Reviews</a></p>
+    {% if product %}
+        <p><a href="{% url 'catalog:product_detail' product_id=product.id %}">Back to Product Details</a></p>
+    {% else %}
+        <p><a href="{% url 'cms:reviews' %}">Back to Reviews</a></p>
+    {% endif %}
 {% endblock %}
