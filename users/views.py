@@ -68,21 +68,6 @@ def profile_view(request):
     else:
         return render(request, 'users/profile_client.html', {'profile': None})
 
-@role_required([User.Role.CUSTOMER])
-def order_history_view(request):
-    profile = getattr(request.user, 'customer_profile', None)
-    history_orders = []
-    if profile:
-        history_orders = profile.orders.filter(status__in=[Order.OrderStatus.COMPLETED, Order.OrderStatus.CANCELLED]).order_by('-created_at')
-    return render(request, 'users/order_history.html', {'history_orders': history_orders})
-
-@role_required([User.Role.CUSTOMER])
-def order_details_view(request, order_id):
-    profile = getattr(request.user, 'customer_profile', None)
-    order = get_object_or_404(Order, id=order_id, client=profile)
-    items = order.items.all()
-    return render(request, 'users/order_details.html', {'order': order, 'items': items})
-
 @role_required([User.Role.ADMIN])
 def staff_list_view(request):
     if request.method == 'POST':

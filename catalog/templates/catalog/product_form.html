@@ -1,0 +1,14 @@
+{% extends 'core/base.html' %}
+{% block title %}{{ title }} | Pastry Shop{% endblock %}
+
+{% block content %}
+<h2>{{ title }}</h2>
+
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Save Product</button>
+</form>
+
+<p><a href="{% url 'catalog:product_list' %}">Back to Catalog</a></p>
+{% endblock %}

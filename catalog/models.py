@@ -32,6 +32,7 @@ class Product(TimestampedModel):
     )
     photo = models.ImageField(upload_to='products/', null=True, blank=True)
     ingredients = models.TextField()
+    is_active = models.BooleanField(default=True)
 
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='products')
     manufacturer = models.ForeignKey(Manufacturer, on_delete=models.CASCADE, related_name='products')

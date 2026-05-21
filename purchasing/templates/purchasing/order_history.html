@@ -11,8 +11,8 @@
             <li>
                 Order #{{ order.id }} - {{ order.status }}
                 (Created: {{ order.created_at|date:"d/m/Y" }}, Updated: {{ order.updated_at|date:"d/m/Y" }})
-                - Total Price: Placeholder
-                <a href="{% url 'order_details' order.id %}"><button>Details</button></a>
+                - Total Price: ${{ order.final_price }}
+                <a href="{% url 'purchasing:order_details' order.id %}"><button>Details</button></a>
             </li>
         {% empty %}
             <li>No history orders.</li>

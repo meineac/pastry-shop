@@ -14,8 +14,10 @@
                 {% if item.product.photo %}
                     <img src="{{ item.product.photo.url }}" alt="{{ item.product.name }}" width="100">
                 {% endif %}
-                <!-- Leave a review button (Placeholder link for Phase 3/4) -->
-                <button>Leave a Review</button>
+                <!-- Leave a review button if order is COMPLETED and product not yet reviewed -->
+                {% if order.status == 'COMPLETED' and not item.already_reviewed %}
+                    <a href="{% url 'cms:review_create' %}?product_id={{ item.product.id }}"><button>Leave a Review</button></a>
+                {% endif %}
             </li>
         {% empty %}
             <li>No items found in this order.</li>
