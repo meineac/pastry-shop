@@ -1,0 +1,76 @@
+{% extends 'core/base.html' %}
+
+{% block title %}My Clients{% endblock %}
+
+{% block content %}
+<h1>My Clients</h1>
+
+{% if not staff_has_profile %}
+    <p><strong>Note:</strong> You do not have a Staff Profile yet. A Staff Profile is required to maintain a client list. Please ask an administrator to create one for you.</p>
+{% endif %}
+
+{% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li class="{{ message.tags }}">{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+<p><a href="{% url 'client_list' %}">View all clients</a></p>
+
+<h2>Search &amp; Filter</h2>
+<form method="get" action="">
+    <label for="id_q">Search by name:</label>
+    <input type="text" id="id_q" name="q" value="{{ q }}" placeholder="Name or username">
+
+    <label for="id_product">Purchased product:</label>
+    <select id="id_product" name="product">
+        <option value="">-- All products --</option>
+        {% for p in products %}
+            <option value="{{ p.id }}" {% if product_id == p.id|stringformat:"s" %}selected{% endif %}>
+                {{ p.name }}
+            </option>
+        {% endfor %}
+    </select>
+
+    <label for="id_category">Product category (tag):</label>
+    <select id="id_category" name="category">
+        <option value="">-- All categories --</option>
+        {% for c in categories %}
+            <option value="{{ c.id }}" {% if category_id == c.id|stringformat:"s" %}selected{% endif %}>
+                {{ c.name }}
+            </option>
+        {% endfor %}
+    </select>
+
+    <label for="id_date_from">Last order from:</label>
+    <input type="date" id="id_date_from" name="date_from" value="{{ date_from }}">
+
+    <label for="id_date_to">Last order to:</label>
+    <input type="date" id="id_date_to" name="date_to" value="{{ date_to }}">
+
+    <button type="submit">Apply</button>
+    <a href="{% url 'my_clients' %}">Clear</a>
+</form>
+
+<h2>My Client List</h2>
+<ul>
+    {% for client in clients %}
+        <li>
+            <strong>{{ client.user.get_full_name|default:client.user.username }}</strong>
+            &mdash; Completed orders: {{ client.received_orders }}
+            &mdash; Cancelled orders: {{ client.cancelled_orders }}
+
+            <a href="{% url 'client_card' client.id %}">Open Card</a>
+
+            <form method="post" action="{% url 'client_remove' client.id %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit">Remove</button>
+            </form>
+        </li>
+    {% empty %}
+        <li>Your client list is empty. <a href="{% url 'client_list' %}">Browse all clients</a> to add some.</li>
+    {% endfor %}
+</ul>
+{% endblock %}

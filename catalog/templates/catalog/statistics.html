@@ -1,0 +1,154 @@
+{% extends 'core/base.html' %}
+{% load catalog_extras %}
+
+{% block title %}Statistics{% endblock %}
+
+{% block content %}
+<h1>Statistics &amp; Analytics</h1>
+
+<!-- ================================================================== -->
+<!-- PRODUCT LIST -->
+<!-- ================================================================== -->
+<h2>Products</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Photo</th>
+            <th>Name</th>
+            <th>Reviews (0–5)</th>
+            <th>Total Reviews</th>
+            <th>Sales (completed)</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in product_stats %}
+            <tr>
+                <td>
+                    {% if item.product.photo %}
+                        <img src="{{ item.product.photo.url }}" alt="{{ item.product.name }}" width="60" height="60">
+                    {% else %}
+                        —
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="{% url 'catalog:product_detail' item.product.id %}">{{ item.product.name }}</a>
+                </td>
+                <td>
+                    {% for rating in rating_range %}
+                        {{ rating }}★: {{ item.rating_counts|get_item:rating }}
+                        {% if not forloop.last %} | {% endif %}
+                    {% endfor %}
+                </td>
+                <td>{{ item.total_reviews }}</td>
+                <td>{{ item.sales_count }}</td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="5">No products found.</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- ================================================================== -->
+<!-- STATISTICAL METRICS -->
+<!-- ================================================================== -->
+<h2>Statistical Metrics</h2>
+
+<h3>Sales Amount (completed orders)</h3>
+{% if sales_stats.mean is not None %}
+    <ul>
+        <li><strong>Mean:</strong> {{ sales_stats.mean }}</li>
+        <li><strong>Median:</strong> {{ sales_stats.median }}</li>
+        <li><strong>Mode:</strong>
+            {% for m in sales_stats.mode %}{{ m }}{% if not forloop.last %}, {% endif %}{% endfor %}
+        </li>
+    </ul>
+{% else %}
+    <p>No completed orders to calculate sales statistics.</p>
+{% endif %}
+
+<h3>Client Age</h3>
+{% if age_stats.mean is not None %}
+    <ul>
+        <li><strong>Mean age:</strong> {{ age_stats.mean }} years</li>
+        <li><strong>Median age:</strong> {{ age_stats.median }} years</li>
+    </ul>
+{% else %}
+    <p>No client data available.</p>
+{% endif %}
+
+<!-- ================================================================== -->
+<!-- CATEGORY RANKINGS -->
+<!-- ================================================================== -->
+<h2>Category Rankings</h2>
+
+<h3>Most Popular Product Categories (by completed order count)</h3>
+{% if category_popularity %}
+    <ol>
+        {% for cat in category_popularity %}
+            <li>{{ cat.name }} — {{ cat.item_count }} item(s) sold</li>
+        {% endfor %}
+    </ol>
+{% else %}
+    <p>No category data available.</p>
+{% endif %}
+
+<h3>Most Profitable Product Categories (by revenue)</h3>
+{% if category_profit %}
+    <ol>
+        {% for cat in category_profit %}
+            <li>
+                {{ cat.name }}
+                {% if cat.total_revenue %}
+                    — Revenue: {{ cat.total_revenue|floatformat:2 }}
+                {% else %}
+                    — Revenue: 0.00
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ol>
+{% else %}
+    <p>No revenue data available.</p>
+{% endif %}
+
+<!-- ================================================================== -->
+<!-- GRAPHS -->
+<!-- ================================================================== -->
+<h2>Graphs</h2>
+
+<!-- Graph 1: Product by date -->
+<h3>Purchases of a Specific Product by Date</h3>
+
+<form method="get" action="">
+    <label for="id_product_id">Select product:</label>
+    <select id="id_product_id" name="product_id">
+        {% for p in all_products %}
+            <option value="{{ p.id }}"
+                {% if selected_product and p.id == selected_product.id %}selected{% endif %}>
+                {{ p.name }}
+            </option>
+        {% endfor %}
+    </select>
+    <button type="submit">Show</button>
+</form>
+
+{% if chart_product_b64 %}
+    <img src="data:image/png;base64,{{ chart_product_b64 }}"
+         alt="Purchases of {{ selected_product.name }} by date"
+         style="max-width:100%;">
+{% else %}
+    <p>No product data to display.</p>
+{% endif %}
+
+<!-- Graph 2: Purchases by category -->
+<h3>Purchases by Product Category</h3>
+{% if chart_category_b64 %}
+    <img src="data:image/png;base64,{{ chart_category_b64 }}"
+         alt="Purchases by product category"
+         style="max-width:100%;">
+{% else %}
+    <p>No category data to display.</p>
+{% endif %}
+
+{% endblock %}

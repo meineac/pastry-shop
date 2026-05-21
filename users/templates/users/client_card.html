@@ -1,0 +1,70 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Client Card — {{ client }}{% endblock %}
+
+{% block content %}
+<h1>Client Card: {{ client.user.get_full_name|default:client.user.username }}</h1>
+
+<a href="{% url 'client_list' %}">&larr; Back to Clients</a>
+
+<h2>Personal Information</h2>
+<p><strong>Name:</strong> {{ client.user.get_full_name|default:client.user.username }}</p>
+<p><strong>Age:</strong> {{ age }}</p>
+<p><strong>Registration date:</strong> {{ client.user.date_joined|date:"d/m/Y" }}</p>
+<p><strong>Phone:</strong> {{ client.phone_number }}</p>
+<p><strong>Email:</strong> {{ client.user.email|default:"—" }}</p>
+
+<h2>Orders ({{ orders.count }})</h2>
+{% if orders %}
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Status</th>
+                <th>Delivery</th>
+                <th>Payment</th>
+                <th>Final Price</th>
+                <th>Created</th>
+                <th>Updated</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+                <tr>
+                    <td>{{ order.id }}</td>
+                    <td>{{ order.get_status_display }}</td>
+                    <td>{{ order.get_delivery_type_display }}</td>
+                    <td>{{ order.get_payment_type_display }}</td>
+                    <td>{{ order.final_price }}</td>
+                    <td>{{ order.created_at|date:"d/m/Y" }}</td>
+                    <td>{{ order.updated_at|date:"d/m/Y" }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No orders found.</p>
+{% endif %}
+
+<h2>Reviews ({{ reviews.count }})</h2>
+{% if reviews %}
+    <ul>
+        {% for review in reviews %}
+            <li>
+                <strong>Rating: {{ review.rating }}/5</strong>
+                {% if review.product %}
+                    &mdash; Product: <a href="{% url 'catalog:product_detail' review.product.id %}">{{ review.product.name }}</a>
+                {% else %}
+                    &mdash; General store review
+                {% endif %}
+                <br>
+                {{ review.review_text }}
+                <br>
+                <small>{{ review.created_at|date:"d/m/Y" }}</small>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No reviews found.</p>
+{% endif %}
+{% endblock %}
