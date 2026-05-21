@@ -1,8 +1,37 @@
 {% extends 'core/base.html' %}
 
-{% block content %}
-    <h1>Welcome to Pastry Shop</h1>
+{% block title %}Home – Pastry Shop{% endblock %}
 
+{% block content %}
+<h1>Welcome to Pastry Shop</h1>
+
+<section>
+    <h2>Your Location &amp; Current Conditions</h2>
+    <table>
+        <tr><th>City</th><td>{{ city }}, {{ country }}</td></tr>
+        <tr><th>Timezone</th><td>{{ timezone }}</td></tr>
+        <tr><th>Local Date</th><td>{{ local_date }}</td></tr>
+        <tr><th>Local Time</th><td>{{ local_time }}</td></tr>
+        <tr><th>UTC Date</th><td>{{ utc_date }}</td></tr>
+    </table>
+
+    {% if weather %}
+    <h3>Weather</h3>
+    <table>
+        <tr><th>Conditions</th><td>{{ weather.description }}</td></tr>
+        <tr><th>Temperature</th><td>{{ weather.temperature }}°C (feels like {{ weather.feels_like }}°C)</td></tr>
+        <tr><th>Humidity</th><td>{{ weather.humidity }}%</td></tr>
+        <tr><th>Wind Speed</th><td>{{ weather.wind_speed }} m/s</td></tr>
+    </table>
+    {% else %}
+    <p>Weather information is currently unavailable.</p>
+    {% endif %}
+
+    <h3>Calendar</h3>
+    <pre>{{ text_calendar }}</pre>
+</section>
+
+<section>
     <h2>Latest News</h2>
     {% if latest_news %}
         <div>
@@ -23,4 +52,5 @@
     {% else %}
         <p>No news available.</p>
     {% endif %}
+</section>
 {% endblock %}

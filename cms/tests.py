@@ -1,10 +1,41 @@
 from django.test import TestCase, Client
 from django.urls import reverse
+from unittest.mock import MagicMock, patch
 from .models import News, CompanyInfo, Vacancy, QaA, Review, NewsTag
 from users.models import User, CustomerProfile
 from catalog.models import Product, Category, Manufacturer
 from purchasing.models import Order, OrderItem
 from datetime import date
+
+
+def _mock_ipinfo_ctx():
+    """Patch ipinfo.getHandler to return a fake details object."""
+    fake = MagicMock()
+    fake.city = "Minsk"
+    fake.country = "BY"
+    fake.country_name = "Belarus"
+    fake.timezone = "Europe/Minsk"
+    fake.latitude = "53.9"
+    fake.longitude = "27.5667"
+    handler = MagicMock()
+    handler.getDetails.return_value = fake
+    return patch("core.views.ipinfo.getHandler", return_value=handler)
+
+
+def _mock_weather_ctx():
+    """Patch requests.get to return a fake weather payload."""
+    payload = {
+        "name": "Minsk",
+        "sys": {"country": "BY"},
+        "main": {"temp": 15.0, "feels_like": 14.0, "humidity": 70},
+        "weather": [{"description": "overcast clouds"}],
+        "wind": {"speed": 2.1},
+    }
+    resp = MagicMock()
+    resp.json.return_value = payload
+    resp.raise_for_status = MagicMock()
+    return patch("core.views.requests.get", return_value=resp)
+
 
 class CMSViewsTests(TestCase):
     def setUp(self):
@@ -31,9 +62,11 @@ class CMSViewsTests(TestCase):
         )
 
     def test_home_view(self):
-        response = self.client.get(reverse('cms:home'))
+        with _mock_ipinfo_ctx(), _mock_weather_ctx():
+            response = self.client.get(reverse('cms:home'))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Test News')
+
 
     def test_about_company_view(self):
         response = self.client.get(reverse('cms:about'))
