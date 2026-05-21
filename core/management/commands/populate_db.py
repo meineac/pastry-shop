@@ -11,10 +11,19 @@ because it uses ``get_or_create`` for every object.
 
 import logging
 import re
+import os
+import random
+from datetime import date, timedelta
+from decimal import Decimal
 
 from django.core.management.base import BaseCommand
+from django.utils import timezone
+from django.db import transaction
 
 from catalog.models import Category, Manufacturer, Product
+from cms.models import CompanyInfo, News, Vacancy, QaA, Review
+from users.models import User, CustomerProfile, StaffProfile
+from purchasing.models import Order, OrderItem
 
 logger = logging.getLogger(__name__)
 
@@ -24,56 +33,16 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 
 MANUFACTURERS = [
-    {
-        "name": "PhlloCraft Wholesale",
-        "description": "Premium, paper-thin phyllo and kataifi dough tailored for delicate Mediterranean pastries.",
-        "contact_email": "trade@phyllocraft.com",
-    },
-    {
-        "name": "CrispCrest Manufacturers",
-        "description": "Industrial-scale producer of puff pastry ribbons and shells for commercial catering.",
-        "contact_email": "volume@crispcrest.com",
-    },
-    {
-        "name": "Glaze & Ganache Labs",
-        "description": "B2B provider of technical pastry components like mirror glazes, stable mousses, and pralines.",
-        "contact_email": "lab@glazeganache.com",
-    },
-    {
-        "name": "AlpineDough Suppliers",
-        "description": "Cold-chain distributor of traditional shortcrust, sablé, and savory pie crusts.",
-        "contact_email": "sales@alpinedough.com",
-    },
-    {
-        "name": "ButterGlow Pastries",
-        "description": "Craft manufacturer dedicated exclusively to brioche dough variants and enriched sweet buns.",
-        "contact_email": "supply@butterglow.com",
-    },
-    {
-        "name": "SweetStratum Bakers",
-        "description": "Multi-layered puff pastries and gourmet viennoiserie utilizing high-fat European butter.",
-        "contact_email": "client@sweetstratum.com",
-    },
-    {
-        "name": "VelvetBatter Creations",
-        "description": "Premade premium sponge layers, génoise, and wet batters for upscale cake assembly.",
-        "contact_email": "info@velvetbatter.com",
-    },
-    {
-        "name": "PuffPerfect Mill",
-        "description": "Focuses on organic, high-protein flour blends for ultra-light, structural choux pastry.",
-        "contact_email": "baking@puffperfect.com",
-    },
-    {
-        "name": "FlakyLayer Co.",
-        "description": "High-volume supplier of flash-frozen croissant dough and danish bases for rapid baking.",
-        "contact_email": "orders@flakylayer.com",
-    },
-    {
-        "name": "GoldenCrust Artisans",
-        "description": "Specializes in traditional, hand-laminated puff pastry sheets and pre-shaped tart shells.",
-        "contact_email": "wholesale@goldencrust.com",
-    },
+    {"name": "PhlloCraft Wholesale", "description": "Premium, paper-thin phyllo and kataifi dough tailored for delicate Mediterranean pastries.", "contact_email": "trade@phyllocraft.com"},
+    {"name": "CrispCrest Manufacturers", "description": "Industrial-scale producer of puff pastry ribbons and shells for commercial catering.", "contact_email": "volume@crispcrest.com"},
+    {"name": "Glaze & Ganache Labs", "description": "B2B provider of technical pastry components like mirror glazes, stable mousses, and pralines.", "contact_email": "lab@glazeganache.com"},
+    {"name": "AlpineDough Suppliers", "description": "Cold-chain distributor of traditional shortcrust, sablé, and savory pie crusts.", "contact_email": "sales@alpinedough.com"},
+    {"name": "ButterGlow Pastries", "description": "Craft manufacturer dedicated exclusively to brioche dough variants and enriched sweet buns.", "contact_email": "supply@butterglow.com"},
+    {"name": "SweetStratum Bakers", "description": "Multi-layered puff pastries and gourmet viennoiserie utilizing high-fat European butter.", "contact_email": "client@sweetstratum.com"},
+    {"name": "VelvetBatter Creations", "description": "Premade premium sponge layers, génoise, and wet batters for upscale cake assembly.", "contact_email": "info@velvetbatter.com"},
+    {"name": "PuffPerfect Mill", "description": "Focuses on organic, high-protein flour blends for ultra-light, structural choux pastry.", "contact_email": "baking@puffperfect.com"},
+    {"name": "FlakyLayer Co.", "description": "High-volume supplier of flash-frozen croissant dough and danish bases for rapid baking.", "contact_email": "orders@flakylayer.com"},
+    {"name": "GoldenCrust Artisans", "description": "Specializes in traditional, hand-laminated puff pastry sheets and pre-shaped tart shells.", "contact_email": "wholesale@goldencrust.com"},
 ]
 
 CATEGORIES = [
@@ -89,7 +58,6 @@ CATEGORIES = [
     {"name": "Viennoiserie", "description": "Yeast-leavened, laminated doughs including croissants, danishes, and brioche."},
 ]
 
-# Markdown product table (same data as the standalone populate_db.py).
 PRODUCTS_MD = """
 ### 1. Viennoiserie
 | Butter Croissant | **GoldenCrust Artisans** | $2.50 | piece | Wheat flour, European butter (82% fat), water, sugar, yeast, salt, egg wash. |
@@ -212,22 +180,65 @@ PRODUCTS_MD = """
 | Royal Icing Mix | **CrispCrest Manufacturers** | $5.50 | kg | Powdered sugar, dried egg white powder, cornstarch, cream of tartar, vanilla. |
 """
 
-# Map markdown unit names to model choices
 UNIT_MAP = {
     "piece": Product.UnitMeasurement.PIECES,
     "kg": Product.UnitMeasurement.KILOGRAMS,
     "liter": Product.UnitMeasurement.LITERS,
 }
 
+NEWS_ITEMS = [
+    {"title": "New Summer Menu", "summary": "Refresh yourself with our new fruit tarts.", "text": "We are launching a new lineup of summer fruit tarts packed with seasonal berries and tropical flavors."},
+    {"title": "Award-Winning Pastry", "summary": "Our signature chocolate entremet won gold.", "text": "We are proud to announce our chocolate entremet took first place at the national pastry competition."},
+    {"title": "Pastry Class Opening", "summary": "Learn the secrets of French baking.", "text": "Join our master bakers for an intensive weekend course on lamination and viennoiserie."},
+    {"title": "Holiday Specials", "summary": "Pre-order your yule logs now.", "text": "The holiday season is here! Secure your festive treats including our famous Bûche de Noël."},
+    {"title": "New Collaboration", "summary": "Matcha meets classic French techniques.", "text": "We've partnered with a premium tea supplier to bring you a unique line of matcha-infused pastries."},
+    {"title": "Sustainability Effort", "summary": "Moving to 100% organic flour.", "text": "As part of our commitment to the environment, all our products now use locally sourced, organic flour."},
+    {"title": "Delivery Expanded", "summary": "We now deliver city-wide.", "text": "You can now enjoy our pastries delivered directly to your door anywhere in the metropolitan area."},
+    {"title": "Store Renovation", "summary": "A fresh look for our flagship store.", "text": "We've updated our dining area to provide a more comfortable and modern experience for our guests."},
+    {"title": "Loyalty Program", "summary": "Earn points on every purchase.", "text": "Sign up for our new rewards program and earn free pastries, coffee, and exclusive discounts."},
+    {"title": "Vegan Options", "summary": "Delicious plant-based treats.", "text": "We've expanded our menu to include 100% vegan cakes, cookies, and croissants without compromising taste."}
+]
+
+VACANCIES = [
+    {"title": "Head Baker", "desc": "Looking for an experienced Head Baker to lead our morning team."},
+    {"title": "Pastry Chef", "desc": "Seeking a creative Pastry Chef skilled in entremets and macarons."},
+    {"title": "Cashier", "desc": "Friendly face needed for front-of-house operations."},
+    {"title": "Barista", "desc": "Coffee enthusiast required to pair perfect brews with our pastries."},
+    {"title": "Store Manager", "desc": "Experienced manager to oversee daily operations and staff."},
+    {"title": "Delivery Driver", "desc": "Reliable driver for morning wholesale and retail deliveries."},
+    {"title": "Marketing Intern", "desc": "Creative individual to help manage our social media presence."},
+    {"title": "Dishwasher", "desc": "Essential team member to keep our bustling kitchen clean."},
+    {"title": "Cake Decorator", "desc": "Detail-oriented decorator for custom event cakes."},
+    {"title": "Assistant Baker", "desc": "Entry-level position for an enthusiastic learner."}
+]
+
+QNA_ITEMS = [
+    {"q": "What are your hours?", "a": "We are open Monday to Saturday from 7:00 AM to 8:00 PM."},
+    {"q": "Do you deliver?", "a": "Yes, we offer city-wide delivery for all our products."},
+    {"q": "Are there vegan options?", "a": "Absolutely, we have a dedicated section for vegan pastries."},
+    {"q": "Do you do custom cakes?", "a": "Yes, please contact us at least 48 hours in advance for custom orders."},
+    {"q": "Is there a loyalty program?", "a": "Yes! Ask our cashiers to sign up and start earning points."},
+    {"q": "Do you sell gift cards?", "a": "Gift cards are available in-store and online."},
+    {"q": "Are pets allowed?", "a": "We welcome service animals indoors, and all pets on our outdoor patio."},
+    {"q": "Do you use organic flour?", "a": "Yes, 100% of our flour is organic and locally sourced."},
+    {"q": "Can I order in advance?", "a": "Yes, you can pre-order via our website or over the phone."},
+    {"q": "Do you cater events?", "a": "We offer wholesale and catering options for events of all sizes."}
+]
 
 # ---------------------------------------------------------------------------
 # Command
 # ---------------------------------------------------------------------------
 
 class Command(BaseCommand):
-    help = "Populate the database with demo manufacturers, categories, and products."
+    help = "Populate the database with comprehensive demo data including users, orders, news, and cms data."
 
+    @transaction.atomic
     def handle(self, *args, **options):
+        self._populate_company_info()
+        self._populate_news()
+        self._populate_vacancies()
+        self._populate_qna()
+
         self.stdout.write("Populating manufacturers...")
         self._populate_manufacturers()
 
@@ -235,95 +246,109 @@ class Command(BaseCommand):
         self._populate_categories()
 
         self.stdout.write("Populating products...")
-        count = self._populate_products()
+        self._populate_products()
 
-        self.stdout.write(
-            self.style.SUCCESS(
-                f"Done. Processed {count} products."
-            )
-        )
+        self.stdout.write("Populating superuser...")
+        self._populate_superuser()
+
+        self.stdout.write("Populating staff...")
+        self._populate_staff()
+
+        self.stdout.write("Populating customers, reviews, and orders...")
+        self._populate_customers_and_orders()
+
+        self.stdout.write(self.style.SUCCESS("Database successfully populated!"))
 
     # ------------------------------------------------------------------
     # Private helpers
     # ------------------------------------------------------------------
 
+    def _populate_company_info(self):
+        if not CompanyInfo.objects.exists():
+            CompanyInfo.objects.create(
+                text_information="We are a premium pastry shop dedicated to high-quality ingredients.",
+                history_by_years="2010: Founded.\n2015: Opened flagship store.\n2022: Expanded city-wide.",
+                company_details="Registration No: 123456789. Address: 123 Baker Street."
+            )
+            logger.info("Created Company Info.")
+
+    def _populate_news(self):
+        for item in NEWS_ITEMS:
+            News.objects.get_or_create(
+                title=item["title"],
+                defaults={
+                    "short_summary": item["summary"],
+                    "full_text": item["text"]
+                }
+            )
+        logger.info("Created 10 News records.")
+
+    def _populate_vacancies(self):
+        for item in VACANCIES:
+            Vacancy.objects.get_or_create(
+                title=item["title"],
+                defaults={"description": item["desc"]}
+            )
+        logger.info("Created 10 Vacancies.")
+
+    def _populate_qna(self):
+        for item in QNA_ITEMS:
+            QaA.objects.get_or_create(
+                question_text=item["q"],
+                defaults={"answer_text": item["a"]}
+            )
+        logger.info("Created 10 Q&A records.")
+
     def _populate_manufacturers(self):
         for data in MANUFACTURERS:
-            _, created = Manufacturer.objects.get_or_create(
+            Manufacturer.objects.get_or_create(
                 name=data["name"],
                 defaults={
                     "description": data["description"],
                     "contact_email": data["contact_email"],
                 },
             )
-            if created:
-                logger.info("Created manufacturer: %s", data["name"])
-            else:
-                logger.debug("Manufacturer already exists: %s", data["name"])
 
     def _populate_categories(self):
         for data in CATEGORIES:
-            _, created = Category.objects.get_or_create(
+            Category.objects.get_or_create(
                 name=data["name"],
                 defaults={"description": data["description"]},
             )
-            if created:
-                logger.info("Created category: %s", data["name"])
-            else:
-                logger.debug("Category already exists: %s", data["name"])
 
     def _populate_products(self):
         current_category = None
         count = 0
-
         for line in PRODUCTS_MD.splitlines():
             line = line.strip()
-            if not line:
-                continue
-
-            # Section header → look up category
+            if not line: continue
             cat_match = re.match(r"### \d+\.\s+(.*)", line)
             if cat_match:
                 category_name = cat_match.group(1).strip()
                 try:
                     current_category = Category.objects.get(name=category_name)
                 except Category.DoesNotExist:
-                    logger.warning("Category not found: %s", category_name)
                     current_category = None
                 continue
 
-            # Product row
-            if (
-                line.startswith("|")
-                and not line.startswith("| ---")
-                and not line.startswith("| Product Name")
-            ):
+            if line.startswith("|") and not line.startswith("| ---") and not line.startswith("| Product Name"):
                 parts = [p.strip() for p in line.split("|") if p.strip()]
-                if len(parts) != 5:
-                    continue
-
-                name = parts[0]
-                manufacturer_name = parts[1].replace("**", "")
-                price = parts[2].replace("$", "")
-                unit_str = parts[3]
-                ingredients = parts[4]
+                if len(parts) != 5: continue
+                name, manufacturer_name, price, unit_str, ingredients = parts
+                manufacturer_name = manufacturer_name.replace("**", "")
+                price = price.replace("$", "")
 
                 try:
                     manufacturer = Manufacturer.objects.get(name=manufacturer_name)
                 except Manufacturer.DoesNotExist:
-                    logger.warning(
-                        "Manufacturer '%s' not found — skipping product '%s'.",
-                        manufacturer_name, name,
-                    )
                     continue
 
                 unit = UNIT_MAP.get(unit_str, Product.UnitMeasurement.PIECES)
-
-                _, created = Product.objects.get_or_create(
+                Product.objects.get_or_create(
                     name=name,
                     defaults={
                         "price": price,
-                        "quantity": 1,
+                        "quantity": 100,
                         "unit_of_measurement": unit,
                         "ingredients": ingredients,
                         "category": current_category,
@@ -331,8 +356,102 @@ class Command(BaseCommand):
                         "is_active": True,
                     },
                 )
-                if created:
-                    logger.info("Created product: %s", name)
                 count += 1
-
         return count
+
+    def _populate_superuser(self):
+        su_username = os.environ.get('SUPERUSER_USERNAME', 'admin')
+        su_email = os.environ.get('SUPERUSER_EMAIL', 'admin@example.com')
+        su_password = os.environ.get('SUPERUSER_PASSWORD', 'adminpass')
+        if not User.objects.filter(username=su_username).exists():
+            User.objects.create_superuser(
+                username=su_username,
+                email=su_email,
+                password=su_password
+            )
+            logger.info("Created superuser from .env variables.")
+
+    def _populate_staff(self):
+        for i in range(1, 11):
+            username = f"staffuser{i}"
+            user, created = User.objects.get_or_create(
+                username=username,
+                defaults={
+                    "email": f"staff{i}@pastry.com",
+                    "role": User.Role.STAFF
+                }
+            )
+            if created:
+                user.set_password('staffpass123')
+                user.save()
+                StaffProfile.objects.create(
+                    user=user,
+                    position="Pastry Shop Employee",
+                    contact_details=f"Phone: +375 (29) 222-22-{i:02d}",
+                    date_of_birth=date(1990, 1, 1)
+                )
+
+    def _populate_customers_and_orders(self):
+        products = list(Product.objects.all())
+        if not products:
+            logger.warning("No products available to generate orders.")
+            return
+
+        for i in range(1, 21):
+            username = f"customer{i}"
+            user, created = User.objects.get_or_create(
+                username=username,
+                defaults={
+                    "email": f"customer{i}@pastry.com",
+                    "role": User.Role.CUSTOMER
+                }
+            )
+            if created:
+                user.set_password('customerpass123')
+                user.save()
+
+                profile, _ = CustomerProfile.objects.get_or_create(
+                    user=user,
+                    defaults={
+                        "date_of_birth": date(1995, 5, 15),
+                        "phone_number": f"+375 (29) 111-11-{i:02d}"
+                    }
+                )
+
+                # 1 Review per customer
+                Review.objects.create(
+                    author=user,
+                    rating=random.randint(4, 5),
+                    review_text="Amazing pastry shop! I come here all the time.",
+                    product=None
+                )
+
+                # 10 Purchases per customer
+                for j in range(10):
+                    order = Order.objects.create(
+                        client=profile,
+                        delivery_type=Order.DeliveryType.PICKUP,
+                        payment_type=Order.PaymentType.CARD,
+                        status=Order.OrderStatus.COMPLETED,
+                        final_price=0 
+                    )
+                    
+                    num_items = random.randint(1, 3)
+                    selected_products = random.sample(products, num_items)
+                    total_price = Decimal(0)
+                    
+                    for prod in selected_products:
+                        qty = random.randint(1, 4)
+                        OrderItem.objects.create(
+                            order=order,
+                            product=prod,
+                            quantity=qty,
+                            purchase_price=prod.price,
+                            historical_product_name=prod.name
+                        )
+                        total_price += prod.price * qty
+
+                    order.final_price = total_price
+                    # Backdate the order artificially
+                    order.created_at = timezone.now() - timedelta(days=random.randint(1, 365))
+                    order.save()
