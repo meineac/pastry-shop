@@ -6,6 +6,7 @@ from django.urls import reverse
 from users.decorators import role_required
 from users.models import User
 from .models import Cart, CartItem, Order, OrderItem, PickupPoint, PromoCode
+from cms.models import Review
 from catalog.models import Product
 from datetime import date
 import decimal
@@ -373,7 +374,6 @@ def order_details_view(request, order_id):
     items = order.items.all()
 
     # Check which products have already been reviewed by this user
-    from cms.models import Review
     reviewed_product_ids = set(
         Review.objects.filter(author=request.user, product__in=[item.product for item in items if item.product])
         .values_list('product_id', flat=True)
