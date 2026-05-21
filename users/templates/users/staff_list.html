@@ -5,6 +5,8 @@
 {% block content %}
     <h1>Staff Members</h1>
 
+    <p><a href="{% url 'staff_create' %}">+ Create New Staff Member</a></p>
+
     {% if messages %}
         <ul class="messages">
             {% for message in messages %}
@@ -24,7 +26,15 @@
                 <form method="post" style="display:inline;">
                     {% csrf_token %}
                     <input type="hidden" name="user_id" value="{{ staff.id }}">
+                    <input type="hidden" name="action" value="revoke">
                     <button type="submit">Revoke Access</button>
+                </form>
+                {% else %}
+                <form method="post" style="display:inline;">
+                    {% csrf_token %}
+                    <input type="hidden" name="user_id" value="{{ staff.id }}">
+                    <input type="hidden" name="action" value="return">
+                    <button type="submit">Return Access</button>
                 </form>
                 {% endif %}
             </li>

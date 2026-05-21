@@ -45,6 +45,7 @@
             </h3>
             <p>Category: {{ product.category.name }}</p>
             <p>Price: ${{ product.price }}</p>
+            <p>Available: {{ product.quantity }} in stock</p>
             
             {% if request.user.is_authenticated and request.user.role == 'ADMIN' or request.user.is_authenticated and request.user.role == 'STAFF' %}
                 <p>
@@ -54,10 +55,14 @@
             {% endif %}
 
             {% if not request.user.is_authenticated or request.user.role == 'CUSTOMER' %}
-                <form action="{% url 'purchasing:add_to_cart' product_id=product.id %}" method="POST">
-                    {% csrf_token %}
-                    <button type="submit">Add to Cart</button>
-                </form>
+                {% if product.quantity > 0 %}
+                    <form action="{% url 'purchasing:add_to_cart' product_id=product.id %}" method="POST">
+                        {% csrf_token %}
+                        <button type="submit">Add to Cart</button>
+                    </form>
+                {% else %}
+                    <p style="color:red; font-weight:bold;">Out of Stock</p>
+                {% endif %}
             {% endif %}
         </li>
     {% empty %}

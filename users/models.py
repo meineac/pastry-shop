@@ -78,6 +78,12 @@ class StaffProfile(TimestampedModel):
     photo = models.ImageField(upload_to='staff_photos/', null=True, blank=True)
     contact_details = models.TextField()
     date_of_birth = models.DateField(validators=[validate_age_18_plus])
+    my_clients = models.ManyToManyField(
+        'CustomerProfile',
+        blank=True,
+        related_name='assigned_staff',
+        help_text="Clients this staff member is currently working with."
+    )
 
     def __str__(self):
         return self.user.get_full_name() or self.user.username

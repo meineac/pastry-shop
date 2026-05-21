@@ -1,0 +1,60 @@
+# ---------------------------------------------------------------------------
+# Pastry Shop — docker-compose.yml
+# ---------------------------------------------------------------------------
+# Starts two services:
+#   db  — postgres:16-alpine (public image)
+#   web — the Django app built from the local Dockerfile
+#
+# Usage:
+#   docker compose up --build
+# ---------------------------------------------------------------------------
+
+services:
+
+  db:
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      POSTGRES_DB: pastry_shop
+      POSTGRES_USER: pastry_user
+      POSTGRES_PASSWORD: pastry_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pastry_user -d pastry_shop"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build: .
+    restart: always
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      # Django core
+      SECRET_KEY: "change-me-in-production"
+      DEBUG: "False"
+      ALLOWED_HOSTS: "localhost,127.0.0.1"
+
+      # Database — points to the 'db' service above
+      DATABASE_URL: "postgres://pastry_user:pastry_password@db:5432/pastry_shop"
+
+      # Third-party APIs (override with your real tokens)
+      IPINFO_TOKEN: ""
+      OPENWEATHER_API_KEY: ""
+
+      # Logging level
+      LOG_LEVEL: "INFO"
+
+      # Fallback IP for local dev when request IP is loopback
+      TEST_IP: "8.8.8.8"
+    volumes:
+      - media_files:/app/media
+
+volumes:
+  postgres_data:
+  media_files:

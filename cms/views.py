@@ -1,12 +1,14 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Q
 from django.contrib import messages
+from django.utils import timezone as dj_tz
 
 from .models import News, CompanyInfo, Vacancy, QaA, Review, NewsTag, VacancyTag, QaATag, ReviewTag
 from .forms import ReviewForm, CompanyInfoForm, NewsForm, VacancyForm, QaAForm, PromoCodeForm
 from users.models import StaffProfile
 from purchasing.models import PromoCode, Order, OrderItem, Product
 from users.decorators import role_required
+from core.views import _get_client_ip, _get_ipinfo, _get_weather, _build_text_calendar, _local_datetime
 
 # --- GENERIC HELPERS ---
 def generic_create_view(request, form_class, redirect_url, title):
@@ -46,7 +48,36 @@ def generic_delete_view(request, model, redirect_url, title, pk):
 # --- HOME ---
 def home_view(request):
     latest_news = News.objects.filter(is_hidden=False).order_by('-created_at').first()
-    return render(request, 'cms/home.html', {'latest_news': latest_news})
+
+    # --- User location / timezone / weather / calendar ---
+    ip = _get_client_ip(request)
+    location = _get_ipinfo(ip)
+
+    tz_name = location.get("timezone", "UTC") or "UTC"
+    city = location.get("city", "Unknown")
+    country = location.get("country", "Unknown")
+
+    local_dt = _local_datetime(tz_name)
+    weather = _get_weather(city, country)
+    text_calendar = _build_text_calendar(local_dt.year, local_dt.month)
+
+    utc_now = dj_tz.now()
+
+    context = {
+        'latest_news': latest_news,
+        # location block
+        'ip': ip,
+        'city': city,
+        'country': country,
+        'timezone': tz_name,
+        'local_date': local_dt.strftime("%d/%m/%Y"),
+        'local_time': local_dt.strftime("%H:%M:%S"),
+        'utc_date': utc_now.strftime("%d/%m/%Y"),
+        'weather': weather,
+        'text_calendar': text_calendar,
+    }
+    return render(request, 'cms/home.html', context)
+
 
 # --- COMPANY INFO ---
 def about_company_view(request):

@@ -19,9 +19,11 @@ from django.contrib import admin
 from django.urls import re_path, include
 
 urlpatterns = [
-    re_path(r'^admin/', admin.site.urls),
-    re_path(r'^', include('cms.urls', namespace='cms')),
-    re_path(r'^', include('users.urls')),
-    re_path(r'^', include('catalog.urls', namespace='catalog')),
-    re_path(r'^', include('purchasing.urls', namespace='purchasing')),
+    re_path(r"^admin/", admin.site.urls),
+    re_path(r"^", include("core.urls", namespace="core")),
+    re_path(r"^", include("cms.urls", namespace="cms")),
+    re_path(r"^", include("users.urls")),
+    re_path(r"^", include("catalog.urls", namespace="catalog")),
+    re_path(r"^", include("purchasing.urls", namespace="purchasing")),
 ]
+

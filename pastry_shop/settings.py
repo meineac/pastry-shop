@@ -30,7 +30,13 @@ SECRET_KEY = os.environ.get(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = []
+# Hosts: read from env (comma-separated) plus allow localhost and Render
+_raw_hosts = os.environ.get("ALLOWED_HOSTS", "")
+ALLOWED_HOSTS = [h.strip() for h in _raw_hosts.split(",") if h.strip()] + [
+    "localhost",
+    "127.0.0.1",
+    ".onrender.com",
+]
 
 
 # Application definition
@@ -154,9 +160,26 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 
+# Directory where collectstatic writes files (needed for Render/production)
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
 # Media files
 MEDIA_URL = "media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# ---------------------------------------------------------------------------
+# Third-party API keys (read from environment, no hard-coded secrets)
+# ---------------------------------------------------------------------------
+
+# IPinfo token — https://ipinfo.io/
+IPINFO_TOKEN = os.environ.get("IPINFO_TOKEN", "")
+
+# OpenWeatherMap API key — https://openweathermap.org/api
+OPENWEATHER_API_KEY = os.environ.get("OPENWEATHER_API_KEY", "")
+
+# Fallback IP used when the real IP is loopback (e.g. local development)
+# Set TEST_IP to any public IP address in your .env to test location lookups.
+TEST_IP = os.environ.get("TEST_IP", "8.8.8.8")
