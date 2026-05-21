@@ -23,7 +23,7 @@ from django.db import transaction
 from catalog.models import Category, Manufacturer, Product
 from cms.models import CompanyInfo, News, Vacancy, QaA, Review
 from users.models import User, CustomerProfile, StaffProfile
-from purchasing.models import Order, OrderItem
+from purchasing.models import Order, OrderItem, PickupPoint, PromoCode
 
 logger = logging.getLogger(__name__)
 
@@ -31,6 +31,12 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 # Seed data
 # ---------------------------------------------------------------------------
+
+PICKUP_POINTS_DATA = [
+    {"address": "123 Baker Street", "working_hours": "07:00 - 20:00", "price": "0.00"},
+    {"address": "456 Pastry Lane", "working_hours": "08:00 - 21:00", "price": "5.00"},
+    {"address": "789 Dessert Blvd", "working_hours": "09:00 - 18:00", "price": "3.50"},
+]
 
 MANUFACTURERS = [
     {"name": "PhlloCraft Wholesale", "description": "Premium, paper-thin phyllo and kataifi dough tailored for delicate Mediterranean pastries.", "contact_email": "trade@phyllocraft.com"},
@@ -254,6 +260,12 @@ class Command(BaseCommand):
         self.stdout.write("Populating staff...")
         self._populate_staff()
 
+        self.stdout.write("Populating pickup points...")
+        self._populate_pickup_points()
+
+        self.stdout.write("Populating promocodes...")
+        self._populate_promocodes()
+
         self.stdout.write("Populating customers, reviews, and orders...")
         self._populate_customers_and_orders()
 
@@ -391,8 +403,34 @@ class Command(BaseCommand):
                     date_of_birth=date(1990, 1, 1)
                 )
 
+    def _populate_pickup_points(self):
+        for data in PICKUP_POINTS_DATA:
+            PickupPoint.objects.get_or_create(
+                address=data["address"],
+                defaults={
+                    "working_hours": data["working_hours"],
+                    "price": data["price"]
+                }
+            )
+        logger.info("Created Pickup Points.")
+
+    def _populate_promocodes(self):
+        for i in range(1, 11):
+            code = f"PROMO{i * 10}"
+            PromoCode.objects.get_or_create(
+                code=code,
+                defaults={
+                    "expiration_date": date.today() + timedelta(days=365),
+                    "discount_percentage": Decimal(random.randint(5, 20)),
+                    "minimum_purchase_amount": Decimal(random.randint(10, 50)),
+                    "conditions_of_application": "Standard discount",
+                }
+            )
+        logger.info("Created 10 PromoCodes.")
+
     def _populate_customers_and_orders(self):
         products = list(Product.objects.all())
+        pickup_points = list(PickupPoint.objects.all())
         if not products:
             logger.warning("No products available to generate orders.")
             return
@@ -431,6 +469,7 @@ class Command(BaseCommand):
                     order = Order.objects.create(
                         client=profile,
                         delivery_type=Order.DeliveryType.PICKUP,
+                        pickup_point=random.choice(pickup_points) if pickup_points else None,
                         payment_type=Order.PaymentType.CARD,
                         status=Order.OrderStatus.COMPLETED,
                         final_price=0 
