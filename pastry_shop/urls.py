@@ -1,21 +1,10 @@
 """
 URL configuration for pastry_shop project.
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/6.0/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
 from django.contrib import admin
+from django.conf import settings
+from django.views.static import serve
 from django.urls import re_path, include
 
 urlpatterns = [
@@ -27,3 +16,23 @@ urlpatterns = [
     re_path(r"^", include("purchasing.urls", namespace="purchasing")),
 ]
 
+# ---------------------------------------------------------------------------
+# Media file serving
+# ---------------------------------------------------------------------------
+# Django does NOT serve media files automatically in any mode.
+# We wire up django.views.static.serve unconditionally so that uploaded images
+# (products, news, staff photos) work both in local development and on Render's
+# free tier (which has no object-storage / CDN).
+#
+# In a production deployment with a dedicated object-storage service (S3, GCS,
+# Cloudinary, etc.) you would remove this and configure DEFAULT_FILE_STORAGE
+# instead.  For Render free tier without paid storage this is the correct
+# approach.
+# ---------------------------------------------------------------------------
+urlpatterns += [
+    re_path(
+        r"^media/(?P<path>.*)$",
+        serve,
+        {"document_root": settings.MEDIA_ROOT},
+    ),
+]
