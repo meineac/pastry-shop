@@ -398,3 +398,133 @@ class StatisticsViewTests(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Tarte Tatin')
+
+
+# ---------------------------------------------------------------------------
+# Staff creation view tests
+# ---------------------------------------------------------------------------
+
+class StaffCreationViewTests(TestCase):
+    """Tests for GET/POST /staff/create/ — Admin only."""
+
+    def setUp(self):
+        self.admin_user, self.admin_profile = make_admin('sc_admin')
+        self.staff_user, self.staff_profile = make_staff('sc_staff')
+        self.customer_user, _ = make_customer('sc_cust')
+
+        # Valid payload that satisfies all constraints
+        self.valid_payload = {
+            'username': 'new_staff_member',
+            'first_name': 'Alice',
+            'last_name': 'Baker',
+            'email': 'alice@pastry.example',
+            'password': 'Str0ngP@ss!',
+            'password_confirm': 'Str0ngP@ss!',
+            'position': 'Head Chef',
+            'date_of_birth': '1990-06-15',
+            'contact_details': 'ext. 202',
+        }
+
+    # ---- Access control ----
+
+    def test_unauthenticated_redirects_to_login(self):
+        response = self.client.get(reverse('staff_create'))
+        self.assertRedirects(response, reverse('login'))
+
+    def test_customer_is_denied(self):
+        self.client.force_login(self.customer_user)
+        response = self.client.get(reverse('staff_create'))
+        self.assertEqual(response.status_code, 403)
+
+    def test_staff_role_is_denied(self):
+        self.client.force_login(self.staff_user)
+        response = self.client.get(reverse('staff_create'))
+        self.assertEqual(response.status_code, 403)
+
+    def test_admin_can_access_form(self):
+        self.client.force_login(self.admin_user)
+        response = self.client.get(reverse('staff_create'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Create Staff Account')
+
+    # ---- Successful creation ----
+
+    def test_valid_post_creates_user_and_profile(self):
+        self.client.force_login(self.admin_user)
+        response = self.client.post(reverse('staff_create'), self.valid_payload)
+        self.assertRedirects(response, reverse('staff_list'))
+
+        # User created with STAFF role
+        user = User.objects.get(username='new_staff_member')
+        self.assertEqual(user.role, User.Role.STAFF)
+        self.assertEqual(user.first_name, 'Alice')
+        self.assertTrue(user.check_password('Str0ngP@ss!'))
+
+        # StaffProfile linked
+        self.assertTrue(hasattr(user, 'staff_profile'))
+        self.assertEqual(user.staff_profile.position, 'Head Chef')
+        self.assertEqual(str(user.staff_profile.date_of_birth), '1990-06-15')
+
+    def test_valid_post_shows_success_message(self):
+        self.client.force_login(self.admin_user)
+        response = self.client.post(
+            reverse('staff_create'), self.valid_payload, follow=True
+        )
+        self.assertContains(response, 'created successfully')
+
+    def test_underage_leaves_no_partial_user(self):
+        """If date_of_birth fails validation, no partial User is created."""
+        payload = dict(self.valid_payload)
+        payload['username'] = 'partial_user'
+        payload['date_of_birth'] = '2015-01-01'  # under 18
+
+        self.client.force_login(self.admin_user)
+        self.client.post(reverse('staff_create'), payload)
+
+        self.assertFalse(User.objects.filter(username='partial_user').exists())
+
+    # ---- Validation failures ----
+
+    def test_duplicate_username_rejected(self):
+        self.client.force_login(self.admin_user)
+        payload = dict(self.valid_payload)
+        payload['username'] = self.staff_user.username  # already exists
+
+        response = self.client.post(reverse('staff_create'), payload)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'already exists')
+
+    def test_password_mismatch_rejected(self):
+        self.client.force_login(self.admin_user)
+        payload = dict(self.valid_payload)
+        payload['password_confirm'] = 'WrongPassword!'
+
+        response = self.client.post(reverse('staff_create'), payload)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'do not match')
+
+    def test_underage_date_of_birth_rejected(self):
+        self.client.force_login(self.admin_user)
+        payload = dict(self.valid_payload)
+        payload['username'] = 'young_staff'
+        payload['date_of_birth'] = '2015-01-01'  # under 18
+
+        response = self.client.post(reverse('staff_create'), payload)
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(User.objects.filter(username='young_staff').exists())
+
+    def test_missing_required_field_rejected(self):
+        self.client.force_login(self.admin_user)
+        payload = dict(self.valid_payload)
+        del payload['position']  # required StaffProfile field
+
+        response = self.client.post(reverse('staff_create'), payload)
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(User.objects.filter(username='new_staff_member').exists())
+
+    def test_form_has_both_fieldsets(self):
+        """The form page should contain both Account Details and Staff Profile fieldsets."""
+        self.client.force_login(self.admin_user)
+        response = self.client.get(reverse('staff_create'))
+        self.assertContains(response, 'Account Details')
+        self.assertContains(response, 'Staff Profile')

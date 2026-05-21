@@ -1,0 +1,126 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Create Staff Account{% endblock %}
+
+{% block content %}
+<h1>Create Staff Account</h1>
+
+<p><a href="{% url 'staff_list' %}">&larr; Back to Staff List</a></p>
+
+{% if form.non_field_errors %}
+    <ul class="errorlist">
+        {% for error in form.non_field_errors %}
+            <li>{{ error }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+<form method="post" enctype="multipart/form-data" novalidate>
+    {% csrf_token %}
+
+    <fieldset>
+        <legend>Account Details</legend>
+
+        <p>
+            <label for="{{ form.username.id_for_label }}">Username <span aria-hidden="true">*</span></label>
+            {{ form.username }}
+            {% if form.username.errors %}
+                <span class="errorlist">{{ form.username.errors|join:", " }}</span>
+            {% endif %}
+        </p>
+
+        <p>
+            <label for="{{ form.first_name.id_for_label }}">First name</label>
+            {{ form.first_name }}
+            {% if form.first_name.errors %}
+                <span class="errorlist">{{ form.first_name.errors|join:", " }}</span>
+            {% endif %}
+        </p>
+
+        <p>
+            <label for="{{ form.last_name.id_for_label }}">Last name</label>
+            {{ form.last_name }}
+            {% if form.last_name.errors %}
+                <span class="errorlist">{{ form.last_name.errors|join:", " }}</span>
+            {% endif %}
+        </p>
+
+        <p>
+            <label for="{{ form.email.id_for_label }}">Email</label>
+            {{ form.email }}
+            {% if form.email.errors %}
+                <span class="errorlist">{{ form.email.errors|join:", " }}</span>
+            {% endif %}
+        </p>
+
+        <p>
+            <label for="{{ form.password.id_for_label }}">Password <span aria-hidden="true">*</span></label>
+            {{ form.password }}
+            {% if form.password.help_text %}
+                <small>{{ form.password.help_text }}</small>
+            {% endif %}
+            {% if form.password.errors %}
+                <span class="errorlist">{{ form.password.errors|join:", " }}</span>
+            {% endif %}
+        </p>
+
+        <p>
+            <label for="{{ form.password_confirm.id_for_label }}">Confirm password <span aria-hidden="true">*</span></label>
+            {{ form.password_confirm }}
+            {% if form.password_confirm.errors %}
+                <span class="errorlist">{{ form.password_confirm.errors|join:", " }}</span>
+            {% endif %}
+        </p>
+    </fieldset>
+
+    <fieldset>
+        <legend>Staff Profile</legend>
+
+        <p>
+            <label for="{{ form.position.id_for_label }}">Position <span aria-hidden="true">*</span></label>
+            {{ form.position }}
+            {% if form.position.errors %}
+                <span class="errorlist">{{ form.position.errors|join:", " }}</span>
+            {% endif %}
+        </p>
+
+        <p>
+            <label for="{{ form.date_of_birth.id_for_label }}">Date of birth <span aria-hidden="true">*</span></label>
+            {{ form.date_of_birth }}
+            {% if form.date_of_birth.help_text %}
+                <small>{{ form.date_of_birth.help_text }}</small>
+            {% endif %}
+            {% if form.date_of_birth.errors %}
+                <span class="errorlist">{{ form.date_of_birth.errors|join:", " }}</span>
+            {% endif %}
+        </p>
+
+        <p>
+            <label for="{{ form.contact_details.id_for_label }}">Contact details <span aria-hidden="true">*</span></label>
+            {{ form.contact_details }}
+            {% if form.contact_details.help_text %}
+                <small>{{ form.contact_details.help_text }}</small>
+            {% endif %}
+            {% if form.contact_details.errors %}
+                <span class="errorlist">{{ form.contact_details.errors|join:", " }}</span>
+            {% endif %}
+        </p>
+
+        <p>
+            <label for="{{ form.photo.id_for_label }}">Photo</label>
+            {{ form.photo }}
+            {% if form.photo.help_text %}
+                <small>{{ form.photo.help_text }}</small>
+            {% endif %}
+            {% if form.photo.errors %}
+                <span class="errorlist">{{ form.photo.errors|join:", " }}</span>
+            {% endif %}
+        </p>
+    </fieldset>
+
+    <p>
+        <button type="submit">Create Staff Account</button>
+        <a href="{% url 'staff_list' %}">Cancel</a>
+    </p>
+</form>
+{% endblock %}

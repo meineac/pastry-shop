@@ -12,7 +12,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from catalog.models import Category, Product
 from purchasing.models import Order
 from .decorators import role_required, unauthenticated_only
-from .forms import LoginForm, RegistrationForm
+from .forms import LoginForm, RegistrationForm, StaffCreationForm
 from .models import CustomerProfile, StaffProfile, User
 
 logger = logging.getLogger(__name__)
@@ -103,24 +103,79 @@ def profile_view(request):
 def staff_list_view(request):
     if request.method == 'POST':
         user_id = request.POST.get('user_id')
+        action = request.POST.get('action')
         staff_user = get_object_or_404(User, id=user_id, role__in=[User.Role.STAFF, User.Role.ADMIN])
 
         if staff_user == request.user:
-            messages.error(request, "You cannot revoke your own access.")
+            messages.error(request, "You cannot modify your own access.")
         else:
-            staff_user.is_active = False
-            staff_user.save()
-            logger.warning(
-                "Admin '%s' revoked access for user '%s'.",
-                request.user.username, staff_user.username
-            )
-            messages.success(request, f"Access revoked for {staff_user.username}.")
+            if action == 'return':
+                staff_user.is_active = True
+                staff_user.save()
+                logger.info(
+                    "Admin '%s' returned access for user '%s'.",
+                    request.user.username, staff_user.username
+                )
+                messages.success(request, f"Access restored for {staff_user.username}.")
+            else:
+                staff_user.is_active = False
+                staff_user.save()
+                logger.warning(
+                    "Admin '%s' revoked access for user '%s'.",
+                    request.user.username, staff_user.username
+                )
+                messages.success(request, f"Access revoked for {staff_user.username}.")
         return redirect('staff_list')
 
     staff_members = User.objects.filter(
         role__in=[User.Role.STAFF, User.Role.ADMIN]
     ).order_by('date_joined')
     return render(request, 'users/staff_list.html', {'staff_members': staff_members})
+
+
+@role_required([User.Role.ADMIN])
+def staff_create_view(request):
+    """
+    Admin-only view for creating a new Staff User and their StaffProfile
+    simultaneously via a single unified form.
+    Both records are saved inside an atomic transaction so the database
+    is never left in a partial state.
+    """
+    if request.method == 'POST':
+        form = StaffCreationForm(request.POST, request.FILES)
+        if form.is_valid():
+            with transaction.atomic():
+                user = User(
+                    username=form.cleaned_data['username'],
+                    first_name=form.cleaned_data['first_name'],
+                    last_name=form.cleaned_data['last_name'],
+                    email=form.cleaned_data['email'],
+                    role=User.Role.STAFF,
+                )
+                user.set_password(form.cleaned_data['password'])
+                user.save()
+
+                StaffProfile.objects.create(
+                    user=user,
+                    position=form.cleaned_data['position'],
+                    date_of_birth=form.cleaned_data['date_of_birth'],
+                    contact_details=form.cleaned_data['contact_details'],
+                    photo=form.cleaned_data.get('photo'),
+                )
+
+            logger.info(
+                "Admin '%s' created new staff account '%s'.",
+                request.user.username, user.username
+            )
+            messages.success(
+                request,
+                f"Staff account '{user.username}' created successfully."
+            )
+            return redirect('staff_list')
+    else:
+        form = StaffCreationForm()
+
+    return render(request, 'users/staff_create.html', {'form': form})
 
 
 # ---------------------------------------------------------------------------

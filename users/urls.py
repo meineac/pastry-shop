@@ -9,6 +9,7 @@ urlpatterns = [
 
     re_path(r'^profile/$', views.profile_view, name='profile'),
 
+    re_path(r'^staff/create/$', views.staff_create_view, name='staff_create'),
     re_path(r'^staff/$', views.staff_list_view, name='staff_list'),
 
     # Client management (Admin & Staff)
