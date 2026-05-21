@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from core.models import TimestampedModel, phone_regex_validator, validate_age_18_plus
@@ -16,20 +17,18 @@ class User(AbstractUser):
 
     def clean(self):
         super().clean()
-        from django.core.exceptions import ValidationError
-        
         # 1. Superuser is always an ADMIN
         if self.is_superuser and self.role != self.Role.ADMIN:
             raise ValidationError({
                 'role': "Superusers must always have the ADMIN role."
             })
-            
+
         # 2. STAFF is STAFF and never a superuser
         if self.role == self.Role.STAFF and self.is_superuser:
             raise ValidationError({
                 'is_superuser': "Staff users cannot be superusers."
             })
-            
+
         # 3. CUSTOMER is CUSTOMER and never a superuser
         if self.role == self.Role.CUSTOMER and self.is_superuser:
             raise ValidationError({

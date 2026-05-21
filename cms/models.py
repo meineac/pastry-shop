@@ -1,3 +1,4 @@
+from django.core.exceptions import FieldDoesNotExist
 from django.db import models
 from core.models import TimestampedModel
 from users.models import User
@@ -13,7 +14,7 @@ class TagCleanupMixin(models.Model):
         
         try:
             accessor_name = self._meta.get_field('tags').remote_field.get_accessor_name()
-        except Exception:
+        except FieldDoesNotExist:
             accessor_name = None
 
         result = super().delete(*args, **kwargs)

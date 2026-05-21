@@ -2,35 +2,47 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db import transaction
-from django.urls import reverse
+
 from users.decorators import role_required
 from users.models import User
 from .models import Cart, CartItem, Order, OrderItem, PickupPoint, PromoCode
+from .services import (
+    COURIER_DELIVERY_PRICE,
+    apply_promo_code,
+    calculate_delivery_price,
+    calculate_total,
+    get_cart_subtotal,
+    place_order,
+)
 from cms.models import Review
 from catalog.models import Product
 from datetime import date
 import decimal
-import re
+
+
+# Cart helpers
 
 def get_or_create_cart(user):
     if not hasattr(user, 'customer_profile'):
         return None
-    cart, created = Cart.objects.get_or_create(client=user.customer_profile)
+    cart, _ = Cart.objects.get_or_create(client=user.customer_profile)
     return cart
+
+
+# Cart views
 
 def add_to_cart_view(request, product_id):
     if not request.user.is_authenticated:
         return redirect('register')
 
     if not hasattr(request.user, 'customer_profile'):
-        # Admin and staff don't have carts
+        # Admins and staff have no cart
         return redirect('catalog:product_list')
 
     product = get_object_or_404(Product, id=product_id, is_active=True)
     cart = get_or_create_cart(request.user)
 
     if request.method == 'POST':
-        # Add product or increment quantity
         cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product)
         if not created:
             cart_item.quantity += 1
@@ -38,6 +50,7 @@ def add_to_cart_view(request, product_id):
         return redirect('purchasing:cart')
 
     return redirect('catalog:product_list')
+
 
 @login_required
 def remove_from_cart_view(request, cart_item_id):
@@ -51,6 +64,7 @@ def remove_from_cart_view(request, cart_item_id):
 
     return redirect('purchasing:cart')
 
+
 @login_required
 def cart_view(request):
     if not hasattr(request.user, 'customer_profile'):
@@ -59,58 +73,24 @@ def cart_view(request):
     cart = get_or_create_cart(request.user)
     items = cart.items.all()
 
-    # Auto-purge inactive products from the cart
+    # Auto-purge inactive products
     inactive_items = items.filter(product__is_active=False)
     if inactive_items.exists():
-        inactive_items_count = inactive_items.count()
+        count = inactive_items.count()
         inactive_items.delete()
-        messages.warning(request, f"{inactive_items_count} item(s) in your cart became unavailable and were removed.")
+        messages.warning(request, f"{count} item(s) in your cart became unavailable and were removed.")
         items = cart.items.all()
 
-    total = sum(item.product.price * item.quantity for item in items if item.product)
+    total = get_cart_subtotal(items)
+    return render(request, 'purchasing/cart.html', {'items': items, 'total': total})
 
-    context = {
-        'items': items,
-        'total': total
-    }
-    return render(request, 'purchasing/cart.html', context)
-
-COURIER_DELIVERY_PRICE = decimal.Decimal('5.00')
-
-def parse_promo_code(promo, subtotal):
-    discount_percent = decimal.Decimal('10.00') # Default 10%
-    # Extract discount percentage
-    pct_match = re.search(r'(\d+)\s*%', promo.conditions_of_application)
-    if not pct_match:
-        pct_match = re.search(r'(\d+)\s*%', promo.code)
-    if not pct_match:
-        code_digits = re.search(r'([A-Za-z]+)(\d+)', promo.code)
-        if code_digits:
-            val = int(code_digits.group(2))
-            if 0 < val <= 100:
-                discount_percent = decimal.Decimal(val)
-    else:
-        discount_percent = decimal.Decimal(pct_match.group(1))
-
-    # Extract minimum purchase requirement
-    min_purchase = decimal.Decimal('0.00')
-    min_match = re.search(r'(?:min|minimum|over|above|least|>\s*)\s*(?:\$)?\s*(\d+(?:\.\d{2})?)', promo.conditions_of_application.lower())
-    if min_match:
-        min_purchase = decimal.Decimal(min_match.group(1))
-    
-    is_valid = subtotal >= min_purchase
-    error_message = ""
-    if not is_valid:
-        error_message = f"This promo code requires a minimum purchase of ${min_purchase:.2f}."
-        
-    discount_amount = (subtotal * (discount_percent / decimal.Decimal('100.00'))).quantize(decimal.Decimal('0.01'))
-    return is_valid, error_message, discount_amount
+# Promo code application (standalone endpoint)
 
 @login_required
 def apply_promo_view(request):
     if not hasattr(request.user, 'customer_profile'):
         return redirect('catalog:product_list')
-        
+
     if request.method == 'POST':
         code = request.POST.get('promo_code', '').strip()
         try:
@@ -130,6 +110,9 @@ def apply_promo_view(request):
 
     return redirect('purchasing:checkout')
 
+
+# Checkout view
+
 @login_required
 def checkout_view(request):
     if not hasattr(request.user, 'customer_profile'):
@@ -138,7 +121,7 @@ def checkout_view(request):
     cart = get_or_create_cart(request.user)
     items = cart.items.all()
 
-    # Auto-purge inactive products from the cart
+    # Auto-purge inactive products and redirect back to cart
     inactive_items = items.filter(product__is_active=False)
     if inactive_items.exists():
         inactive_items.delete()
@@ -148,9 +131,9 @@ def checkout_view(request):
     if not items:
         return redirect('purchasing:cart')
 
-    subtotal = sum(item.product.price * item.quantity for item in items if item.product)
+    subtotal = get_cart_subtotal(items)
 
-    # Check if there is a post to update delivery state
+    # Persist form selections to session on POST
     if request.method == 'POST':
         delivery_type = request.POST.get('delivery_type', 'PICKUP')
         pickup_point_id = request.POST.get('pickup_point')
@@ -158,15 +141,16 @@ def checkout_view(request):
         payment_type = request.POST.get('payment_type', 'CASH')
         promo_code_str = request.POST.get('promo_code', '').strip()
 
-        # Save to session
         request.session['delivery_type'] = delivery_type
         request.session['pickup_point_id'] = pickup_point_id
         request.session['delivery_address'] = delivery_address
         request.session['payment_type'] = payment_type
-        
+
         if promo_code_str:
             try:
-                promo = PromoCode.objects.get(code=promo_code_str, status=PromoCode.Status.ACTIVE, is_hidden=False)
+                promo = PromoCode.objects.get(
+                    code=promo_code_str, status=PromoCode.Status.ACTIVE, is_hidden=False
+                )
                 if promo.expiration_date >= date.today():
                     request.session['promo_code_id'] = promo.id
                     request.session['promo_error'] = ''
@@ -184,23 +168,23 @@ def checkout_view(request):
             request.session.pop('promo_error', None)
             request.session.pop('promo_success', None)
 
-    # Read state from session
+    # Restore session state
     delivery_type = request.session.get('delivery_type', 'PICKUP')
     pickup_point_id = request.session.get('pickup_point_id')
     delivery_address = request.session.get('delivery_address', '')
     payment_type = request.session.get('payment_type', 'CASH')
     promo_code_id = request.session.get('promo_code_id')
 
-    # Promo code discount calculation
-    promo_code = None
-    discount = decimal.Decimal('0.00')
     promo_error = request.session.pop('promo_error', None)
     promo_success = request.session.pop('promo_success', None)
+
+    promo_code = None
+    discount = decimal.Decimal('0.00')
 
     if promo_code_id:
         try:
             promo_code = PromoCode.objects.get(id=promo_code_id)
-            is_valid, err_msg, disc_amt = parse_promo_code(promo_code, subtotal)
+            is_valid, err_msg, disc_amt = apply_promo_code(promo_code, subtotal)
             if is_valid:
                 discount = disc_amt
                 if not promo_success:
@@ -212,24 +196,15 @@ def checkout_view(request):
         except PromoCode.DoesNotExist:
             request.session.pop('promo_code_id', None)
 
-    # Delivery price calculation
-    delivery_price = decimal.Decimal('0.00')
+    # Delivery price
     pickup_point = None
-    if delivery_type == 'PICKUP':
-        if pickup_point_id:
-            try:
-                pickup_point = PickupPoint.objects.get(id=pickup_point_id)
-                delivery_price = pickup_point.price
-            except PickupPoint.DoesNotExist:
-                pass
-    else:
-        delivery_price = COURIER_DELIVERY_PRICE
-
-    total = subtotal - discount + delivery_price
-    if total < decimal.Decimal('0.00'):
-        total = decimal.Decimal('0.00')
-
-    pickup_points = PickupPoint.objects.all()
+    if delivery_type == Order.DeliveryType.PICKUP and pickup_point_id:
+        try:
+            pickup_point = PickupPoint.objects.get(id=pickup_point_id)
+        except PickupPoint.DoesNotExist:
+            pass
+    delivery_price = calculate_delivery_price(delivery_type, pickup_point)
+    total = calculate_total(subtotal, discount, delivery_price)
 
     context = {
         'items': items,
@@ -244,128 +219,95 @@ def checkout_view(request):
         'payment_type': payment_type,
         'delivery_price': delivery_price,
         'total': total,
-        'pickup_points': pickup_points,
+        'pickup_points': PickupPoint.objects.all(),
     }
     return render(request, 'purchasing/checkout.html', context)
+
+
+# Order placement view
 
 @login_required
 def place_order_view(request):
     if not hasattr(request.user, 'customer_profile'):
         return redirect('catalog:product_list')
 
-    if request.method == 'POST':
-        cart = get_or_create_cart(request.user)
-        items = cart.items.all()
+    if request.method != 'POST':
+        return redirect('purchasing:checkout')
 
-        if not items:
-            return redirect('purchasing:cart')
+    cart = get_or_create_cart(request.user)
+    items = cart.items.all()
 
-        # Check for inactive products in cart
-        inactive_items = items.filter(product__is_active=False)
-        if inactive_items.exists():
-            inactive_items.delete()
-            request.session['promo_error'] = "Some products in your cart became unavailable and were removed."
-            return redirect('purchasing:cart')
+    if not items:
+        return redirect('purchasing:cart')
 
-        # Read POST details
-        delivery_type = request.POST.get('delivery_type', 'PICKUP')
-        pickup_point_id = request.POST.get('pickup_point')
-        delivery_address = request.POST.get('delivery_address', '').strip()
-        payment_type = request.POST.get('payment_type')
+    # Purge inactive products before order
+    inactive_items = items.filter(product__is_active=False)
+    if inactive_items.exists():
+        inactive_items.delete()
+        request.session['promo_error'] = "Some products in your cart became unavailable and were removed."
+        return redirect('purchasing:cart')
 
-        # Validate delivery fields
-        pickup_point = None
-        delivery_price = decimal.Decimal('0.00')
-        if delivery_type == 'PICKUP':
-            if not pickup_point_id:
-                request.session['promo_error'] = "Please select a store for pickup."
-                return redirect('purchasing:checkout')
-            pickup_point = get_object_or_404(PickupPoint, id=pickup_point_id)
-            delivery_price = pickup_point.price
-            delivery_address = None
-        else:
-            if not delivery_address:
-                request.session['promo_error'] = "Please enter an address for courier delivery."
-                return redirect('purchasing:checkout')
-            delivery_price = COURIER_DELIVERY_PRICE
-            pickup_point = None
+    # Parse and validate delivery details
+    delivery_type = request.POST.get('delivery_type', 'PICKUP')
+    pickup_point_id = request.POST.get('pickup_point')
+    delivery_address = request.POST.get('delivery_address', '').strip()
+    payment_type = request.POST.get('payment_type')
 
-        if payment_type not in [Order.PaymentType.CASH, Order.PaymentType.CARD]:
-            request.session['promo_error'] = "Please select a valid payment method."
+    pickup_point = None
+    if delivery_type == Order.DeliveryType.PICKUP:
+        if not pickup_point_id:
+            request.session['promo_error'] = "Please select a store for pickup."
+            return redirect('purchasing:checkout')
+        pickup_point = get_object_or_404(PickupPoint, id=pickup_point_id)
+        delivery_address = None
+    else:
+        if not delivery_address:
+            request.session['promo_error'] = "Please enter an address for courier delivery."
             return redirect('purchasing:checkout')
 
-        # Calculate pricing
-        subtotal = sum(item.product.price * item.quantity for item in items if item.product)
+    if payment_type not in [Order.PaymentType.CASH, Order.PaymentType.CARD]:
+        request.session['promo_error'] = "Please select a valid payment method."
+        return redirect('purchasing:checkout')
 
-        # Handle PromoCode
-        promo_code_id = request.session.get('promo_code_id')
-        promo_code = None
-        discount = decimal.Decimal('0.00')
+    # Resolve promo code from session
+    promo_code = None
+    promo_code_id = request.session.get('promo_code_id')
+    if promo_code_id:
+        try:
+            promo_code = PromoCode.objects.get(id=promo_code_id)
+        except PromoCode.DoesNotExist:
+            pass
 
-        if promo_code_id:
-            try:
-                promo_code = PromoCode.objects.get(id=promo_code_id)
-                is_valid, _, disc_amt = parse_promo_code(promo_code, subtotal)
-                if is_valid:
-                    discount = disc_amt
-                else:
-                    promo_code = None
-            except PromoCode.DoesNotExist:
-                pass
+    # Delegate all business logic to the service layer
+    with transaction.atomic():
+        place_order(
+            customer_profile=request.user.customer_profile,
+            cart=cart,
+            delivery_type=delivery_type,
+            delivery_address=delivery_address,
+            pickup_point=pickup_point,
+            payment_type=payment_type,
+            promo_code=promo_code,
+        )
 
-        final_price = subtotal - discount + delivery_price
-        if final_price < decimal.Decimal('0.00'):
-            final_price = decimal.Decimal('0.00')
+    # Clear session checkout state
+    for key in ('promo_code_id', 'delivery_type', 'pickup_point_id', 'delivery_address', 'payment_type'):
+        request.session.pop(key, None)
 
-        with transaction.atomic():
-            order = Order.objects.create(
-                client=request.user.customer_profile,
-                delivery_type=delivery_type,
-                delivery_address=delivery_address,
-                delivery_price=delivery_price,
-                pickup_point=pickup_point,
-                payment_type=payment_type,
-                status=Order.OrderStatus.PENDING,
-                promo_code=promo_code,
-                final_price=final_price
-            )
+    return redirect('profile')
 
-            for item in items:
-                if item.product:
-                    product = item.product
-                    if product.quantity >= item.quantity:
-                        product.quantity -= item.quantity
-                    else:
-                        product.quantity = 0
-                    product.save()
-
-                    OrderItem.objects.create(
-                        order=order,
-                        product=product,
-                        quantity=item.quantity,
-                        purchase_price=product.price,
-                        historical_product_name=product.name
-                    )
-
-            # Clear cart items and promo code/delivery session
-            items.delete()
-            request.session.pop('promo_code_id', None)
-            request.session.pop('delivery_type', None)
-            request.session.pop('pickup_point_id', None)
-            request.session.pop('delivery_address', None)
-            request.session.pop('payment_type', None)
-
-        return redirect('profile')
-
-    return redirect('purchasing:checkout')
+# Order history views
 
 @role_required([User.Role.CUSTOMER])
 def order_history_view(request):
     profile = getattr(request.user, 'customer_profile', None)
     history_orders = []
     if profile:
-        history_orders = profile.orders.filter(status__in=[Order.OrderStatus.COMPLETED, Order.OrderStatus.CANCELLED]).order_by('-created_at')
+        history_orders = profile.orders.filter(
+            status__in=[Order.OrderStatus.COMPLETED, Order.OrderStatus.CANCELLED]
+        ).order_by('-created_at')
     return render(request, 'purchasing/order_history.html', {'history_orders': history_orders})
+
 
 @role_required([User.Role.CUSTOMER])
 def order_details_view(request, order_id):
@@ -373,15 +315,14 @@ def order_details_view(request, order_id):
     order = get_object_or_404(Order, id=order_id, client=profile)
     items = order.items.all()
 
-    # Check which products have already been reviewed by this user
     reviewed_product_ids = set(
-        Review.objects.filter(author=request.user, product__in=[item.product for item in items if item.product])
-        .values_list('product_id', flat=True)
+        Review.objects.filter(
+            author=request.user,
+            product__in=[item.product for item in items if item.product],
+        ).values_list('product_id', flat=True)
     )
 
-    # Attach a flag to each item
     for item in items:
         item.already_reviewed = item.product_id in reviewed_product_ids if item.product else False
 
     return render(request, 'purchasing/order_details.html', {'order': order, 'items': items})
-

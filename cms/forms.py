@@ -1,4 +1,5 @@
 from django import forms
+from django.core.exceptions import FieldDoesNotExist
 from .models import CompanyInfo, News, Vacancy, QaA, Review
 from purchasing.models import PromoCode
 
@@ -21,7 +22,7 @@ class TagMixinForm(forms.ModelForm):
                 self.fields['tags_string'].help_text = f"Comma-separated list of tags. Currently available tags: {', '.join(all_tags)}"
             else:
                 self.fields['tags_string'].help_text = "Comma-separated list of tags. No tags available yet."
-        except Exception:
+        except FieldDoesNotExist:
             pass
 
     def save(self, commit=True):
@@ -49,7 +50,7 @@ class TagMixinForm(forms.ModelForm):
             # Cleanup orphaned tags
             try:
                 accessor_name = self._meta.model._meta.get_field('tags').remote_field.get_accessor_name()
-            except Exception:
+            except FieldDoesNotExist:
                 accessor_name = None
 
             if accessor_name:
@@ -96,7 +97,11 @@ class QaAForm(TagMixinForm):
 class PromoCodeForm(forms.ModelForm):
     class Meta:
         model = PromoCode
-        fields = ['code', 'expiration_date', 'status', 'conditions_of_application', 'is_hidden']
+        fields = [
+            'code', 'expiration_date', 'status',
+            'discount_percentage', 'minimum_purchase_amount',
+            'conditions_of_application', 'is_hidden',
+        ]
         widgets = {
             'expiration_date': forms.DateInput(attrs={'type': 'date', 'required': True})
         }

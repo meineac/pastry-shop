@@ -23,7 +23,21 @@ class PromoCode(TimestampedModel):
         choices=Status.choices,
         default=Status.ACTIVE
     )
-    conditions_of_application = models.TextField()
+    discount_percentage = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        default=0,
+        help_text="Discount as a percentage, e.g. 20 for 20% off."
+    )
+    minimum_purchase_amount = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=0,
+        help_text="Minimum cart subtotal required to apply this promo code."
+    )
+    conditions_of_application = models.TextField(
+        help_text="Human-readable description of this promo code's conditions (for display only)."
+    )
     is_hidden = models.BooleanField(default=False)
 
     def __str__(self):

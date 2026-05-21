@@ -3,6 +3,7 @@ from django.db.models import Q
 from django.http import Http404
 from .models import Product, Category, Manufacturer
 from cms.models import Review
+from purchasing.models import Order, OrderItem
 from users.decorators import role_required
 from .forms import ProductForm
 
@@ -64,7 +65,6 @@ def product_detail_view(request, product_id):
 
     can_review = False
     if request.user.is_authenticated and hasattr(request.user, 'customer_profile'):
-        from purchasing.models import Order, OrderItem
         has_received = OrderItem.objects.filter(
             order__client=request.user.customer_profile,
             order__status=Order.OrderStatus.COMPLETED,

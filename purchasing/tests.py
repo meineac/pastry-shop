@@ -71,21 +71,27 @@ class PurchasingTests(TestCase):
             code="SAVE20",
             expiration_date=date.today() + timedelta(days=5),
             status=PromoCode.Status.ACTIVE,
-            conditions_of_application="Get 20% off. Min purchase: $10.00",
+            discount_percentage=decimal.Decimal('20.00'),
+            minimum_purchase_amount=decimal.Decimal('10.00'),
+            conditions_of_application="20% off on orders over $10.00",
             is_hidden=False
         )
         self.promo_expired = PromoCode.objects.create(
             code="SAVE50",
             expiration_date=date.today() - timedelta(days=5),
             status=PromoCode.Status.ACTIVE,
-            conditions_of_application="Get 50% off.",
+            discount_percentage=decimal.Decimal('50.00'),
+            minimum_purchase_amount=decimal.Decimal('0.00'),
+            conditions_of_application="50% off — expired.",
             is_hidden=False
         )
         self.promo_high_min = PromoCode.objects.create(
             code="MIN100",
             expiration_date=date.today() + timedelta(days=5),
             status=PromoCode.Status.ACTIVE,
-            conditions_of_application="15% discount on purchase over 100",
+            discount_percentage=decimal.Decimal('15.00'),
+            minimum_purchase_amount=decimal.Decimal('100.00'),
+            conditions_of_application="15% discount on purchases over $100.00",
             is_hidden=False
         )
 

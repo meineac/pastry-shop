@@ -2,6 +2,8 @@ from django.test import TestCase, Client
 from django.urls import reverse
 from .models import News, CompanyInfo, Vacancy, QaA, Review, NewsTag
 from users.models import User, CustomerProfile
+from catalog.models import Product, Category, Manufacturer
+from purchasing.models import Order, OrderItem
 from datetime import date
 
 class CMSViewsTests(TestCase):
@@ -69,9 +71,6 @@ class CMSViewsTests(TestCase):
         self.assertTrue(Review.objects.filter(author=self.user, rating=5).exists())
 
     def test_product_review_eligibility(self):
-        from catalog.models import Product, Category, Manufacturer
-        from purchasing.models import Order, OrderItem
-        
         # Create catalog items
         cat = Category.objects.create(name="Cakes")
         man = Manufacturer.objects.create(name="Sweet Bakers")
