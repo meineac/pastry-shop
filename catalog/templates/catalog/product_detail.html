@@ -29,10 +29,14 @@
 <p><strong>Quantity:</strong> {{ product.quantity }} {{ product.get_unit_of_measurement_display }}</p>
 
 {% if not request.user.is_authenticated or request.user.role == 'CUSTOMER' %}
-<form action="{% url 'purchasing:add_to_cart' product_id=product.id %}" method="POST">
-    {% csrf_token %}
-    <button type="submit">Add to Cart</button>
-</form>
+    {% if product.quantity > 0 %}
+        <form action="{% url 'purchasing:add_to_cart' product_id=product.id %}" method="POST">
+            {% csrf_token %}
+            <button type="submit">Add to Cart</button>
+        </form>
+    {% else %}
+        <p style="color:red; font-weight:bold;">Out of Stock</p>
+    {% endif %}
 {% endif %}
 
 <hr>

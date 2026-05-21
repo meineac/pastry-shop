@@ -43,10 +43,17 @@ def add_to_cart_view(request, product_id):
     cart = get_or_create_cart(request.user)
 
     if request.method == 'POST':
+        if product.quantity <= 0:
+            messages.error(request, f"Sorry, {product.name} is out of stock.")
+            return redirect('catalog:product_list')
+
         cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product)
         if not created:
-            cart_item.quantity += 1
-            cart_item.save()
+            if cart_item.quantity < product.quantity:
+                cart_item.quantity += 1
+                cart_item.save()
+            else:
+                messages.warning(request, f"You cannot add more of {product.name}. Only {product.quantity} in stock.")
         return redirect('purchasing:cart')
 
     return redirect('catalog:product_list')
@@ -79,7 +86,19 @@ def cart_view(request):
         count = inactive_items.count()
         inactive_items.delete()
         messages.warning(request, f"{count} item(s) in your cart became unavailable and were removed.")
-        items = cart.items.all()
+
+    # Check and adjust quantities based on available stock
+    for item in items:
+        if item.product and item.quantity > item.product.quantity:
+            if item.product.quantity == 0:
+                item.delete()
+                messages.warning(request, f"{item.product.name} is out of stock and was removed from your cart.")
+            else:
+                item.quantity = item.product.quantity
+                item.save()
+                messages.warning(request, f"Quantity for {item.product.name} was reduced to {item.product.quantity} due to stock limits.")
+
+    items = cart.items.all()
 
     total = get_cart_subtotal(items)
     return render(request, 'purchasing/cart.html', {'items': items, 'total': total})
@@ -130,6 +149,12 @@ def checkout_view(request):
 
     if not items:
         return redirect('purchasing:cart')
+
+    # Check if stock is sufficient
+    for item in items:
+        if item.product and item.quantity > item.product.quantity:
+            messages.error(request, f"Sorry, we only have {item.product.quantity} of {item.product.name} in stock. Please adjust your cart.")
+            return redirect('purchasing:cart')
 
     subtotal = get_cart_subtotal(items)
 
@@ -246,6 +271,12 @@ def place_order_view(request):
         inactive_items.delete()
         request.session['promo_error'] = "Some products in your cart became unavailable and were removed."
         return redirect('purchasing:cart')
+
+    # Check if stock is sufficient
+    for item in items:
+        if item.product and item.quantity > item.product.quantity:
+            messages.error(request, f"Sorry, we only have {item.product.quantity} of {item.product.name} in stock.")
+            return redirect('purchasing:cart')
 
     # Parse and validate delivery details
     delivery_type = request.POST.get('delivery_type', 'PICKUP')

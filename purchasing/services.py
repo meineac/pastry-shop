@@ -128,3 +128,28 @@ def place_order(
         items.delete()
 
     return order
+
+
+def update_order_status(order: Order, new_status: str, user) -> bool:
+    """
+    Update the status of an order and handle side-effects like stock restoration.
+    Returns True if successful, False if the transition is invalid.
+    """
+    # Prevent changing status of already completed or cancelled orders
+    if order.status in [Order.OrderStatus.COMPLETED, Order.OrderStatus.CANCELLED]:
+        return False
+
+    with transaction.atomic():
+        if new_status == Order.OrderStatus.CANCELLED:
+            # Restore stock
+            for item in order.items.select_related('product').all():
+                if item.product:
+                    # Refresh from DB to avoid race conditions
+                    item.product.refresh_from_db()
+                    item.product.quantity += item.quantity
+                    item.product.save(update_fields=['quantity'])
+
+        order.status = new_status
+        order.save(update_fields=['status'])
+
+    return True

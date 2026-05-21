@@ -1,0 +1,72 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Current Running Orders{% endblock %}
+
+{% block content %}
+<h1>Current Running Orders</h1>
+
+{% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+{% if orders %}
+    <table>
+        <thead>
+            <tr>
+                <th>Order ID</th>
+                <th>Client</th>
+                <th>Created At</th>
+                <th>Delivery Type</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+                <tr>
+                    <td>{{ order.id }}</td>
+                    <td><a href="{% url 'client_card' order.client.id %}">{{ order.client.user.username }}</a></td>
+                    <td>{{ order.created_at|date:"d/m/Y H:i" }}</td>
+                    <td>{{ order.get_delivery_type_display }}</td>
+                    <td><strong>{{ order.get_status_display }}</strong></td>
+                    <td>
+                        <!-- Status progression forms -->
+                        {% if order.status == 'PENDING' %}
+                            <form method="post" action="{% url 'purchasing:update_order_status' order.id %}" style="display:inline;">
+                                {% csrf_token %}
+                                <input type="hidden" name="new_status" value="PROCESSING">
+                                <button type="submit">Mark Processing</button>
+                            </form>
+                        {% elif order.status == 'PROCESSING' %}
+                            <form method="post" action="{% url 'purchasing:update_order_status' order.id %}" style="display:inline;">
+                                {% csrf_token %}
+                                <input type="hidden" name="new_status" value="READY">
+                                <button type="submit">Mark Ready</button>
+                            </form>
+                        {% elif order.status == 'READY' %}
+                            <form method="post" action="{% url 'purchasing:update_order_status' order.id %}" style="display:inline;">
+                                {% csrf_token %}
+                                <input type="hidden" name="new_status" value="COMPLETED">
+                                <button type="submit">Mark Completed</button>
+                            </form>
+                        {% endif %}
+
+                        <!-- Cancellation form -->
+                        <form method="post" action="{% url 'purchasing:update_order_status' order.id %}" style="display:inline;">
+                            {% csrf_token %}
+                            <input type="hidden" name="new_status" value="CANCELLED">
+                            <button type="submit" style="color:red;">Cancel Order</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No active orders found.</p>
+{% endif %}
+{% endblock %}

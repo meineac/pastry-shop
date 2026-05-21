@@ -22,6 +22,7 @@
                     <a href="{% url 'purchasing:cart' %}">Cart</a> |
                 {% endif %}
                 {% if request.user.role == 'ADMIN' or request.user.role == 'STAFF' or request.user.is_superuser %}
+                    <a href="{% url 'purchasing:active_orders' %}">Active Orders</a> |
                     <a href="{% url 'client_list' %}">Clients</a> |
                     <a href="{% url 'my_clients' %}">My Clients</a> |
                     <a href="{% url 'catalog:statistics' %}">Statistics</a> |
