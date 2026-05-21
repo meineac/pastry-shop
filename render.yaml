@@ -12,7 +12,7 @@ services:
     env: python
     region: frankfurt
     plan: free
-    buildCommand: "pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate --noinput"
+    buildCommand: "pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate --noinput && python manage.py populate_db && python link_images.py"
     startCommand: "gunicorn pastry_shop.wsgi:application --bind 0.0.0.0:$PORT --workers 2 --timeout 120"
     envVars:
       - key: DATABASE_URL
