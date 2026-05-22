@@ -9,7 +9,14 @@
     <h2>Your Location &amp; Current Conditions</h2>
     <table>
         <tr><th>City</th><td>{{ city }}, {{ country }}</td></tr>
-        <tr><th>Timezone</th><td>{{ timezone }}</td></tr>
+        <tr>
+            <th>Timezone (Client)</th>
+            <td>{{ tz_name }} &mdash; {{ now_local|date:"d/m/Y H:i:s" }}</td>
+        </tr>
+        <tr>
+            <th>Timezone (Server)</th>
+            <td>UTC &mdash; {{ now_utc|date:"d/m/Y H:i:s" }}</td>
+        </tr>
         <tr><th>Local Date</th><td>{{ local_date }}</td></tr>
         <tr><th>Local Time</th><td>{{ local_time }}</td></tr>
         <tr><th>UTC Date</th><td>{{ utc_date }}</td></tr>

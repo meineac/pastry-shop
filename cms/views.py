@@ -75,6 +75,10 @@ def home_view(request):
         'utc_date': utc_now.strftime("%d/%m/%Y"),
         'weather': weather,
         'text_calendar': text_calendar,
+        # full datetime objects for timezone display
+        'now_utc': utc_now,
+        'now_local': local_dt,
+        'tz_name': tz_name,
     }
     return render(request, 'cms/home.html', context)
 
