@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.conf import settings
-from django.views.static import serve
+from django.conf.urls.static import static
 from django.urls import re_path, include
 
 urlpatterns = [
@@ -12,12 +12,7 @@ urlpatterns = [
     re_path(r"^", include("purchasing.urls", namespace="purchasing")),
 ]
 
-# Media file serving
-
-urlpatterns += [
-    re_path(
-        r"^media/(?P<path>.*)$",
-        serve,
-        {"document_root": settings.MEDIA_ROOT},
-    ),
-]
+# Media file serving — only active during development (DEBUG=True).
+# In production, media should be served by Nginx, a CDN, or object storage (e.g. S3).
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

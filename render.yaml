@@ -33,6 +33,12 @@ services:
         sync: false          # Set manually in Render dashboard
       - key: TEST_IP
         value: "8.8.8.8"
+      - key: SUPERUSER_USERNAME
+        value: "admin"
+      - key: SUPERUSER_EMAIL
+        value: "admin@example.com"
+      - key: SUPERUSER_PASSWORD
+        sync: false          # Set manually in Render dashboard
 
 # ── PostgreSQL Database ──────────────────────────────────────────────────────
 databases:

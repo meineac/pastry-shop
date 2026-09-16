@@ -42,6 +42,7 @@ ALLOWED_HOSTS = [h.strip() for h in _raw_hosts.split(",") if h.strip()] + [
 # Application definition
 
 INSTALLED_APPS = [
+    "whitenoise.runserver_nostatic",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -184,3 +185,23 @@ OPENWEATHER_API_KEY = os.environ.get("OPENWEATHER_API_KEY", "")
 # Fallback IP used when the real IP is loopback (e.g. local development)
 # Set TEST_IP to any public IP address in your .env to test location lookups.
 TEST_IP = os.environ.get("TEST_IP", "8.8.8.8")
+
+# ---------------------------------------------------------------------------
+# Production security — only active when DEBUG is False
+# ---------------------------------------------------------------------------
+CSRF_TRUSTED_ORIGINS = [
+    origin.strip()
+    for origin in os.environ.get(
+        "CSRF_TRUSTED_ORIGINS", "https://*.onrender.com"
+    ).split(",")
+    if origin.strip()
+]
+
+if not DEBUG:
+    SECURE_SSL_REDIRECT = os.environ.get("SECURE_SSL_REDIRECT", "True") == "True"
+    SECURE_HSTS_SECONDS = 31_536_000           # 1 year
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")

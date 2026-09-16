@@ -39,6 +39,7 @@ services:
       SECRET_KEY: "change-me-in-production"
       DEBUG: "False"
       ALLOWED_HOSTS: "localhost,127.0.0.1"
+      SECURE_SSL_REDIRECT: "False"
 
       # Database — points to the 'db' service above
       DATABASE_URL: "postgres://pastry_user:pastry_password@db:5432/pastry_shop"
@@ -52,6 +53,11 @@ services:
 
       # Fallback IP for local dev when request IP is loopback
       TEST_IP: "8.8.8.8"
+
+      # Superuser for populate_db
+      SUPERUSER_USERNAME: "admin"
+      SUPERUSER_EMAIL: "admin@example.com"
+      SUPERUSER_PASSWORD: "change-me-in-production"
     volumes:
       - media_files:/app/media
 
