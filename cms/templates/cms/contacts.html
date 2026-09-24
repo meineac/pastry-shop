@@ -39,7 +39,7 @@
                      srcset="{{ employee.photo_small.url }} 120w, {{ employee.photo_medium.url }} 240w"
                      sizes="120px"
                      itemprop="image">
-                <figcaption itemprop="name">{{ employee.user.get_full_name|default:employee.user.username }}</figcaption>
+                <figcaption>{{ employee.user.get_full_name|default:employee.user.username }}</figcaption>
             </figure>
             {% endif %}
             <h3 itemprop="name">{{ employee.user.get_full_name|default:employee.user.username }}</h3>
@@ -47,7 +47,7 @@
             <address>
                 <strong>Contact:</strong> {{ employee.contact_details }}<br>
                 <strong>Email:</strong>
-                <a href="mailto:{{ employee.user.email }}" itemprop="email">{{ employee.user.email }}</a>
+                <a href="mailto:{{ employee.user.email }}"><span itemprop="email">{{ employee.user.email }}</span></a>
             </address>
         </li>
     {% empty %}
