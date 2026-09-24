@@ -18,7 +18,7 @@
                 </figure>
                 {% endif %}
 
-                <h3>
+                <h2>
                     {% if item.product %}
                         <a href="{% url 'catalog:product_detail' product_id=item.product.id %}" itemprop="url">
                             {{ item.product.name }}
@@ -26,7 +26,7 @@
                     {% else %}
                         <em>Unavailable Item</em>
                     {% endif %}
-                </h3>
+                </h2>
 
                 {% if item.product %}
                     <p>Category: {{ item.product.category.name }}</p>
@@ -57,7 +57,7 @@
         {% endfor %}
     </ul>
 
-    <h3>Total: ${{ total }}</h3>
+    <h2>Total: ${{ total }}</h2>
     <p><a href="{% url 'purchasing:checkout' %}">[Proceed to Checkout]</a></p>
 
 {% else %}

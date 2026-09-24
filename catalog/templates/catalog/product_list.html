@@ -57,12 +57,12 @@
                 <figcaption itemprop="name">{{ product.name }}</figcaption>
             </figure>
             {% endif %}
-            <h3>
+            <h2>
                 <a href="{% url 'catalog:product_detail' product_id=product.id %}" itemprop="url">{{ product.name }}</a>
                 {% if not product.is_active %}
                     <em>[Inactive / Hidden]</em>
                 {% endif %}
-            </h3>
+            </h2>
             <p>Category: {{ product.category.name }}</p>
             <p itemprop="offers" itemscope itemtype="https://schema.org/Offer">
                 Price: <strong>$<span itemprop="price">{{ product.price }}</span></strong>

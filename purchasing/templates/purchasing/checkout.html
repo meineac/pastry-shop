@@ -66,7 +66,7 @@
         </label>
 
         <div>
-            <h3>Select Pickup Store</h3>
+            <h2>Select Pickup Store</h2>
             <select name="pickup_point" aria-label="Select pickup store">
                 <option value="" disabled {% if not pickup_point_id %}selected{% endif %}>-- Select a store --</option>
                 {% for point in pickup_points %}
@@ -78,7 +78,7 @@
         </div>
 
         <div>
-            <h3>Courier Delivery Address</h3>
+            <h2>Courier Delivery Address</h2>
             <label for="id_delivery_address">Delivery address:</label>
             <input type="text"
                    id="id_delivery_address"

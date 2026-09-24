@@ -8,11 +8,29 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'pastry_shop.settings')
 django.setup()
 settings.ALLOWED_HOSTS = ['*']
 
+from datetime import date
+from users.models import CustomerProfile
+from catalog.models import Product
+from purchasing.models import Cart, CartItem
+
 User = get_user_model()
 user, created = User.objects.get_or_create(username='testuser')
-if created:
-    user.set_password('testpass')
-    user.save()
+user.set_password('testpass')
+user.role = 'CUSTOMER'
+user.save()
+
+profile, _ = CustomerProfile.objects.get_or_create(
+    user=user,
+    defaults={
+        'date_of_birth': date(2000, 1, 1),
+        'phone_number': '+375 (29) 111-22-33'
+    }
+)
+
+cart, _ = Cart.objects.get_or_create(client=profile)
+product = Product.objects.filter(is_active=True).first()
+if product:
+    CartItem.objects.get_or_create(cart=cart, product=product, defaults={'quantity': 1})
 
 client = Client(SERVER_NAME='localhost')
 client.force_login(user)
@@ -27,6 +45,7 @@ urls = {
     "vacancies": "/vacancies/",
     "reviews": "/reviews/",
     "promo_codes": "/promo-codes/",
+    "catalog": "/catalog/",
     "cart": "/cart/",
     "checkout": "/checkout/",
 }
