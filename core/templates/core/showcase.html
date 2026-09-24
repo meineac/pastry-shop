@@ -1,0 +1,211 @@
+{% extends "core/base.html" %}
+
+{% block title %}HTML Features Showcase{% endblock %}
+
+{% block content %}
+<!-- Microdata, Container elements & Global attributes -->
+<article itemscope itemtype="https://schema.org/TechArticle" id="showcase-article" lang="en" dir="ltr" title="HTML Elements Showcase">
+  <header>
+    <h1 itemprop="headline">HTML Features Showcase</h1>
+    <p>This page explicitly demonstrates every single tag, attribute, and semantic element required in the assignment task.</p>
+    
+    <!-- Horizontal Navigation -->
+    <nav aria-label="Page horizontal navigation">
+      <a href="#semantic-text">Semantic Text</a> | 
+      <a href="#quatrain">Quatrain</a> | 
+      <a href="#lists-figures">Lists &amp; Figures</a> | 
+      <a href="#data-table">Data Table</a> | 
+      <a href="#forms">Forms</a> | 
+      <a href="#embedded">Embedded Content</a>
+    </nav>
+  </header>
+
+  <hr>
+
+  <section id="semantic-text">
+    <h2>Semantic Text &amp; Specific Tags</h2>
+    <!-- Container elements: div, span -->
+    <div tabindex="0">
+      <p>Here is an example of <mark>highlighted</mark> text, <em>emphasized</em> text, and <strong>strong</strong> text in a <span>span</span> container.</p>
+      
+      <!-- Date-time -->
+      <p>The showcase was published on <time datetime="2026-09-24">24/09/2026</time>.</p>
+      
+      <!-- Address -->
+      <address>
+        Contact the author at: <a href="mailto:student@example.com">student@example.com</a>
+      </address>
+      
+      <!-- Code listing (pre/code) -->
+      <p>Example of a code listing:</p>
+      <pre><code>def hello_world():
+    print("Hello, HTML5!")</code></pre>
+
+      <!-- Abbreviations & Definitions -->
+      <p>The <abbr title="HyperText Markup Language">HTML</abbr> specification defines a <dfn>showcase</dfn> as a display of items.</p>
+      
+      <!-- Blockquote & inline quote (q) & cite -->
+      <blockquote cite="https://developer.mozilla.org/en-US/docs/Web/HTML">
+        <p>HTML is the standard markup language for documents designed to be displayed in a web browser.</p>
+      </blockquote>
+      <p>As they say, <q>Practice makes perfect</q> &mdash; <cite>Anonymous Student</cite>.</p>
+    </div>
+  </section>
+
+  <section id="quatrain">
+    <h2>Quatrain (Poem)</h2>
+    <!-- Fixed and potential line breaks -->
+    <p>
+      Code is written in the night,<br>
+      Bugs are hiding out of sight.<br>
+      Fixing them is quite a <wbr>challenge,<br>
+      But the grades make it all right.
+    </p>
+  </section>
+
+  <section id="lists-figures">
+    <h2>Lists, Figures, Links &amp; Vertical Nav</h2>
+    <!-- Vertical navigation (using ul inside nav) -->
+    <nav aria-label="Vertical internal navigation">
+      <ul>
+        <li><a href="#semantic-text">Back to Semantic Text</a></li>
+        <li><a href="#forms">Jump to Forms</a></li>
+      </ul>
+    </nav>
+
+    <!-- Ordered List -->
+    <ol>
+      <li>First step</li>
+      <li>Second step</li>
+    </ol>
+    
+    <!-- Definition List -->
+    <dl>
+      <dt>HTML</dt>
+      <dd>Markup language.</dd>
+      <dt>Python</dt>
+      <dd>Programming language.</dd>
+    </dl>
+
+    <!-- Figure, image (with srcset/sizes), and figcaption -->
+    <figure>
+      <img src="/media/company/logo.jpg" alt="Pastry Shop Logo" width="300" srcset="/media/company/logo.jpg 1x" sizes="(max-width: 600px) 100vw, 300px">
+      <figcaption>Figure 1: Responsive Company Logo</figcaption>
+    </figure>
+
+    <p>
+      <!-- Various Links including anchor and download -->
+      <a href="{% url 'cms:home' %}">Standard link to Home</a><br>
+      <a href="/media/company/menu.pdf" download>Download Menu (PDF)</a><br>
+      <a href="#showcase-article">Anchor link to top</a>
+    </p>
+  </section>
+
+  <section id="data-table">
+    <h2>Data Table</h2>
+    <!-- Table with all required elements/attributes -->
+    <table border="1">
+      <thead>
+        <tr>
+          <th id="th-name" rowspan="2">Item Name</th>
+          <th id="th-details" colspan="2">Details</th>
+        </tr>
+        <tr>
+          <th id="th-price">Price (USD)</th>
+          <th id="th-stock">Stock</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td headers="th-name">Croissant</td>
+          <td headers="th-details th-price">2.50</td>
+          <td headers="th-details th-stock">150</td>
+        </tr>
+        <tr>
+          <td headers="th-name">Macaron</td>
+          <td headers="th-details th-price">1.50</td>
+          <td headers="th-details th-stock">300</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="forms">
+    <h2>Forms &amp; Controls</h2>
+    <form action="#" method="get">
+      <!-- Fieldset and Legend -->
+      <fieldset>
+        <legend>Feedback Form</legend>
+        
+        <!-- Validation (required, pattern, minlength, maxlength) -->
+        <label for="username">Username (Letters only):</label>
+        <input type="text" id="username" name="username" required minlength="3" maxlength="20" pattern="[A-Za-z]+"><br><br>
+        
+        <!-- Validation (min, max) -->
+        <label for="rating">Rating (1-10):</label>
+        <input type="number" id="rating" name="rating" min="1" max="10"><br><br>
+        
+        <!-- Various input types -->
+        <label for="fav_color">Favorite Color:</label>
+        <input type="color" id="fav_color" name="fav_color"><br><br>
+        
+        <label for="exam_date">Exam Date:</label>
+        <input type="date" id="exam_date" name="exam_date"><br><br>
+
+        <label for="user_email">Email:</label>
+        <input type="email" id="user_email" name="user_email"><br><br>
+
+        <label for="upload_file">Upload assignment:</label>
+        <input type="file" id="upload_file" name="upload_file"><br><br>
+
+        <!-- Radio buttons -->
+        <p>Status:</p>
+        <input type="radio" id="status_student" name="status" value="student">
+        <label for="status_student">Student</label><br>
+        <input type="radio" id="status_teacher" name="status" value="teacher">
+        <label for="status_teacher">Teacher</label><br><br>
+
+        <!-- Checkbox -->
+        <input type="checkbox" id="agree" name="agree" value="yes" required>
+        <label for="agree">I confirm the code is valid.</label><br><br>
+
+        <!-- Select dropdown -->
+        <label for="course">Course:</label>
+        <select id="course" name="course">
+          <option value="web_dev">Web Development</option>
+          <option value="databases">Databases</option>
+        </select><br><br>
+
+        <!-- Textarea -->
+        <label for="feedback">Comments:</label><br>
+        <textarea id="feedback" name="feedback" rows="4" cols="40" placeholder="Enter text here..."></textarea><br><br>
+        
+        <!-- Buttons -->
+        <button type="submit">Submit</button>
+        <button type="reset">Reset</button>
+      </fieldset>
+    </form>
+  </section>
+
+  <section id="embedded">
+    <h2>Embedded Content (Iframe, Video, Audio)</h2>
+    
+    <!-- Iframe (e.g. OpenStreetMap) -->
+    <iframe src="https://www.openstreetmap.org/export/embed.html?bbox=-0.162%2C51.514%2C-0.142%2C51.528&amp;layer=mapnik" width="425" height="350" title="Map of London"></iframe>
+    <br><br>
+
+    <!-- Video -->
+    <video width="320" height="240" controls>
+      <source src="/media/company/bakery_tour.mp4" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+    <br><br>
+
+    <!-- Audio (Fallback dummy source) -->
+    <audio controls>
+      <source src="/media/company/dummy.mp3" type="audio/mpeg">
+      Your browser does not support the audio element.
+    </audio>
+  </section>
+</article>
+{% endblock %}

@@ -115,3 +115,7 @@ def local_datetime(tz_name):
         tz = pytz.utc
     return timezone.now().astimezone(tz)
 # ---------------------------------------------------------------------------
+
+def showcase_view(request):
+    """View to demonstrate all required HTML elements for the task."""
+    return render(request, "core/showcase.html")
