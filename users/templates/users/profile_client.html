@@ -23,7 +23,7 @@
                 Order #{{ order.id }} - {{ order.status }}
                 (Created: {{ order.created_at|date:"d/m/Y" }}, Updated: {{ order.updated_at|date:"d/m/Y" }})
                 - Total Price: ${{ order.final_price }}
-                <a href="{% url 'purchasing:order_details' order.id %}"><button>Details</button></a>
+                <a href="{% url 'purchasing:order_details' order.id %}">[Details]</a>
             </li>
         {% empty %}
             <li>No active orders.</li>

@@ -18,7 +18,7 @@
 </nav>
 
 {% if request.user.role == 'ADMIN' %}
-    <p><a href="{% url 'cms:about_edit' %}"><button>Edit Company Info</button></a></p>
+    <p><a href="{% url 'cms:about_edit' %}">[Edit Company Info]</a></p>
 {% endif %}
 
 {% if company_info %}
@@ -30,7 +30,6 @@
              alt="Pastry Shop company logo"
              width="250"
              srcset="{{ company_info.logo_small.url }} 1x, {{ company_info.logo_medium.url }} 2x"
-             sizes="250px"
              itemprop="logo">
         <figcaption><strong>Pastry Shop</strong> — <em>Crafted with passion since <time datetime="2010">2010</time></em></figcaption>
     </figure>

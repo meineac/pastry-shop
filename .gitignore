@@ -224,3 +224,7 @@ setup.sh
 # Cached images
 
 media/CACHE/
+# Validation artifacts
+rendered_html/
+w3c_results.json
+fix_*.py

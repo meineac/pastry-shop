@@ -34,15 +34,15 @@
             {% if employee.photo %}
             <figure>
                 <img src="{{ employee.photo.url }}"
-                     alt="{{ employee.user.get_full_name }}"
+                     alt="{{ employee.user.get_full_name|default:employee.user.username }}"
                      width="120"
                      srcset="{{ employee.photo_small.url }} 120w, {{ employee.photo_medium.url }} 240w"
                      sizes="120px"
                      itemprop="image">
-                <figcaption itemprop="name">{{ employee.user.get_full_name }}</figcaption>
+                <figcaption itemprop="name">{{ employee.user.get_full_name|default:employee.user.username }}</figcaption>
             </figure>
             {% endif %}
-            <h3 itemprop="name">{{ employee.user.get_full_name }}</h3>
+            <h3 itemprop="name">{{ employee.user.get_full_name|default:employee.user.username }}</h3>
             <p><strong>Position:</strong> <span itemprop="jobTitle">{{ employee.position }}</span></p>
             <address>
                 <strong>Contact:</strong> {{ employee.contact_details }}<br>

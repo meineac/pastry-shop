@@ -5,7 +5,7 @@
 <h1>Product Catalog</h1>
 
 {% if request.user.is_authenticated and request.user.role == 'ADMIN' or request.user.is_authenticated and request.user.role == 'STAFF' %}
-    <p><a href="{% url 'catalog:product_create' %}"><button>Create New Product</button></a></p>
+    <p><a href="{% url 'catalog:product_create' %}">[Create New Product]</a></p>
 {% endif %}
 
 <form method="GET" action="{% url 'catalog:product_list' %}">
@@ -71,8 +71,8 @@
 
             {% if request.user.is_authenticated and request.user.role == 'ADMIN' or request.user.is_authenticated and request.user.role == 'STAFF' %}
                 <p>
-                    <a href="{% url 'catalog:product_edit' product_id=product.id %}"><button>Edit</button></a>
-                    <a href="{% url 'catalog:product_delete' product_id=product.id %}"><button>Delete</button></a>
+                    <a href="{% url 'catalog:product_edit' product_id=product.id %}">[Edit]</a>
+                    <a href="{% url 'catalog:product_delete' product_id=product.id %}">[Delete]</a>
                 </p>
             {% endif %}
 

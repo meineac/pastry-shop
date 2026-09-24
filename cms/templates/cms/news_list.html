@@ -5,10 +5,10 @@
 <h1>News &amp; Articles</h1>
 
 {% if request.user.role == 'ADMIN' %}
-    <p><a href="{% url 'cms:news_create' %}"><button>Add News</button></a></p>
+    <p><a href="{% url 'cms:news_create' %}">[Add News]</a></p>
 {% endif %}
 
-<form method="GET" action="">
+<form method="GET" >
     <fieldset>
         <legend>Search &amp; Filter</legend>
         <label for="id_q">Search:</label>
@@ -38,7 +38,7 @@
             <figcaption>{{ item.title }}</figcaption>
         </figure>
         {% endif %}
-        <h3 itemprop="headline">{{ item.title }}</h3>
+        <h2 itemprop="headline">{{ item.title }}</h2>
         <p>
             <strong>Published:</strong>
             <time datetime="{{ item.created_at|date:'Y-m-d' }}" itemprop="datePublished">
@@ -55,12 +55,12 @@
         {% endif %}
         <p itemprop="description">{{ item.short_summary }}</p>
         <p>
-            <a href="{% url 'cms:news_detail' pk=item.id %}"><button>Read More</button></a>
+            <a href="{% url 'cms:news_detail' pk=item.id %}">[Read More]</a>
         </p>
         {% if request.user.role == 'ADMIN' %}
         <p>
-            <a href="{% url 'cms:news_edit' pk=item.id %}"><button>Edit</button></a>
-            <a href="{% url 'cms:news_delete' pk=item.id %}"><button>Delete</button></a>
+            <a href="{% url 'cms:news_edit' pk=item.id %}">[Edit]</a>
+            <a href="{% url 'cms:news_delete' pk=item.id %}">[Delete]</a>
         </p>
         {% endif %}
     </li>

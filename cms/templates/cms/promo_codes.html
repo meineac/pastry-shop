@@ -5,7 +5,7 @@
 <h1>Promo Codes &amp; Coupons</h1>
 
 {% if request.user.role == 'ADMIN' %}
-    <p><a href="{% url 'cms:promo_code_create' %}"><button>Add Promo Code</button></a></p>
+    <p><a href="{% url 'cms:promo_code_create' %}">[Add Promo Code]</a></p>
 {% endif %}
 
 <section id="active-promos" aria-labelledby="active-heading">
@@ -16,8 +16,8 @@
             <h3><code>{{ promo.code }}</code> &mdash; <strong>{{ promo.discount_percentage }}% off</strong></h3>
             {% if request.user.role == 'ADMIN' %}
                 <p>
-                    <a href="{% url 'cms:promo_code_edit' pk=promo.id %}"><button>Edit</button></a>
-                    <a href="{% url 'cms:promo_code_delete' pk=promo.id %}"><button>Delete</button></a>
+                    <a href="{% url 'cms:promo_code_edit' pk=promo.id %}">[Edit]</a>
+                    <a href="{% url 'cms:promo_code_delete' pk=promo.id %}">[Delete]</a>
                 </p>
             {% endif %}
             <p>
@@ -43,8 +43,8 @@
             <h3><code>{{ promo.code }}</code> &mdash; <del>{{ promo.discount_percentage }}% off</del> <em>(expired)</em></h3>
             {% if request.user.role == 'ADMIN' %}
                 <p>
-                    <a href="{% url 'cms:promo_code_edit' pk=promo.id %}"><button>Edit</button></a>
-                    <a href="{% url 'cms:promo_code_delete' pk=promo.id %}"><button>Delete</button></a>
+                    <a href="{% url 'cms:promo_code_edit' pk=promo.id %}">[Edit]</a>
+                    <a href="{% url 'cms:promo_code_delete' pk=promo.id %}">[Delete]</a>
                 </p>
             {% endif %}
             <p>

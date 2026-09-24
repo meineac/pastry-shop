@@ -13,8 +13,8 @@
 
 {% if request.user.is_authenticated and request.user.role == 'ADMIN' or request.user.is_authenticated and request.user.role == 'STAFF' %}
     <p>
-        <a href="{% url 'catalog:product_edit' product_id=product.id %}"><button>Edit Product</button></a>
-        <a href="{% url 'catalog:product_delete' product_id=product.id %}"><button>Delete Product</button></a>
+        <a href="{% url 'catalog:product_edit' product_id=product.id %}">[Edit Product]</a>
+        <a href="{% url 'catalog:product_delete' product_id=product.id %}">[Delete Product]</a>
     </p>
 {% endif %}
 
@@ -104,7 +104,7 @@
     {% endif %}
 
     {% if can_review %}
-        <p><a href="{% url 'cms:review_create' %}?product_id={{ product.id }}"><button>Leave a Review</button></a></p>
+        <p><a href="{% url 'cms:review_create' %}?product_id={{ product.id }}">[Leave a Review]</a></p>
     {% endif %}
 </section>
 

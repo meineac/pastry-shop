@@ -8,8 +8,8 @@
 
     {% if request.user.role == 'ADMIN' %}
         <p>
-            <a href="{% url 'cms:news_edit' pk=news_item.id %}"><button>Edit</button></a>
-            <a href="{% url 'cms:news_delete' pk=news_item.id %}"><button>Delete</button></a>
+            <a href="{% url 'cms:news_edit' pk=news_item.id %}">[Edit]</a>
+            <a href="{% url 'cms:news_delete' pk=news_item.id %}">[Delete]</a>
         </p>
     {% endif %}
 
@@ -37,7 +37,6 @@
              srcset="{{ news_item.image_small.url }} 300w,
                      {{ news_item.image_medium.url }} 600w,
                      {{ news_item.image_large.url }} 1200w"
-             sizes="(max-width: 600px) 100vw, 600px"
              itemprop="image">
         <figcaption>
             <cite>{{ news_item.title }}</cite> — Pastry Shop News

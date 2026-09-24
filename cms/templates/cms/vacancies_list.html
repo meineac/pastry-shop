@@ -5,10 +5,10 @@
 <h1>Vacancies</h1>
 
 {% if request.user.role == 'ADMIN' %}
-    <p><a href="{% url 'cms:vacancy_create' %}"><button>Add Vacancy</button></a></p>
+    <p><a href="{% url 'cms:vacancy_create' %}">[Add Vacancy]</a></p>
 {% endif %}
 
-<form method="GET" action="">
+<form method="GET" >
     <fieldset>
         <legend>Search Vacancies</legend>
         <label for="id_q">Search:</label>
@@ -27,11 +27,11 @@
 <ul>
 {% for vacancy in vacancies %}
     <li itemscope itemtype="https://schema.org/JobPosting">
-        <h3 itemprop="title">{{ vacancy.title }}</h3>
+        <h2 itemprop="title">{{ vacancy.title }}</h2>
         {% if request.user.role == 'ADMIN' %}
         <p>
-            <a href="{% url 'cms:vacancy_edit' pk=vacancy.id %}"><button>Edit</button></a>
-            <a href="{% url 'cms:vacancy_delete' pk=vacancy.id %}"><button>Delete</button></a>
+            <a href="{% url 'cms:vacancy_edit' pk=vacancy.id %}">[Edit]</a>
+            <a href="{% url 'cms:vacancy_delete' pk=vacancy.id %}">[Delete]</a>
         </p>
         {% endif %}
         <p>

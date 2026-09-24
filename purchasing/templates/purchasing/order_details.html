@@ -16,7 +16,7 @@
                 {% endif %}
                 <!-- Leave a review button if order is COMPLETED and product not yet reviewed -->
                 {% if order.status == 'COMPLETED' and not item.already_reviewed %}
-                    <a href="{% url 'cms:review_create' %}?product_id={{ item.product.id }}"><button>Leave a Review</button></a>
+                    <a href="{% url 'cms:review_create' %}?product_id={{ item.product.id }}">[Leave a Review]</a>
                 {% endif %}
             </li>
         {% empty %}

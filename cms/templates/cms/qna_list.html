@@ -5,10 +5,10 @@
 <h1>Frequently Asked Questions</h1>
 
 {% if request.user.role == 'ADMIN' %}
-    <p><a href="{% url 'cms:qna_create' %}"><button>Add Q&amp;A</button></a></p>
+    <p><a href="{% url 'cms:qna_create' %}">[Add Q&amp;A]</a></p>
 {% endif %}
 
-<form method="GET" action="">
+<form method="GET" >
     <fieldset>
         <legend>Search Q&amp;A</legend>
         <label for="id_q">Search:</label>
@@ -42,8 +42,8 @@
             <p><strong>A:</strong> {{ qa.answer_text }}</p>
             {% if request.user.role == 'ADMIN' %}
                 <p>
-                    <a href="{% url 'cms:qna_edit' pk=qa.id %}"><button>Edit</button></a>
-                    <a href="{% url 'cms:qna_delete' pk=qa.id %}"><button>Delete</button></a>
+                    <a href="{% url 'cms:qna_edit' pk=qa.id %}">[Edit]</a>
+                    <a href="{% url 'cms:qna_delete' pk=qa.id %}">[Delete]</a>
                 </p>
             {% endif %}
         </details>

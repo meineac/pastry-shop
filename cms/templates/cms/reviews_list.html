@@ -41,8 +41,8 @@
         </blockquote>
         {% if request.user == review.author %}
         <p>
-            <a href="{% url 'cms:review_edit' pk=review.id %}"><button>Edit</button></a>
-            <a href="{% url 'cms:review_delete' pk=review.id %}"><button>Delete</button></a>
+            <a href="{% url 'cms:review_edit' pk=review.id %}">[Edit]</a>
+            <a href="{% url 'cms:review_delete' pk=review.id %}">[Delete]</a>
         </p>
         {% endif %}
     </li>
