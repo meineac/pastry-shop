@@ -1,12 +1,55 @@
 """
-Seed data for the cms app: company info, news, vacancies, and Q&A.
+Seed data for the cms app: company info, news, vacancies, Q&A, partners, and banners.
 """
 
 COMPANY_INFO = {
-    "text_information": "We are a premium pastry shop dedicated to high-quality ingredients.",
-    "history_by_years": "2010: Founded.\n2015: Opened flagship store.\n2022: Expanded city-wide.",
-    "company_details": "Registration No: 123456789. Address: 123 Baker Street.",
+    "text_information": (
+        "We are a premium pastry shop dedicated to high-quality ingredients and authentic French techniques. "
+        "Every item in our showcase is crafted with care by our team of trained pâtissiers."
+    ),
+    "history_by_years": (
+        "2010: Founded by Marie Leblanc in a small kitchen on Baker Street.\n"
+        "2013: Won first regional award for our signature chocolate entremet.\n"
+        "2015: Opened the flagship store at 123 Baker Street.\n"
+        "2018: Launched city-wide delivery and online ordering.\n"
+        "2020: Introduced our vegan and plant-based pastry range.\n"
+        "2022: Expanded to three city locations.\n"
+        "2025: Certified by the International Pastry Institute."
+    ),
+    "company_details": (
+        "Registration No: 123456789. "
+        "Address: 123 Baker Street, London, UK. "
+        "VAT No: GB-987654321. "
+        "Opening hours: Monday–Saturday 07:00–20:00."
+    ),
+    "video_url": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    "certificate_text": (
+        "CERTIFICATE OF QUALITY\n"
+        "Pastry Shop — 123 Baker Street, London\n\n"
+        "This certificate confirms that Pastry Shop meets all requirements of the\n"
+        "International Pastry Standards Council (IPSC) for the production and sale\n"
+        "of baked goods and confectionery.\n\n"
+        "Certificate No: IPSC-2025-00342\n"
+        "Issued: 01/06/2025\n"
+        "Valid until: 01/06/2027\n"
+        "Issuing body: International Pastry Standards Council\n"
+        "Certification level: Gold"
+    ),
 }
+
+PARTNERS = [
+    {"name": "FreshFarm Dairy", "website": "https://freshfarmdairy.example.com", "logo": "partners/freshfarm_dairy.jpg"},
+    {"name": "Organic Flour Mills", "website": "https://organicflour.example.com", "logo": "partners/organic_flour_mills.jpg"},
+    {"name": "CacaoSource Premium", "website": "https://cacaosource.example.com", "logo": "partners/cacaosource_premium.jpg"},
+    {"name": "Alpine Butter Co.", "website": "https://alpinebutter.example.com", "logo": "partners/alpine_butter_co.jpg"},
+    {"name": "BerryBest Farms", "website": "https://berrybestfarms.example.com", "logo": "partners/berrybestfarms.jpg"},
+]
+
+BANNERS = [
+    {"title": "Summer Collection", "image": "banners/summer_collection.jpg", "position": 1},
+    {"title": "Holiday Specials", "image": "banners/holiday_specials.jpg", "position": 2},
+    {"title": "New Arrivals", "image": "banners/new_arrivals.jpg", "position": 3},
+]
 
 NEWS_ITEMS = [
     {"title": "New Summer Menu", "summary": "Refresh yourself with our new fruit tarts.", "text": "We are launching a new lineup of summer fruit tarts packed with seasonal berries and tropical flavors."},

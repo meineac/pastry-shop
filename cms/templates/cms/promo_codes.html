@@ -1,30 +1,64 @@
 {% extends 'core/base.html' %}
+{% block title %}Promo Codes — Pastry Shop{% endblock %}
 
 {% block content %}
-    <h1>Promo Codes and Coupons</h1>
-    {% if request.user.role == 'ADMIN' %}
-        <p><a href="{% url 'cms:promo_code_create' %}"><button>Add Promo Code</button></a></p>
-    {% endif %}
+<h1>Promo Codes &amp; Coupons</h1>
 
+{% if request.user.role == 'ADMIN' %}
+    <p><a href="{% url 'cms:promo_code_create' %}"><button>Add Promo Code</button></a></p>
+{% endif %}
+
+<section id="active-promos" aria-labelledby="active-heading">
+    <h2 id="active-heading">Active Promo Codes</h2>
     <ul>
-    {% for promo in promo_codes %}
+    {% for promo in active_promos %}
         <li>
-            <h3>{{ promo.code }} ({{ promo.get_status_display }})</h3>
+            <h3><code>{{ promo.code }}</code> &mdash; <strong>{{ promo.discount_percentage }}% off</strong></h3>
             {% if request.user.role == 'ADMIN' %}
                 <p>
                     <a href="{% url 'cms:promo_code_edit' pk=promo.id %}"><button>Edit</button></a>
                     <a href="{% url 'cms:promo_code_delete' pk=promo.id %}"><button>Delete</button></a>
                 </p>
             {% endif %}
-            <p><strong>Expiration Date:</strong> {{ promo.expiration_date|date:"d/m/Y" }}</p>
-            <p><strong>Discount:</strong> {{ promo.discount_percentage }}% off</p>
+            <p>
+                <strong>Expires:</strong>
+                <time datetime="{{ promo.expiration_date|date:'Y-m-d' }}">{{ promo.expiration_date|date:"d/m/Y" }}</time>
+            </p>
             {% if promo.minimum_purchase_amount > 0 %}
                 <p><strong>Minimum Purchase:</strong> ${{ promo.minimum_purchase_amount }}</p>
             {% endif %}
             <p><strong>Conditions:</strong> {{ promo.conditions_of_application }}</p>
         </li>
     {% empty %}
-        <li>No promo codes found.</li>
+        <li>No active promo codes at this time.</li>
     {% endfor %}
     </ul>
+</section>
+
+<section id="archived-promos" aria-labelledby="archived-heading">
+    <h2 id="archived-heading">Archived Promo Codes</h2>
+    <ul>
+    {% for promo in archived_promos %}
+        <li>
+            <h3><code>{{ promo.code }}</code> &mdash; <del>{{ promo.discount_percentage }}% off</del> <em>(expired)</em></h3>
+            {% if request.user.role == 'ADMIN' %}
+                <p>
+                    <a href="{% url 'cms:promo_code_edit' pk=promo.id %}"><button>Edit</button></a>
+                    <a href="{% url 'cms:promo_code_delete' pk=promo.id %}"><button>Delete</button></a>
+                </p>
+            {% endif %}
+            <p>
+                <strong>Expired:</strong>
+                <time datetime="{{ promo.expiration_date|date:'Y-m-d' }}">{{ promo.expiration_date|date:"d/m/Y" }}</time>
+            </p>
+            {% if promo.minimum_purchase_amount > 0 %}
+                <p><strong>Minimum Purchase:</strong> ${{ promo.minimum_purchase_amount }}</p>
+            {% endif %}
+            <p><strong>Conditions:</strong> {{ promo.conditions_of_application }}</p>
+        </li>
+    {% empty %}
+        <li>No archived promo codes.</li>
+    {% endfor %}
+    </ul>
+</section>
 {% endblock %}

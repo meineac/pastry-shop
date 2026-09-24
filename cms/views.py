@@ -3,10 +3,11 @@ from django.db.models import Q
 from django.contrib import messages
 from django.utils import timezone as dj_tz
 
-from .models import News, CompanyInfo, Vacancy, QaA, Review, NewsTag, VacancyTag, QaATag, ReviewTag
+from .models import News, CompanyInfo, Vacancy, QaA, Review, NewsTag, VacancyTag, QaATag, ReviewTag, Partner, PromotionalBanner
 from .forms import ReviewForm, CompanyInfoForm, NewsForm, VacancyForm, QaAForm, PromoCodeForm
 from users.models import StaffProfile
 from purchasing.models import PromoCode, Order, OrderItem, Product
+from catalog.models import Product as CatalogProduct
 from users.decorators import role_required
 from core.views import get_client_ip, get_ipinfo, get_weather, build_text_calendar, local_datetime
 
@@ -48,6 +49,10 @@ def generic_delete_view(request, model, redirect_url, title, pk):
 # --- HOME ---
 def home_view(request):
     latest_news = News.objects.filter(is_hidden=False).order_by('-created_at').first()
+    products_preview = CatalogProduct.objects.filter(is_active=True).order_by('id')[:4]
+    partners = Partner.objects.filter(is_hidden=False)
+    banners = PromotionalBanner.objects.filter(is_active=True)
+    company_info = CompanyInfo.objects.filter(is_hidden=False).first()
 
     # --- User location / timezone / weather / calendar ---
     ip = get_client_ip(request)
@@ -65,6 +70,10 @@ def home_view(request):
 
     context = {
         'latest_news': latest_news,
+        'products_preview': products_preview,
+        'partners': partners,
+        'banners': banners,
+        'company_info': company_info,
         # location block
         'ip': ip,
         'city': city,
@@ -92,7 +101,7 @@ def about_company_view(request):
 def about_company_edit_view(request):
     company_info = CompanyInfo.objects.first()
     if request.method == 'POST':
-        form = CompanyInfoForm(request.POST, instance=company_info)
+        form = CompanyInfoForm(request.POST, request.FILES, instance=company_info)
         if form.is_valid():
             form.save()
             return redirect('cms:about')
@@ -300,8 +309,16 @@ def review_delete_view(request, pk):
 
 # --- PROMO CODES ---
 def promo_codes_list_view(request):
-    promo_codes = PromoCode.objects.filter(is_hidden=False).order_by('-created_at')
-    return render(request, 'cms/promo_codes.html', {'promo_codes': promo_codes})
+    active_promos = PromoCode.objects.filter(
+        is_hidden=False, status=PromoCode.Status.ACTIVE
+    ).order_by('-created_at')
+    archived_promos = PromoCode.objects.filter(
+        is_hidden=False, status=PromoCode.Status.ARCHIVED
+    ).order_by('-created_at')
+    return render(request, 'cms/promo_codes.html', {
+        'active_promos': active_promos,
+        'archived_promos': archived_promos,
+    })
 
 @role_required(['ADMIN'])
 def promo_code_create_view(request):

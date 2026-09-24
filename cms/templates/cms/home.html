@@ -1,63 +1,214 @@
 {% extends 'core/base.html' %}
-
-{% block title %}Home – Pastry Shop{% endblock %}
+{% block title %}Home — Pastry Shop{% endblock %}
 
 {% block content %}
-<h1>Welcome to Pastry Shop</h1>
+<h1 itemprop="name">Welcome to <mark>Pastry Shop</mark></h1>
 
-<section>
+<p><em>Handcrafted with love, baked with precision.</em></p>
+
+{% comment %}Quatrain with fixed breaks (br) and potential breaks (wbr){% endcomment %}
+<section aria-label="Our motto">
+    <blockquote cite="https://pastryshop.example.com">
+        <p>
+            A flake of butter, a pinch of salt,<wbr> a twist of dough,<br>
+            Golden in the oven, rising warm and slow.<br>
+            Each layer tells a story,<wbr> each crumb a memory,<br>
+            From our kitchen to your table — with love, freshly.
+        </p>
+        <cite>— The Pastry Shop</cite>
+    </blockquote>
+</section>
+
+{% comment %}Company logo{% endcomment %}
+{% if company_info and company_info.logo %}
+<section aria-label="Brand">
+    <figure>
+        <img src="{{ company_info.logo.url }}"
+             alt="Pastry Shop Logo"
+             width="200"
+             srcset="{{ company_info.logo.url }} 1x"
+             sizes="200px"
+             itemprop="logo">
+        <figcaption><strong>Pastry Shop</strong> — est. <time datetime="2010">2010</time></figcaption>
+    </figure>
+</section>
+{% endif %}
+
+{% comment %}Promotional banners{% endcomment %}
+{% if banners %}
+<section aria-label="Promotions">
+    <h2>Current Promotions</h2>
+    <ul>
+    {% for banner in banners %}
+        <li>
+            {% if banner.link_url %}
+            <a href="{{ banner.link_url }}" rel="noopener">
+            {% endif %}
+                <figure>
+                    <img src="{{ banner.image.url }}"
+                         alt="{{ banner.title }}"
+                         width="800"
+                         srcset="{{ banner.image.url }} 800w"
+                         sizes="(max-width: 800px) 100vw, 800px">
+                    {% if banner.title %}<figcaption>{{ banner.title }}</figcaption>{% endif %}
+                </figure>
+            {% if banner.link_url %}
+            </a>
+            {% endif %}
+        </li>
+    {% endfor %}
+    </ul>
+</section>
+{% endif %}
+
+{% comment %}Product catalog preview{% endcomment %}
+<section id="catalog-preview" aria-label="Catalog preview">
+    <h2>Our Products</h2>
+    <p>A selection of our most popular items. <a href="{% url 'catalog:product_list' %}">View the full catalog &rarr;</a></p>
+    <ul>
+    {% for product in products_preview %}
+        <li itemscope itemtype="https://schema.org/Product">
+            {% if product.photo %}
+            <figure>
+                <a href="{% url 'catalog:product_detail' product_id=product.id %}">
+                    <img src="{{ product.photo.url }}"
+                         alt="{{ product.name }}"
+                         width="150"
+                         itemprop="image">
+                </a>
+                <figcaption itemprop="name">{{ product.name }}</figcaption>
+            </figure>
+            {% endif %}
+            <p>
+                <a href="{% url 'catalog:product_detail' product_id=product.id %}" itemprop="url">
+                    <strong>{{ product.name }}</strong>
+                </a>
+            </p>
+            <p itemprop="offers" itemscope itemtype="https://schema.org/Offer">
+                Price: <strong><span itemprop="price">${{ product.price }}</span></strong>
+                / {{ product.unit }}
+            </p>
+        </li>
+    {% empty %}
+        <li>No products available yet.</li>
+    {% endfor %}
+    </ul>
+    <p><a href="{% url 'catalog:product_list' %}"><strong>Browse all products &rarr;</strong></a></p>
+</section>
+
+{% comment %}Latest news{% endcomment %}
+<section aria-label="Latest news">
+    <h2>Latest News</h2>
+    {% if latest_news %}
+        <article itemscope itemtype="https://schema.org/NewsArticle">
+            {% if latest_news.image %}
+            <figure>
+                <img src="{{ latest_news.image.url }}"
+                     alt="{{ latest_news.title }}"
+                     width="300"
+                     itemprop="image">
+                <figcaption>{{ latest_news.title }}</figcaption>
+            </figure>
+            {% endif %}
+            <h3 itemprop="headline">{{ latest_news.title }}</h3>
+            <p>
+                <strong>Published:</strong>
+                <time datetime="{{ latest_news.created_at|date:'Y-m-d' }}" itemprop="datePublished">
+                    {{ latest_news.created_at|date:"d/m/Y" }}
+                </time>
+            </p>
+            <p itemprop="description">{{ latest_news.short_summary }}</p>
+            <p><a href="{% url 'cms:news_detail' pk=latest_news.id %}"><strong>Read More &rarr;</strong></a></p>
+        </article>
+    {% else %}
+        <p>No news available yet.</p>
+    {% endif %}
+</section>
+
+{% comment %}Partner companies{% endcomment %}
+{% if partners %}
+<section aria-label="Our partners">
+    <h2>Our Partners</h2>
+    <ul>
+    {% for partner in partners %}
+        <li itemscope itemtype="https://schema.org/Organization">
+            <a href="{{ partner.website_url }}" rel="noopener noreferrer" target="_blank" itemprop="url">
+                {% if partner.logo %}
+                <figure>
+                    <img src="{{ partner.logo.url }}"
+                         alt="{{ partner.name }} logo"
+                         width="120"
+                         itemprop="logo">
+                    <figcaption itemprop="name">{{ partner.name }}</figcaption>
+                </figure>
+                {% else %}
+                <strong itemprop="name">{{ partner.name }}</strong>
+                {% endif %}
+            </a>
+        </li>
+    {% endfor %}
+    </ul>
+</section>
+{% endif %}
+
+{% comment %}Location & weather info{% endcomment %}
+<section aria-label="Location and conditions">
     <h2>Your Location &amp; Current Conditions</h2>
     <table>
-        <tr><th>City</th><td>{{ city }}, {{ country }}</td></tr>
-        <tr>
-            <th>Timezone (Client)</th>
-            <td>{{ tz_name }} &mdash; {{ now_local|date:"d/m/Y H:i:s" }}</td>
-        </tr>
-        <tr>
-            <th>Timezone (Server)</th>
-            <td>UTC &mdash; {{ now_utc|date:"d/m/Y H:i:s" }}</td>
-        </tr>
-        <tr><th>Local Date</th><td>{{ local_date }}</td></tr>
-        <tr><th>Local Time</th><td>{{ local_time }}</td></tr>
-        <tr><th>UTC Date</th><td>{{ utc_date }}</td></tr>
+        <thead>
+            <tr>
+                <th id="col-info">Information</th>
+                <th id="col-value">Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th headers="col-info" scope="row">City</th>
+                <td headers="col-value">{{ city }}, {{ country }}</td>
+            </tr>
+            <tr>
+                <th headers="col-info" scope="row">Timezone (Client)</th>
+                <td headers="col-value">{{ tz_name }} &mdash;
+                    <time datetime="{{ now_local|date:'Y-m-d' }}">{{ now_local|date:"d/m/Y H:i:s" }}</time>
+                </td>
+            </tr>
+            <tr>
+                <th headers="col-info" scope="row">Timezone (Server)</th>
+                <td headers="col-value">UTC &mdash;
+                    <time datetime="{{ now_utc|date:'Y-m-d' }}">{{ now_utc|date:"d/m/Y H:i:s" }}</time>
+                </td>
+            </tr>
+            {% if weather %}
+            <tr>
+                <th headers="col-info" scope="row" colspan="2">Weather</th>
+            </tr>
+            <tr>
+                <th headers="col-info" scope="row">Conditions</th>
+                <td headers="col-value">{{ weather.description }}</td>
+            </tr>
+            <tr>
+                <th headers="col-info" scope="row">Temperature</th>
+                <td headers="col-value">{{ weather.temperature }}&deg;C (feels like {{ weather.feels_like }}&deg;C)</td>
+            </tr>
+            <tr>
+                <th headers="col-info" scope="row">Humidity</th>
+                <td headers="col-value">{{ weather.humidity }}%</td>
+            </tr>
+            <tr>
+                <th headers="col-info" scope="row">Wind Speed</th>
+                <td headers="col-value">{{ weather.wind_speed }} m/s</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td headers="col-info col-value" colspan="2">
+                    <em>Weather information is currently unavailable.</em>
+                </td>
+            </tr>
+            {% endif %}
+        </tbody>
     </table>
-
-    {% if weather %}
-    <h3>Weather</h3>
-    <table>
-        <tr><th>Conditions</th><td>{{ weather.description }}</td></tr>
-        <tr><th>Temperature</th><td>{{ weather.temperature }}°C (feels like {{ weather.feels_like }}°C)</td></tr>
-        <tr><th>Humidity</th><td>{{ weather.humidity }}%</td></tr>
-        <tr><th>Wind Speed</th><td>{{ weather.wind_speed }} m/s</td></tr>
-    </table>
-    {% else %}
-    <p>Weather information is currently unavailable.</p>
-    {% endif %}
 
     <h3>Calendar</h3>
     <pre>{{ text_calendar }}</pre>
-</section>
-
-<section>
-    <h2>Latest News</h2>
-    {% if latest_news %}
-        <div>
-            {% if latest_news.image %}
-                <img src="{{ latest_news.image.url }}" alt="{{ latest_news.title }}" width="200">
-            {% endif %}
-            <h3>{{ latest_news.title }}</h3>
-            <p><strong>Date Added:</strong> {{ latest_news.created_at|date:"d/m/Y" }}</p>
-            <p>
-                <strong>Tags:</strong>
-                {% for tag in latest_news.tags.all %}
-                    {{ tag.name }}{% if not forloop.last %}, {% endif %}
-                {% endfor %}
-            </p>
-            <p>{{ latest_news.short_summary }}</p>
-            <a href="{% url 'cms:news_detail' pk=latest_news.id %}">Read</a>
-        </div>
-    {% else %}
-        <p>No news available.</p>
-    {% endif %}
 </section>
 {% endblock %}

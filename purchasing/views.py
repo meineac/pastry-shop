@@ -73,6 +73,45 @@ def remove_from_cart_view(request, cart_item_id):
 
 
 @login_required
+def increase_quantity_view(request, cart_item_id):
+    """POST only: increment cart item quantity by 1, respecting stock limits."""
+    if not hasattr(request.user, 'customer_profile'):
+        return redirect('catalog:product_list')
+
+    if request.method == 'POST':
+        cart = get_or_create_cart(request.user)
+        cart_item = get_object_or_404(CartItem, id=cart_item_id, cart=cart)
+        if cart_item.product and cart_item.quantity < cart_item.product.quantity:
+            cart_item.quantity += 1
+            cart_item.save()
+        else:
+            messages.warning(
+                request,
+                f"Cannot add more — only {cart_item.product.quantity} in stock."
+            )
+
+    return redirect('purchasing:cart')
+
+
+@login_required
+def decrease_quantity_view(request, cart_item_id):
+    """POST only: decrement cart item quantity by 1; remove item if it reaches 0."""
+    if not hasattr(request.user, 'customer_profile'):
+        return redirect('catalog:product_list')
+
+    if request.method == 'POST':
+        cart = get_or_create_cart(request.user)
+        cart_item = get_object_or_404(CartItem, id=cart_item_id, cart=cart)
+        if cart_item.quantity > 1:
+            cart_item.quantity -= 1
+            cart_item.save()
+        else:
+            cart_item.delete()
+
+    return redirect('purchasing:cart')
+
+
+@login_required
 def cart_view(request):
     if not hasattr(request.user, 'customer_profile'):
         return redirect('catalog:product_list')

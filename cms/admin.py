@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import News, CompanyInfo, Vacancy, QaA, Review, NewsTag, VacancyTag, QaATag, ReviewTag
+from .models import News, CompanyInfo, Vacancy, QaA, Review, NewsTag, VacancyTag, QaATag, ReviewTag, Partner, PromotionalBanner
 
 admin.site.register(NewsTag)
 admin.site.register(VacancyTag)
@@ -55,3 +55,15 @@ class ReviewAdmin(admin.ModelAdmin, DisplayTagsMixin):
     ordering = ('rating', 'created_at', 'updated_at')
     list_filter = ('tags',)
     filter_horizontal = ('tags',)
+
+@admin.register(Partner)
+class PartnerAdmin(admin.ModelAdmin):
+    list_display = ('name', 'website_url', 'is_hidden', 'created_at')
+    search_fields = ('name',)
+    list_filter = ('is_hidden',)
+
+@admin.register(PromotionalBanner)
+class PromotionalBannerAdmin(admin.ModelAdmin):
+    list_display = ('title', 'position', 'is_active', 'created_at')
+    list_filter = ('is_active',)
+    ordering = ('position',)

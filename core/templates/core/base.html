@@ -1,13 +1,18 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" itemscope itemtype="https://schema.org/Bakery">
 <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Pastry Shop — premium handcrafted pastries, croissants, tarts, and entremets made with organic ingredients.">
+    <meta name="keywords" content="pastry shop, croissants, macarons, tarts, entremets, viennoiserie, organic baking">
+    <link rel="icon" href="/media/company/favicon.ico" type="image/x-icon">
     <title>{% block title %}Pastry Shop{% endblock %}</title>
 </head>
 <body>
     <header>
-        <nav>
+        <nav aria-label="Main navigation">
             <a href="{% url 'cms:home' %}">Home</a> |
-            <a href="{% url 'cms:about' %}">About Company</a> |
+            <a href="{% url 'cms:about' %}">About</a> |
             <a href="{% url 'cms:news_list' %}">News</a> |
             <a href="{% url 'cms:vacancies_list' %}">Vacancies</a> |
             <a href="{% url 'cms:qna_list' %}">Q&amp;A</a> |
@@ -38,13 +43,34 @@
         </nav>
     </header>
 
-    <main>
+    <main itemprop="mainContentOfPage">
         {% block content %}
         {% endblock content %}
     </main>
 
     <footer>
-        <p>&copy; 2026 Pastry Shop</p>
+        <nav aria-label="Footer navigation">
+            <ul>
+                <li><a href="{% url 'cms:home' %}">Home</a></li>
+                <li><a href="{% url 'cms:about' %}">About Us</a></li>
+                <li><a href="{% url 'cms:news_list' %}">News</a></li>
+                <li><a href="{% url 'cms:contacts_list' %}">Contacts</a></li>
+                <li><a href="{% url 'cms:privacy_policy' %}">Privacy Policy</a></li>
+                <li><a href="{% url 'cms:vacancies_list' %}">Vacancies</a></li>
+                <li><a href="{% url 'catalog:product_list' %}">Catalog</a></li>
+                <li><a href="{% url 'cms:reviews' %}">Reviews</a></li>
+                <li><a href="{% url 'cms:promo_codes' %}">Promo Codes</a></li>
+            </ul>
+        </nav>
+        <address itemprop="address" itemscope itemtype="https://schema.org/PostalAddress">
+            <strong itemprop="name">Pastry Shop</strong><br>
+            <span itemprop="streetAddress">123 Baker Street</span>,
+            <span itemprop="addressLocality">London</span>,
+            <span itemprop="addressCountry">UK</span><br>
+            Phone: <a href="tel:+375291234567" itemprop="telephone">+375 (29) 123-45-67</a> |
+            Email: <a href="mailto:hello@pastryshop.example.com" itemprop="email">hello@pastryshop.example.com</a>
+        </address>
+        <p>&copy; <time datetime="2026">2026</time> Pastry Shop. All rights reserved.</p>
     </footer>
 </body>
 </html>

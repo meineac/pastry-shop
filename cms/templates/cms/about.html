@@ -1,23 +1,210 @@
 {% extends 'core/base.html' %}
+{% block title %}About Us — Pastry Shop{% endblock %}
 
 {% block content %}
-    <h1>About the Company</h1>
-    {% if request.user.role == 'ADMIN' %}
-        <p><a href="{% url 'cms:about_edit' %}"><button>Edit Company Info</button></a></p>
+<h1>About the Company</h1>
+
+{% comment %}In-page anchor navigation{% endcomment %}
+<nav aria-label="Page sections">
+    <ul>
+        <li><a href="#details">Company Details</a></li>
+        <li><a href="#info">About Us</a></li>
+        <li><a href="#history">History Timeline</a></li>
+        <li><a href="#milestones">Milestones</a></li>
+        <li><a href="#video">Video</a></li>
+        <li><a href="#video-showcase">Behind the Scenes</a></li>
+        <li><a href="#certificate">Certificate</a></li>
+    </ul>
+</nav>
+
+{% if request.user.role == 'ADMIN' %}
+    <p><a href="{% url 'cms:about_edit' %}"><button>Edit Company Info</button></a></p>
+{% endif %}
+
+{% if company_info %}
+
+    {% comment %}Company logo{% endcomment %}
+    {% if company_info.logo %}
+    <figure>
+        <img src="{{ company_info.logo.url }}"
+             alt="Pastry Shop company logo"
+             width="250"
+             srcset="{{ company_info.logo.url }} 1x"
+             sizes="250px"
+             itemprop="logo">
+        <figcaption><strong>Pastry Shop</strong> — <em>Crafted with passion since <time datetime="2010">2010</time></em></figcaption>
+    </figure>
     {% endif %}
 
-    {% if company_info %}
-        <div>
-            <h2>Company Details</h2>
-            <p>{{ company_info.company_details }}</p>
+    {% comment %}Founder quote{% endcomment %}
+    <blockquote cite="https://pastryshop.example.com/about">
+        <p><q>We believe that great pastry is not just food — it is a moment of joy, a small luxury everyone deserves.</q></p>
+        <footer>— <cite>Marie Leblanc, Founder of Pastry Shop</cite></footer>
+    </blockquote>
 
-            <h2>Text Information</h2>
-            <p>{{ company_info.text_information }}</p>
+    {% comment %}Company details section{% endcomment %}
+    <section id="details" aria-labelledby="details-heading">
+        <h2 id="details-heading">Company Details</h2>
+        <p>{{ company_info.company_details }}</p>
+        <p>
+            We are proud to hold the
+            <abbr title="Hazard Analysis Critical Control Points">HACCP</abbr>
+            certification, ensuring the highest food safety standards in all our production processes.
+        </p>
+        <p>
+            Our range includes <dfn id="def-viennoiserie">viennoiserie</dfn>
+            — yeast-leavened, laminated doughs such as croissants and danishes — and
+            <dfn id="def-entremet">entremets</dfn>
+            — multi-layered mousse cakes assembled with precision and mirror glazes.
+        </p>
+        <p>
+            All products comply with <abbr title="European Union">EU</abbr> food labelling regulations
+            and are produced under
+            <abbr title="Good Manufacturing Practices">GMP</abbr> guidelines.
+        </p>
+    </section>
 
-            <h2>History by Years</h2>
-            <p>{{ company_info.history_by_years }}</p>
-        </div>
-    {% else %}
-        <p>No company information available.</p>
+    {% comment %}About text{% endcomment %}
+    <section id="info" aria-labelledby="info-heading">
+        <h2 id="info-heading">About Us</h2>
+        <p>{{ company_info.text_information }}</p>
+
+        {% comment %}Sample API code listing{% endcomment %}
+        <p>
+            Developers can integrate our product catalog using our public
+            <abbr title="Application Programming Interface">API</abbr>:
+        </p>
+        <p>Endpoint: <code>GET /api/v1/products/?category=viennoiserie</code></p>
+        <p>Returns a <abbr title="JavaScript Object Notation">JSON</abbr> array of active product records.</p>
+    </section>
+
+    {% comment %}History timeline{% endcomment %}
+    <section id="history" aria-labelledby="history-heading">
+        <h2 id="history-heading">History Timeline</h2>
+        <dl>
+            {% for line in company_info.history_by_years.splitlines %}
+                {% if line %}
+                    {% with parts=line|cut:" "|slice:":4" %}
+                    <dt>
+                        <time datetime="{{ line|slice:':4' }}">{{ line|slice:':4' }}</time>
+                    </dt>
+                    <dd>{{ line|slice:"6:" }}</dd>
+                    {% endwith %}
+                {% endif %}
+            {% endfor %}
+        </dl>
+    </section>
+
+    {% comment %}Milestones data table with merged cells and headers attribute{% endcomment %}
+    <section id="milestones" aria-labelledby="milestones-heading">
+        <h2 id="milestones-heading">Key Milestones</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th id="th-year">Year</th>
+                    <th id="th-event">Event</th>
+                    <th id="th-category">Category</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td headers="th-year"><time datetime="2010">2010</time></td>
+                    <td headers="th-event">Founded by Marie Leblanc on Baker Street</td>
+                    <td headers="th-category">Foundation</td>
+                </tr>
+                <tr>
+                    <td headers="th-year"><time datetime="2013">2013</time></td>
+                    <td headers="th-event">First regional award — Chocolate Entremet</td>
+                    <td headers="th-category">Recognition</td>
+                </tr>
+                <tr>
+                    <td headers="th-year"><time datetime="2015">2015</time></td>
+                    <td headers="th-event">Opened flagship store at 123 Baker Street</td>
+                    <td headers="th-category">Expansion</td>
+                </tr>
+                <tr>
+                    <td headers="th-year" colspan="2">
+                        <time datetime="2018">2018</time> — City-wide delivery &amp; online ordering launched
+                    </td>
+                    <td headers="th-category">Expansion</td>
+                </tr>
+                <tr>
+                    <td headers="th-year"><time datetime="2020">2020</time></td>
+                    <td headers="th-event">Vegan &amp; plant-based pastry range introduced</td>
+                    <td headers="th-category">Innovation</td>
+                </tr>
+                <tr>
+                    <td headers="th-year"><time datetime="2022">2022</time></td>
+                    <td headers="th-event">Expanded to three city locations</td>
+                    <td headers="th-category">Expansion</td>
+                </tr>
+                <tr>
+                    <td headers="th-year"><time datetime="2025">2025</time></td>
+                    <td headers="th-event" rowspan="2">
+                        Certified by the
+                        <abbr title="International Pastry Standards Council">IPSC</abbr>
+                        — Gold Level
+                    </td>
+                    <td headers="th-category">Certification</td>
+                </tr>
+                <tr>
+                    <td headers="th-year"><em>Ongoing</em></td>
+                    <td headers="th-category">Recognition</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    {% comment %}Download link{% endcomment %}
+    <p>
+        <a href="/media/company/menu.pdf" download>
+            Download our full product menu (PDF)
+        </a>
+    </p>
+
+    {% comment %}Embedded video{% endcomment %}
+    {% if company_info.video_url %}
+    <section id="video" aria-labelledby="video-heading">
+        <h2 id="video-heading">Our Story</h2>
+        <iframe
+            src="{{ company_info.video_url }}"
+            width="560"
+            height="315"
+            title="Pastry Shop — Our Story"
+            allowfullscreen
+            loading="lazy">
+        </iframe>
+    </section>
     {% endif %}
+
+    {% comment %}Native video element — required by HTML markup spec{% endcomment %}
+    <section id="video-showcase" aria-label="Video showcase">
+        <h2>Behind the Scenes</h2>
+        <video controls width="560" preload="metadata">
+            <source src="/media/company/bakery_tour.mp4" type="video/mp4">
+            Your browser does not support the video element.
+        </video>
+        <p><em>Take a look behind the scenes at our bakery kitchen.</em></p>
+    </section>
+
+    {% comment %}Audio element{% endcomment %}
+    <section aria-label="Audio">
+        <h2>Listen to Our Story</h2>
+        <audio controls>
+            <source src="/media/company/story.mp3" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
+    </section>
+
+    {% comment %}Certificate — plain text only, no styling{% endcomment %}
+    {% if company_info.certificate_text %}
+    <section id="certificate" aria-labelledby="certificate-heading">
+        <h2 id="certificate-heading">Quality Certificate</h2>
+        <pre>{{ company_info.certificate_text }}</pre>
+    </section>
+    {% endif %}
+
+{% else %}
+    <p>No company information available yet.</p>
+{% endif %}
 {% endblock %}

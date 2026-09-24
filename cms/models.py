@@ -63,10 +63,37 @@ class CompanyInfo(TimestampedModel):
     text_information = models.TextField()
     history_by_years = models.TextField()
     company_details = models.TextField()
+    logo = models.ImageField(upload_to='company/', null=True, blank=True)
+    video_url = models.URLField(blank=True, help_text="URL to an embeddable video (YouTube embed URL).")
+    certificate_text = models.TextField(blank=True, help_text="Plain text certificate — must not be styled.")
     is_hidden = models.BooleanField(default=False)
 
     def __str__(self):
         return "Company Info"
+
+
+class Partner(TimestampedModel):
+    name = models.CharField(max_length=255)
+    logo = models.ImageField(upload_to='partners/', null=True, blank=True)
+    website_url = models.URLField()
+    is_hidden = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.name
+
+
+class PromotionalBanner(TimestampedModel):
+    title = models.CharField(max_length=255, blank=True)
+    image = models.ImageField(upload_to='banners/')
+    link_url = models.URLField(blank=True)
+    position = models.PositiveIntegerField(default=0)
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ['position']
+
+    def __str__(self):
+        return self.title or f"Banner #{self.id}"
 
 class Vacancy(TagCleanupMixin, TimestampedModel):
     title = models.CharField(max_length=255)

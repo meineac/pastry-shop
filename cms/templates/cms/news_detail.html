@@ -1,27 +1,53 @@
 {% extends 'core/base.html' %}
+{% block title %}{{ news_item.title }} — Pastry Shop{% endblock %}
 
 {% block content %}
-    <h1>{{ news_item.title }}</h1>
+<article itemscope itemtype="https://schema.org/NewsArticle">
+
+    <h1 itemprop="headline">{{ news_item.title }}</h1>
+
     {% if request.user.role == 'ADMIN' %}
         <p>
             <a href="{% url 'cms:news_edit' pk=news_item.id %}"><button>Edit</button></a>
             <a href="{% url 'cms:news_delete' pk=news_item.id %}"><button>Delete</button></a>
         </p>
     {% endif %}
-    <p><strong>Date Added:</strong> {{ news_item.created_at|date:"d/m/Y" }}</p>
+
+    <p>
+        <strong>Published:</strong>
+        <time datetime="{{ news_item.created_at|date:'Y-m-d' }}" itemprop="datePublished">
+            {{ news_item.created_at|date:"d/m/Y" }}
+        </time>
+    </p>
+
+    {% if news_item.tags.all %}
     <p>
         <strong>Tags:</strong>
         {% for tag in news_item.tags.all %}
-            {{ tag.name }}{% if not forloop.last %}, {% endif %}
+            <em>{{ tag.name }}</em>{% if not forloop.last %}, {% endif %}
         {% endfor %}
     </p>
-    {% if news_item.image %}
-        <img src="{{ news_item.image.url }}" alt="{{ news_item.title }}" width="300">
     {% endif %}
 
-    <div>
-        <p>{{ news_item.full_text }}</p>
-    </div>
+    {% if news_item.image %}
+    <figure>
+        <img src="{{ news_item.image.url }}"
+             alt="{{ news_item.title }}"
+             width="600"
+             srcset="{{ news_item.image.url }} 600w"
+             sizes="(max-width: 600px) 100vw, 600px"
+             itemprop="image">
+        <figcaption>
+            <cite>{{ news_item.title }}</cite> — Pastry Shop News
+        </figcaption>
+    </figure>
+    {% endif %}
 
-    <a href="{% url 'cms:news_list' %}">Back to News</a>
+    <section itemprop="articleBody">
+        <p>{{ news_item.full_text }}</p>
+    </section>
+
+    <p><a href="{% url 'cms:news_list' %}">&larr; Back to News</a></p>
+
+</article>
 {% endblock %}

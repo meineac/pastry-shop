@@ -10,9 +10,9 @@
 {% endif %}
 
 {% if messages %}
-    <ul class="messages">
+    <ul>
         {% for message in messages %}
-            <li class="{{ message.tags }}">{{ message }}</li>
+            <li>{{ message }}</li>
         {% endfor %}
     </ul>
 {% endif %}
@@ -64,7 +64,7 @@
 
             <a href="{% url 'client_card' client.id %}">Open Card</a>
 
-            <form method="post" action="{% url 'client_remove' client.id %}" style="display:inline;">
+            <form method="post" action="{% url 'client_remove' client.id %}">
                 {% csrf_token %}
                 <button type="submit">Remove</button>
             </form>

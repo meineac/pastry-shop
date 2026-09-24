@@ -1,44 +1,60 @@
 {% extends 'core/base.html' %}
+{% block title %}Vacancies — Pastry Shop{% endblock %}
 
 {% block content %}
-    <h1>Vacancies</h1>
-    {% if request.user.role == 'ADMIN' %}
-        <p><a href="{% url 'cms:vacancy_create' %}"><button>Add Vacancy</button></a></p>
-    {% endif %}
+<h1>Vacancies</h1>
 
-    <form method="GET" action="">
-        <input type="text" name="q" placeholder="Search vacancies..." value="{{ query }}">
-        <select name="tags" multiple>
+{% if request.user.role == 'ADMIN' %}
+    <p><a href="{% url 'cms:vacancy_create' %}"><button>Add Vacancy</button></a></p>
+{% endif %}
+
+<form method="GET" action="">
+    <fieldset>
+        <legend>Search Vacancies</legend>
+        <label for="id_q">Search:</label>
+        <input type="search" id="id_q" name="q" placeholder="Search vacancies..." value="{{ query }}" maxlength="200">
+        <select name="tags" multiple aria-label="Filter by tag">
             {% for tag in tags %}
                 <option value="{{ tag.id }}" {% if tag.id in current_tags %}selected{% endif %}>{{ tag.name }}</option>
             {% endfor %}
         </select>
-        <button type="submit">Filter/Search</button>
-    </form>
+        <button type="submit">Filter / Search</button>
+    </fieldset>
+</form>
 
-    <hr>
+<hr>
 
-    <ul>
-    {% for vacancy in vacancies %}
-        <li>
-            <h3>{{ vacancy.title }}</h3>
-            {% if request.user.role == 'ADMIN' %}
-                <p>
-                    <a href="{% url 'cms:vacancy_edit' pk=vacancy.id %}"><button>Edit</button></a>
-                    <a href="{% url 'cms:vacancy_delete' pk=vacancy.id %}"><button>Delete</button></a>
-                </p>
-            {% endif %}
-            <p><strong>Date Updated:</strong> {{ vacancy.updated_at|date:"d/m/Y" }}</p>
-            <p>
-                <strong>Tags:</strong>
-                {% for tag in vacancy.tags.all %}
-                    {{ tag.name }}{% if not forloop.last %}, {% endif %}
-                {% endfor %}
-            </p>
-            <p>{{ vacancy.description }}</p>
-        </li>
-    {% empty %}
-        <li>No vacancies found.</li>
-    {% endfor %}
-    </ul>
+<ul>
+{% for vacancy in vacancies %}
+    <li itemscope itemtype="https://schema.org/JobPosting">
+        <h3 itemprop="title">{{ vacancy.title }}</h3>
+        {% if request.user.role == 'ADMIN' %}
+        <p>
+            <a href="{% url 'cms:vacancy_edit' pk=vacancy.id %}"><button>Edit</button></a>
+            <a href="{% url 'cms:vacancy_delete' pk=vacancy.id %}"><button>Delete</button></a>
+        </p>
+        {% endif %}
+        <p>
+            <strong>Updated:</strong>
+            <time datetime="{{ vacancy.updated_at|date:'Y-m-d' }}" itemprop="datePosted">
+                {{ vacancy.updated_at|date:"d/m/Y" }}
+            </time>
+        </p>
+        {% if vacancy.tags.all %}
+        <p>
+            <strong>Tags:</strong>
+            {% for tag in vacancy.tags.all %}
+                <em>{{ tag.name }}</em>{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+        </p>
+        {% endif %}
+        <p itemprop="description">{{ vacancy.description }}</p>
+        <address>
+            Apply: <a href="mailto:jobs@pastryshop.example.com">jobs@pastryshop.example.com</a>
+        </address>
+    </li>
+{% empty %}
+    <li>No vacancies available at this time.</li>
+{% endfor %}
+</ul>
 {% endblock %}

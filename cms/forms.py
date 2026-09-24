@@ -77,7 +77,8 @@ class TagMixinForm(forms.ModelForm):
 class CompanyInfoForm(forms.ModelForm):
     class Meta:
         model = CompanyInfo
-        fields = ['text_information', 'history_by_years', 'company_details', 'is_hidden']
+        fields = ['text_information', 'history_by_years', 'company_details',
+                  'logo', 'video_url', 'certificate_text', 'is_hidden']
 
 class NewsForm(TagMixinForm):
     class Meta:

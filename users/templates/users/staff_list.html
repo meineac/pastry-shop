@@ -8,9 +8,9 @@
     <p><a href="{% url 'staff_create' %}">+ Create New Staff Member</a></p>
 
     {% if messages %}
-        <ul class="messages">
+        <ul>
             {% for message in messages %}
-                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                <li>{{ message }}</li>
             {% endfor %}
         </ul>
     {% endif %}
@@ -23,14 +23,14 @@
                 - Active: {{ staff.is_active }}
 
                 {% if staff.is_active %}
-                <form method="post" style="display:inline;">
+                <form method="post">
                     {% csrf_token %}
                     <input type="hidden" name="user_id" value="{{ staff.id }}">
                     <input type="hidden" name="action" value="revoke">
                     <button type="submit">Revoke Access</button>
                 </form>
                 {% else %}
-                <form method="post" style="display:inline;">
+                <form method="post">
                     {% csrf_token %}
                     <input type="hidden" name="user_id" value="{{ staff.id }}">
                     <input type="hidden" name="action" value="return">

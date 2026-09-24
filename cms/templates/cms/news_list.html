@@ -1,42 +1,71 @@
 {% extends 'core/base.html' %}
+{% block title %}News — Pastry Shop{% endblock %}
 
 {% block content %}
-    <h1>News</h1>
-    {% if request.user.role == 'ADMIN' %}
-        <p><a href="{% url 'cms:news_create' %}"><button>Add News</button></a></p>
-    {% endif %}
+<h1>News &amp; Articles</h1>
 
-    <form method="GET" action="">
-        <input type="text" name="q" placeholder="Search news..." value="{{ query }}">
-        <select name="tags" multiple>
+{% if request.user.role == 'ADMIN' %}
+    <p><a href="{% url 'cms:news_create' %}"><button>Add News</button></a></p>
+{% endif %}
+
+<form method="GET" action="">
+    <fieldset>
+        <legend>Search &amp; Filter</legend>
+        <label for="id_q">Search:</label>
+        <input type="search" id="id_q" name="q" placeholder="Search news..." value="{{ query }}" maxlength="200">
+        <select name="tags" multiple aria-label="Filter by tag">
             {% for tag in tags %}
                 <option value="{{ tag.id }}" {% if tag.id in current_tags %}selected{% endif %}>{{ tag.name }}</option>
             {% endfor %}
         </select>
-        <button type="submit">Filter/Search</button>
-    </form>
+        <button type="submit">Filter / Search</button>
+    </fieldset>
+</form>
 
-    <hr>
+<hr>
 
-    <ul>
-    {% for item in news %}
-        <li>
-            {% if item.image %}
-                <img src="{{ item.image.url }}" alt="{{ item.title }}" width="100">
-            {% endif %}
-            <h3>{{ item.title }}</h3>
-            <p><strong>Date Added:</strong> {{ item.created_at|date:"d/m/Y" }}</p>
-            <p>
-                <strong>Tags:</strong>
-                {% for tag in item.tags.all %}
-                    {{ tag.name }}{% if not forloop.last %}, {% endif %}
-                {% endfor %}
-            </p>
-            <p>{{ item.short_summary }}</p>
-            <a href="{% url 'cms:news_detail' pk=item.id %}">Read</a>
-        </li>
-    {% empty %}
-        <li>No news found.</li>
-    {% endfor %}
-    </ul>
+<ul>
+{% for item in news %}
+    <li itemscope itemtype="https://schema.org/NewsArticle">
+        {% if item.image %}
+        <figure>
+            <img src="{{ item.image.url }}"
+                 alt="{{ item.title }}"
+                 width="200"
+                 srcset="{{ item.image.url }} 200w"
+                 sizes="200px"
+                 itemprop="image">
+            <figcaption>{{ item.title }}</figcaption>
+        </figure>
+        {% endif %}
+        <h3 itemprop="headline">{{ item.title }}</h3>
+        <p>
+            <strong>Published:</strong>
+            <time datetime="{{ item.created_at|date:'Y-m-d' }}" itemprop="datePublished">
+                {{ item.created_at|date:"d/m/Y" }}
+            </time>
+        </p>
+        {% if item.tags.all %}
+        <p>
+            <strong>Tags:</strong>
+            {% for tag in item.tags.all %}
+                <em>{{ tag.name }}</em>{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+        </p>
+        {% endif %}
+        <p itemprop="description">{{ item.short_summary }}</p>
+        <p>
+            <a href="{% url 'cms:news_detail' pk=item.id %}"><button>Read More</button></a>
+        </p>
+        {% if request.user.role == 'ADMIN' %}
+        <p>
+            <a href="{% url 'cms:news_edit' pk=item.id %}"><button>Edit</button></a>
+            <a href="{% url 'cms:news_delete' pk=item.id %}"><button>Delete</button></a>
+        </p>
+        {% endif %}
+    </li>
+{% empty %}
+    <li>No news articles found.</li>
+{% endfor %}
+</ul>
 {% endblock %}

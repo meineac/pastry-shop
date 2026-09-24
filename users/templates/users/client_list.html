@@ -6,9 +6,9 @@
 <h1>Clients</h1>
 
 {% if messages %}
-    <ul class="messages">
+    <ul>
         {% for message in messages %}
-            <li class="{{ message.tags }}">{{ message }}</li>
+            <li>{{ message }}</li>
         {% endfor %}
     </ul>
 {% endif %}
@@ -59,7 +59,7 @@
             <a href="{% url 'client_card' client.id %}">Open Card</a>
 
             {% if client.id not in my_client_ids %}
-                <form method="post" action="" style="display:inline;">
+                <form method="post" action="">
                     {% csrf_token %}
                     <input type="hidden" name="client_id" value="{{ client.id }}">
                     <button type="submit">Add to My Clients</button>

@@ -1,13 +1,15 @@
 {% extends 'core/base.html' %}
-{% block title %}{{ product.name }} | Pastry Shop{% endblock %}
+{% block title %}{{ product.name }} — Pastry Shop{% endblock %}
 
 {% block content %}
-<h2>
+<article itemscope itemtype="https://schema.org/Product">
+
+<h1 itemprop="name">
     {{ product.name }}
     {% if not product.is_active %}
-        <span>[Inactive / Hidden]</span>
+        <em>[Inactive / Hidden]</em>
     {% endif %}
-</h2>
+</h1>
 
 {% if request.user.is_authenticated and request.user.role == 'ADMIN' or request.user.is_authenticated and request.user.role == 'STAFF' %}
     <p>
@@ -17,16 +19,43 @@
 {% endif %}
 
 {% if product.photo %}
-    <img src="{{ product.photo.url }}" alt="{{ product.name }}" width="300">
+<figure>
+    <img src="{{ product.photo.url }}"
+         alt="{{ product.name }}"
+         width="300"
+         srcset="{{ product.photo.url }} 300w"
+         sizes="(max-width: 300px) 100vw, 300px"
+         itemprop="image">
+    <figcaption>{{ product.name }} — {{ product.category.name }}</figcaption>
+</figure>
 {% endif %}
 
-<p><strong>Category:</strong> {{ product.category.name }}</p>
-<p><strong>Manufacturer:</strong> {{ product.manufacturer.name }}</p>
-<p><strong>Price:</strong> ${{ product.price }}</p>
+<dl>
+    <dt>Category</dt>
+    <dd itemprop="category">{{ product.category.name }}</dd>
 
-<h3>Description</h3>
-<p><strong>Ingredients:</strong> {{ product.ingredients }}</p>
-<p><strong>Quantity:</strong> {{ product.quantity }} {{ product.get_unit_of_measurement_display }}</p>
+    <dt>Manufacturer</dt>
+    <dd itemprop="brand" itemscope itemtype="https://schema.org/Brand">
+        <span itemprop="name">{{ product.manufacturer.name }}</span>
+    </dd>
+
+    <dt>Price</dt>
+    <dd itemprop="offers" itemscope itemtype="https://schema.org/Offer">
+        <strong>$<span itemprop="price">{{ product.price }}</span></strong> / {{ product.unit }}
+    </dd>
+
+    <dt>Availability</dt>
+    <dd>
+        {% if product.quantity > 0 %}
+            <strong>{{ product.quantity }}</strong> {{ product.get_unit_of_measurement_display }} in stock
+        {% else %}
+            <strong><em>Out of Stock</em></strong>
+        {% endif %}
+    </dd>
+
+    <dt>Ingredients</dt>
+    <dd itemprop="description">{{ product.ingredients }}</dd>
+</dl>
 
 {% if not request.user.is_authenticated or request.user.role == 'CUSTOMER' %}
     {% if product.quantity > 0 %}
@@ -35,37 +64,49 @@
             <button type="submit">Add to Cart</button>
         </form>
     {% else %}
-        <p style="color:red; font-weight:bold;">Out of Stock</p>
+        <p><strong><mark>Out of Stock</mark></strong></p>
     {% endif %}
 {% endif %}
 
 <hr>
 
-<h3>Reviews</h3>
-<ul>
-    {% for review in reviews %}
-        <li>
-            <p><strong>{{ review.author.username }}</strong> rated it {{ review.rating }}/5 on {{ review.created_at|date:"d/m/Y" }}</p>
-            <p>{{ review.review_text }}</p>
-        </li>
-    {% empty %}
-        <li>No reviews yet.</li>
-    {% endfor %}
-</ul>
-
-{% if messages %}
-    <div>
-        {% for message in messages %}
-            <div>
-                {{ message }}
-            </div>
+<section aria-label="Reviews">
+    <h2>Customer Reviews</h2>
+    <ul>
+        {% for review in reviews %}
+            <li itemscope itemtype="https://schema.org/Review">
+                <p>
+                    <strong itemprop="author">{{ review.author.username }}</strong>
+                    rated
+                    <span itemprop="reviewRating" itemscope itemtype="https://schema.org/Rating">
+                        <strong><span itemprop="ratingValue">{{ review.rating }}</span>/5</strong>
+                    </span>
+                    on
+                    <time datetime="{{ review.created_at|date:'Y-m-d' }}" itemprop="datePublished">
+                        {{ review.created_at|date:"d/m/Y" }}
+                    </time>
+                </p>
+                <blockquote itemprop="reviewBody"><q>{{ review.review_text }}</q></blockquote>
+            </li>
+        {% empty %}
+            <li>No reviews yet for this product.</li>
         {% endfor %}
-    </div>
-{% endif %}
+    </ul>
 
-{% if can_review %}
-    <a href="{% url 'cms:review_create' %}?product_id={{ product.id }}"><button>Leave a Review</button></a>
-{% endif %}
+    {% if messages %}
+    <ul>
+        {% for message in messages %}
+            <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
 
-<p><a href="{% url 'catalog:product_list' %}">Back to Catalog</a></p>
+    {% if can_review %}
+        <p><a href="{% url 'cms:review_create' %}?product_id={{ product.id }}"><button>Leave a Review</button></a></p>
+    {% endif %}
+</section>
+
+<p><a href="{% url 'catalog:product_list' %}">&larr; Back to Catalog</a></p>
+
+</article>
 {% endblock %}

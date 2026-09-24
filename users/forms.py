@@ -34,6 +34,12 @@ class RegistrationForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput)
     password_confirm = forms.CharField(widget=forms.PasswordInput, label="Confirm Password")
 
+    agree_to_privacy_policy = forms.BooleanField(
+        required=True,
+        label="I agree to the Privacy Policy",
+        error_messages={'required': 'You must agree to the Privacy Policy to register.'},
+    )
+
     # CustomerProfile fields
     date_of_birth = forms.DateField(
         widget=forms.DateInput(attrs={'type': 'date'}),
@@ -43,6 +49,11 @@ class RegistrationForm(forms.ModelForm):
         max_length=20,
         validators=[phone_regex_validator],
         help_text="Format: +375 (29) XXX-XX-XX",
+        widget=forms.TextInput(attrs={
+            'pattern': r'\+375 \(29\) \d{3}-\d{2}-\d{2}',
+            'title': '+375 (29) XXX-XX-XX',
+            'placeholder': '+375 (29) XXX-XX-XX',
+        }),
     )
 
     class Meta:

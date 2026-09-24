@@ -1,6 +1,8 @@
 import logging
 from datetime import date
 
+from django.utils import timezone
+
 from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
@@ -57,7 +59,8 @@ def register_view(request):
                 CustomerProfile.objects.create(
                     user=user,
                     date_of_birth=form.cleaned_data['date_of_birth'],
-                    phone_number=form.cleaned_data['phone_number']
+                    phone_number=form.cleaned_data['phone_number'],
+                    privacy_policy_agreed_at=timezone.now(),
                 )
             login(request, user)
             logger.info("New customer '%s' registered.", user.username)

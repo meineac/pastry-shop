@@ -42,21 +42,21 @@
                     <td>
                         <!-- Status progression forms -->
                         {% if order.status == 'PENDING' %}
-                            <form method="post" action="{% url 'purchasing:update_order_status' order.id %}" style="display:inline;">
+                            <form method="post" action="{% url 'purchasing:update_order_status' order.id %}">
                                 {% csrf_token %}
                                 <input type="hidden" name="new_status" value="PROCESSING">
                                 <input type="hidden" name="next" value="{{ request.path }}">
                                 <button type="submit">Mark Processing</button>
                             </form>
                         {% elif order.status == 'PROCESSING' %}
-                            <form method="post" action="{% url 'purchasing:update_order_status' order.id %}" style="display:inline;">
+                            <form method="post" action="{% url 'purchasing:update_order_status' order.id %}">
                                 {% csrf_token %}
                                 <input type="hidden" name="new_status" value="READY">
                                 <input type="hidden" name="next" value="{{ request.path }}">
                                 <button type="submit">Mark Ready</button>
                             </form>
                         {% elif order.status == 'READY' %}
-                            <form method="post" action="{% url 'purchasing:update_order_status' order.id %}" style="display:inline;">
+                            <form method="post" action="{% url 'purchasing:update_order_status' order.id %}">
                                 {% csrf_token %}
                                 <input type="hidden" name="new_status" value="COMPLETED">
                                 <input type="hidden" name="next" value="{{ request.path }}">
@@ -66,11 +66,11 @@
 
                         <!-- Cancellation form -->
                         {% if order.status != 'COMPLETED' and order.status != 'CANCELLED' %}
-                        <form method="post" action="{% url 'purchasing:update_order_status' order.id %}" style="display:inline;">
+                        <form method="post" action="{% url 'purchasing:update_order_status' order.id %}">
                             {% csrf_token %}
                             <input type="hidden" name="new_status" value="CANCELLED">
                             <input type="hidden" name="next" value="{{ request.path }}">
-                            <button type="submit" style="color:red;">Cancel Order</button>
+                            <button type="submit"><strong>Cancel Order</strong></button>
                         </form>
                         {% endif %}
                     </td>

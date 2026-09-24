@@ -68,6 +68,11 @@ class CustomerProfile(TimestampedModel):
         validators=[phone_regex_validator],
         help_text="Format: +375 (29) XXX-XX-XX"
     )
+    privacy_policy_agreed_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text="Timestamp when the user agreed to the Privacy Policy during registration."
+    )
 
     def __str__(self):
         return self.user.get_full_name() or self.user.username
