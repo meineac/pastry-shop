@@ -31,6 +31,8 @@ urls = {
     "checkout": "/checkout/",
 }
 
+os.makedirs("rendered_html", exist_ok=True)
+
 for name, url in urls.items():
     response = client.get(url, follow=True)
     content = response.content.decode('utf-8')
