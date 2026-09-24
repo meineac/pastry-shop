@@ -32,7 +32,7 @@
             <img src="{{ item.image.url }}"
                  alt="{{ item.title }}"
                  width="200"
-                 srcset="{{ item.image.url }} 200w"
+                 srcset="{{ item.image_small.url }} 200w, {{ item.image_medium.url }} 400w"
                  sizes="200px"
                  itemprop="image">
             <figcaption>{{ item.title }}</figcaption>

@@ -36,6 +36,8 @@
                 <img src="{{ employee.photo.url }}"
                      alt="{{ employee.user.get_full_name }}"
                      width="120"
+                     srcset="{{ employee.photo_small.url }} 120w, {{ employee.photo_medium.url }} 240w"
+                     sizes="120px"
                      itemprop="image">
                 <figcaption itemprop="name">{{ employee.user.get_full_name }}</figcaption>
             </figure>

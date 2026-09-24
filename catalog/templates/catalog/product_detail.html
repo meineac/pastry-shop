@@ -23,8 +23,10 @@
     <img src="{{ product.photo.url }}"
          alt="{{ product.name }}"
          width="300"
-         srcset="{{ product.photo.url }} 300w"
-         sizes="(max-width: 300px) 100vw, 300px"
+         srcset="{{ product.photo_small.url }} 300w,
+                 {{ product.photo_medium.url }} 600w,
+                 {{ product.photo_large.url }} 1200w"
+         sizes="(max-width: 600px) 100vw, 300px"
          itemprop="image">
     <figcaption>{{ product.name }} — {{ product.category.name }}</figcaption>
 </figure>

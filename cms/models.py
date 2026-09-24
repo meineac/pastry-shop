@@ -3,6 +3,9 @@ from django.db import models
 from core.models import TimestampedModel
 from users.models import User
 from catalog.models import Product
+from imagekit.models import ImageSpecField
+from imagekit.processors import ResizeToFit
+
 
 
 class TagCleanupMixin(models.Model):
@@ -51,6 +54,18 @@ class ReviewTag(AbstractTag):
 class News(TagCleanupMixin, TimestampedModel):
     title = models.CharField(max_length=255)
     image = models.ImageField(upload_to='news/', null=True, blank=True)
+    image_small = ImageSpecField(source='image',
+                                 processors=[ResizeToFit(300, 300)],
+                                 format='JPEG',
+                                 options={'quality': 85})
+    image_medium = ImageSpecField(source='image',
+                                  processors=[ResizeToFit(600, 600)],
+                                  format='JPEG',
+                                  options={'quality': 85})
+    image_large = ImageSpecField(source='image',
+                                 processors=[ResizeToFit(1200, 1200)],
+                                 format='JPEG',
+                                 options={'quality': 85})
     short_summary = models.TextField()
     full_text = models.TextField()
     tags = models.ManyToManyField(NewsTag, blank=True, related_name='news_articles')
@@ -64,6 +79,12 @@ class CompanyInfo(TimestampedModel):
     history_by_years = models.TextField()
     company_details = models.TextField()
     logo = models.ImageField(upload_to='company/', null=True, blank=True)
+    logo_small = ImageSpecField(source='logo',
+                                processors=[ResizeToFit(200, 200)],
+                                format='PNG')
+    logo_medium = ImageSpecField(source='logo',
+                                 processors=[ResizeToFit(400, 400)],
+                                 format='PNG')
     video_url = models.URLField(blank=True, help_text="URL to an embeddable video (YouTube embed URL).")
     certificate_text = models.TextField(blank=True, help_text="Plain text certificate — must not be styled.")
     is_hidden = models.BooleanField(default=False)
@@ -75,6 +96,9 @@ class CompanyInfo(TimestampedModel):
 class Partner(TimestampedModel):
     name = models.CharField(max_length=255)
     logo = models.ImageField(upload_to='partners/', null=True, blank=True)
+    logo_small = ImageSpecField(source='logo',
+                                processors=[ResizeToFit(200, 200)],
+                                format='PNG')
     website_url = models.URLField()
     is_hidden = models.BooleanField(default=False)
 
@@ -85,6 +109,18 @@ class Partner(TimestampedModel):
 class PromotionalBanner(TimestampedModel):
     title = models.CharField(max_length=255, blank=True)
     image = models.ImageField(upload_to='banners/')
+    image_small = ImageSpecField(source='image',
+                                 processors=[ResizeToFit(400, 400)],
+                                 format='JPEG',
+                                 options={'quality': 85})
+    image_medium = ImageSpecField(source='image',
+                                  processors=[ResizeToFit(800, 800)],
+                                  format='JPEG',
+                                  options={'quality': 85})
+    image_large = ImageSpecField(source='image',
+                                 processors=[ResizeToFit(1600, 1600)],
+                                 format='JPEG',
+                                 options={'quality': 85})
     link_url = models.URLField(blank=True)
     position = models.PositiveIntegerField(default=0)
     is_active = models.BooleanField(default=True)

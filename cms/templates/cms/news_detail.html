@@ -34,7 +34,9 @@
         <img src="{{ news_item.image.url }}"
              alt="{{ news_item.title }}"
              width="600"
-             srcset="{{ news_item.image.url }} 600w"
+             srcset="{{ news_item.image_small.url }} 300w,
+                     {{ news_item.image_medium.url }} 600w,
+                     {{ news_item.image_large.url }} 1200w"
              sizes="(max-width: 600px) 100vw, 600px"
              itemprop="image">
         <figcaption>

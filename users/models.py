@@ -2,6 +2,9 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from core.models import TimestampedModel, phone_regex_validator, validate_age_18_plus
+from imagekit.models import ImageSpecField
+from imagekit.processors import ResizeToFit
+
 
 class User(AbstractUser):
     class Role(models.TextChoices):
@@ -81,6 +84,14 @@ class StaffProfile(TimestampedModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='staff_profile')
     position = models.CharField(max_length=255)
     photo = models.ImageField(upload_to='staff_photos/', null=True, blank=True)
+    photo_small = ImageSpecField(source='photo',
+                                 processors=[ResizeToFit(300, 300)],
+                                 format='JPEG',
+                                 options={'quality': 85})
+    photo_medium = ImageSpecField(source='photo',
+                                  processors=[ResizeToFit(600, 600)],
+                                  format='JPEG',
+                                  options={'quality': 85})
     contact_details = models.TextField()
     date_of_birth = models.DateField(validators=[validate_age_18_plus])
     my_clients = models.ManyToManyField(

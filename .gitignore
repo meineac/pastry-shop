@@ -220,3 +220,7 @@ __marimo__/
 
 clean.sh
 setup.sh
+
+# Cached images
+
+media/CACHE/

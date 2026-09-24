@@ -1,3 +1,5 @@
+from imagekit.models import ImageSpecField
+from imagekit.processors import ResizeToFit
 from django.db import models
 from core.models import TimestampedModel
 
@@ -31,6 +33,18 @@ class Product(TimestampedModel):
         default=UnitMeasurement.PIECES
     )
     photo = models.ImageField(upload_to='products/', null=True, blank=True)
+    photo_small = ImageSpecField(source='photo',
+                                 processors=[ResizeToFit(300, 300)],
+                                 format='JPEG',
+                                 options={'quality': 85})
+    photo_medium = ImageSpecField(source='photo',
+                                  processors=[ResizeToFit(600, 600)],
+                                  format='JPEG',
+                                  options={'quality': 85})
+    photo_large = ImageSpecField(source='photo',
+                                 processors=[ResizeToFit(1200, 1200)],
+                                 format='JPEG',
+                                 options={'quality': 85})
     ingredients = models.TextField()
     is_active = models.BooleanField(default=True)
 
