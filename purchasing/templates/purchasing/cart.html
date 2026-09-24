@@ -36,7 +36,7 @@
                     </p>
                 {% endif %}
 
-                <p>
+                <div>
                     Quantity:
                     <form action="{% url 'purchasing:decrease_quantity' cart_item_id=item.id %}" method="POST">
                         {% csrf_token %}
@@ -47,7 +47,7 @@
                         {% csrf_token %}
                         <button type="submit" aria-label="Increase quantity">&#43;</button>
                     </form>
-                </p>
+                </div>
 
                 <form action="{% url 'purchasing:remove_from_cart' cart_item_id=item.id %}" method="POST">
                     {% csrf_token %}
