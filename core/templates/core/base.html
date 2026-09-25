@@ -11,35 +11,35 @@
 <body>
     <header>
         <nav aria-label="Main navigation">
-            <a href="{% url 'cms:home' %}">Home</a> |
-            <a href="{% url 'cms:about' %}">About</a> |
-            <a href="{% url 'cms:news_list' %}">News</a> |
-            <a href="{% url 'cms:vacancies_list' %}">Vacancies</a> |
-            <a href="{% url 'cms:qna_list' %}">Q&amp;A</a> |
-            <a href="{% url 'cms:contacts_list' %}">Contacts</a> |
-            <a href="{% url 'cms:privacy_policy' %}">Privacy Policy</a> |
-            <a href="{% url 'cms:reviews' %}">Reviews</a> |
-            <a href="{% url 'cms:promo_codes' %}">Promo Codes</a> |
-            <a href="{% url 'catalog:product_list' %}">Catalog</a> |
-            <a href="{% url 'core:showcase' %}">Showcase</a> |
+            <a href="{% url 'cms:home' %}" accesskey="h">Home</a> |
+            <a href="{% url 'cms:about' %}" accesskey="a">About</a> |
+            <a href="{% url 'cms:news_list' %}" accesskey="n">News</a> |
+            <a href="{% url 'cms:vacancies_list' %}" accesskey="v">Vacancies</a> |
+            <a href="{% url 'cms:qna_list' %}" accesskey="q">Q&amp;A</a> |
+            <a href="{% url 'cms:contacts_list' %}" accesskey="c">Contacts</a> |
+            <a href="{% url 'cms:privacy_policy' %}" accesskey="p">Privacy Policy</a> |
+            <a href="{% url 'cms:reviews' %}" accesskey="r">Reviews</a> |
+            <a href="{% url 'cms:promo_codes' %}" accesskey="o">Promo Codes</a> |
+            <a href="{% url 'catalog:product_list' %}" accesskey="g">Catalog</a> |
+            <a href="{% url 'core:showcase' %}" accesskey="s">Showcase</a> |
             {% if request.user.is_authenticated %}
-                <a href="{% url 'profile' %}">Profile</a> |
+                <a href="{% url 'profile' %}" accesskey="u">Profile</a> |
                 {% if request.user.role == 'CUSTOMER' %}
-                    <a href="{% url 'purchasing:cart' %}">Cart</a> |
+                    <a href="{% url 'purchasing:cart' %}" accesskey="k">Cart</a> |
                 {% endif %}
                 {% if request.user.role == 'ADMIN' or request.user.role == 'STAFF' or request.user.is_superuser %}
-                    <a href="{% url 'purchasing:active_orders' %}">Active Orders</a> |
-                    <a href="{% url 'client_list' %}">Clients</a> |
-                    <a href="{% url 'my_clients' %}">My Clients</a> |
-                    <a href="{% url 'catalog:statistics' %}">Statistics</a> |
+                    <a href="{% url 'purchasing:active_orders' %}" accesskey="w">Active Orders</a> |
+                    <a href="{% url 'client_list' %}" accesskey="y">Clients</a> |
+                    <a href="{% url 'my_clients' %}" accesskey="m">My Clients</a> |
+                    <a href="{% url 'catalog:statistics' %}" accesskey="x">Statistics</a> |
                 {% endif %}
                 {% if request.user.role == 'ADMIN' or request.user.is_superuser %}
-                    <a href="{% url 'staff_list' %}">Staff</a> |
+                    <a href="{% url 'staff_list' %}" accesskey="f">Staff</a> |
                 {% endif %}
-                <a href="{% url 'logout' %}">Logout</a>
+                <a href="{% url 'logout' %}" accesskey="l">Logout</a>
             {% else %}
-                <a href="{% url 'login' %}">Login</a> |
-                <a href="{% url 'register' %}">Register</a>
+                <a href="{% url 'login' %}" accesskey="l">Login</a> |
+                <a href="{% url 'register' %}" accesskey="e">Register</a>
             {% endif %}
         </nav>
     </header>
@@ -52,16 +52,16 @@
     <footer>
         <nav aria-label="Footer navigation">
             <ul>
-                <li><a href="{% url 'cms:home' %}">Home</a></li>
-                <li><a href="{% url 'cms:about' %}">About Us</a></li>
-                <li><a href="{% url 'cms:news_list' %}">News</a></li>
-                <li><a href="{% url 'cms:contacts_list' %}">Contacts</a></li>
-                <li><a href="{% url 'cms:privacy_policy' %}">Privacy Policy</a></li>
-                <li><a href="{% url 'cms:vacancies_list' %}">Vacancies</a></li>
-                <li><a href="{% url 'catalog:product_list' %}">Catalog</a></li>
-                <li><a href="{% url 'core:showcase' %}">Showcase</a></li>
-                <li><a href="{% url 'cms:reviews' %}">Reviews</a></li>
-                <li><a href="{% url 'cms:promo_codes' %}">Promo Codes</a></li>
+                <li><a href="{% url 'cms:home' %}" accesskey="1">Home</a></li>
+                <li><a href="{% url 'cms:about' %}" accesskey="2">About Us</a></li>
+                <li><a href="{% url 'cms:news_list' %}" accesskey="3">News</a></li>
+                <li><a href="{% url 'cms:contacts_list' %}" accesskey="4">Contacts</a></li>
+                <li><a href="{% url 'cms:privacy_policy' %}" accesskey="5">Privacy Policy</a></li>
+                <li><a href="{% url 'cms:vacancies_list' %}" accesskey="6">Vacancies</a></li>
+                <li><a href="{% url 'catalog:product_list' %}" accesskey="7">Catalog</a></li>
+                <li><a href="{% url 'core:showcase' %}" accesskey="8">Showcase</a></li>
+                <li><a href="{% url 'cms:reviews' %}" accesskey="9">Reviews</a></li>
+                <li><a href="{% url 'cms:promo_codes' %}" accesskey="0">Promo Codes</a></li>
             </ul>
         </nav>
         <address itemprop="address" itemscope itemtype="https://schema.org/PostalAddress">

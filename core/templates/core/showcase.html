@@ -4,19 +4,21 @@
 
 {% block content %}
 <!-- Microdata, Container elements & Global attributes -->
-<article itemscope itemtype="https://schema.org/TechArticle" id="showcase-article" lang="en" dir="ltr" title="HTML Elements Showcase">
+<article itemscope itemtype="https://schema.org/TechArticle" id="showcase-article" lang="en" dir="ltr" title="HTML Elements Showcase" class="showcase-article" data-showcase="true" itemid="urn:uuid:12345678-1234-1234-1234-123456789012" itemref="extra-details">
   <header>
-    <h1 itemprop="headline">HTML Features Showcase</h1>
+    <h1 itemprop="headline" translate="no">HTML Features Showcase</h1>
     <p>This page explicitly demonstrates every single tag, attribute, and semantic element required in the assignment task.</p>
+    <p id="extra-details" itemprop="abstract">This paragraph provides extra details referenced by itemref.</p>
+    <p hidden>This paragraph is hidden from view using the hidden attribute.</p>
     
     <!-- Horizontal Navigation -->
     <nav aria-label="Page horizontal navigation">
-      <a href="#semantic-text">Semantic Text</a> | 
-      <a href="#quatrain">Quatrain</a> | 
-      <a href="#lists-figures">Lists &amp; Figures</a> | 
-      <a href="#data-table">Data Table</a> | 
-      <a href="#forms">Forms</a> | 
-      <a href="#embedded">Embedded Content</a>
+      <a href="#semantic-text" accesskey="t">Semantic Text</a> | 
+      <a href="#quatrain" accesskey="u">Quatrain</a> | 
+      <a href="#lists-figures" accesskey="l">Lists &amp; Figures</a> | 
+      <a href="#data-table" accesskey="d">Data Table</a> | 
+      <a href="#forms" accesskey="f">Forms</a> | 
+      <a href="#embedded" accesskey="e">Embedded Content</a>
     </nav>
   </header>
 
@@ -37,8 +39,8 @@
       </address>
       
       <!-- Code listing (pre/code) -->
-      <p>Example of a code listing:</p>
-      <pre><code>def hello_world():
+      <p>Example of a code listing (editable):</p>
+      <pre contenteditable="true" spellcheck="false"><code>def hello_world():
     print("Hello, HTML5!")</code></pre>
 
       <!-- Abbreviations & Definitions -->
@@ -132,7 +134,7 @@
 
   <section id="forms">
     <h2>Forms &amp; Controls</h2>
-    <form action="#" method="get">
+    <form action="#" method="get" data-form-type="feedback">
       <!-- Fieldset and Legend -->
       <fieldset>
         <legend>Feedback Form</legend>
@@ -178,11 +180,11 @@
 
         <!-- Textarea -->
         <label for="feedback">Comments:</label><br>
-        <textarea id="feedback" name="feedback" rows="4" cols="40" placeholder="Enter text here..."></textarea><br><br>
+        <textarea id="feedback" name="feedback" rows="4" cols="40" placeholder="Enter text here..." spellcheck="true"></textarea><br><br>
         
         <!-- Buttons -->
-        <button type="submit">Submit</button>
-        <button type="reset">Reset</button>
+        <button type="submit" accesskey="s">Submit</button>
+        <button type="reset" accesskey="x">Reset</button>
       </fieldset>
     </form>
   </section>
@@ -196,14 +198,15 @@
 
     <!-- Video -->
     <video width="320" height="240" controls>
-      <source src="/media/company/bakery_tour.mp4" type="video/mp4">
+      <source src="/media/showcase/Wait A Minute, Who Are You Meme.mp4" type="video/mp4">
+      <track src="/media/showcase/[English (auto-generated)] Wait A Minute, Who Are You Meme [DownSub.com].vtt" kind="subtitles" srclang="en" label="English" default>
       Your browser does not support the video tag.
     </video>
     <br><br>
 
     <!-- Audio (Fallback dummy source) -->
     <audio controls>
-      <source src="/media/company/dummy.mp3" type="audio/mpeg">
+      <source src="/media/showcase/67.mp3" type="audio/mpeg">
       Your browser does not support the audio element.
     </audio>
   </section>
