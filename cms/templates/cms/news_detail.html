@@ -1,19 +1,19 @@
 {% extends 'core/base.html' %}
-{% block title %}{{ news_item.title }} — Pastry Shop{% endblock %}
+{% block title %}News — {{ news_item.title }} — Pastry Shop{% endblock %}
 
 {% block content %}
-<article itemscope itemtype="https://schema.org/NewsArticle">
+<article itemscope itemtype="https://schema.org/NewsArticle" class="full-article">
 
-    <h1 itemprop="headline">{{ news_item.title }}</h1>
+    <h1 itemprop="headline" class="article-title">{{ news_item.title }}</h1>
 
     {% if request.user.role == 'ADMIN' %}
-        <p>
-            <a href="{% url 'cms:news_edit' pk=news_item.id %}">[Edit]</a>
-            <a href="{% url 'cms:news_delete' pk=news_item.id %}">[Delete]</a>
+        <p class="admin-actions">
+            <a href="{% url 'cms:news_edit' pk=news_item.id %}" class="btn btn-secondary">[Edit]</a>
+            <a href="{% url 'cms:news_delete' pk=news_item.id %}" class="btn btn-danger">[Delete]</a>
         </p>
     {% endif %}
 
-    <p>
+    <p class="article-meta">
         <strong>Published:</strong>
         <time datetime="{{ news_item.created_at|date:'Y-m-d' }}" itemprop="datePublished">
             {{ news_item.created_at|date:"d/m/Y" }}
@@ -21,7 +21,7 @@
     </p>
 
     {% if news_item.tags.all %}
-    <p>
+    <p class="article-tags">
         <strong>Tags:</strong>
         {% for tag in news_item.tags.all %}
             <em>{{ tag.name }}</em>{% if not forloop.last %}, {% endif %}
@@ -30,25 +30,27 @@
     {% endif %}
 
     {% if news_item.image %}
-    <figure>
+    <figure class="article-lead-figure">
         <img src="{{ news_item.image.url }}"
              alt="{{ news_item.title }}"
              width="600"
              srcset="{{ news_item.image_small.url }} 300w,
                      {{ news_item.image_medium.url }} 600w,
                      {{ news_item.image_large.url }} 1200w"
-             itemprop="image">
+             itemprop="image"
+             class="article-lead-img">
         <figcaption>
             <cite>{{ news_item.title }}</cite> — Pastry Shop News
         </figcaption>
     </figure>
     {% endif %}
 
-    <section itemprop="articleBody">
-        <p>{{ news_item.full_text }}</p>
+    <!-- Multi-column text body with drop cap and small-caps first line -->
+    <section itemprop="articleBody" class="article-multicol">
+        {{ news_item.full_text|linebreaks }}
     </section>
 
-    <p><a href="{% url 'cms:news_list' %}">&larr; Back to News</a></p>
+    <p class="article-back-link"><a href="{% url 'cms:news_list' %}" class="btn btn-secondary">&larr; Back to News</a></p>
 
 </article>
 {% endblock %}

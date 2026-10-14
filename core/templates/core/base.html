@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+{% load static %}<!DOCTYPE html>
 <html lang="en" itemscope itemtype="https://schema.org/Bakery">
 <head>
     <meta charset="utf-8">
@@ -6,51 +6,78 @@
     <meta name="description" content="Pastry Shop — premium handcrafted pastries, croissants, tarts, and entremets made with organic ingredients.">
     <meta name="keywords" content="pastry shop, croissants, macarons, tarts, entremets, viennoiserie, organic baking">
     <link rel="icon" href="/media/company/favicon.ico" type="image/x-icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,700;1,400&family=Lora:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'core/css/styles.css' %}">
     <title>{% block title %}Pastry Shop{% endblock %}</title>
 </head>
 <body>
-    <header>
-        <nav aria-label="Main navigation">
-            <a href="{% url 'cms:home' %}" accesskey="h">Home</a> |
-            <a href="{% url 'cms:about' %}" accesskey="a">About</a> |
-            <a href="{% url 'cms:news_list' %}" accesskey="n">News</a> |
-            <a href="{% url 'cms:vacancies_list' %}" accesskey="v">Vacancies</a> |
-            <a href="{% url 'cms:qna_list' %}" accesskey="q">Q&amp;A</a> |
-            <a href="{% url 'cms:contacts_list' %}" accesskey="c">Contacts</a> |
-            <a href="{% url 'cms:privacy_policy' %}" accesskey="p">Privacy Policy</a> |
-            <a href="{% url 'cms:reviews' %}" accesskey="r">Reviews</a> |
-            <a href="{% url 'cms:promo_codes' %}" accesskey="o">Promo Codes</a> |
-            <a href="{% url 'catalog:product_list' %}" accesskey="g">Catalog</a> |
-            <a href="{% url 'core:showcase' %}" accesskey="s">Showcase</a> |
-            {% if request.user.is_authenticated %}
-                <a href="{% url 'profile' %}" accesskey="u">Profile</a> |
-                {% if request.user.role == 'CUSTOMER' %}
-                    <a href="{% url 'purchasing:cart' %}" accesskey="k">Cart</a> |
+    <header class="site-header">
+        <div class="header-inner">
+            <a href="{% url 'cms:home' %}" class="brand-link">
+                <span class="brand-logo-icon" aria-hidden="true">🥐</span>
+                <span class="brand-title">Pastry Shop</span>
+            </a>
+            <nav aria-label="Main navigation" class="main-nav">
+                <a href="{% url 'cms:home' %}" accesskey="h" class="nav-link">Home</a>
+                <a href="{% url 'cms:about' %}" accesskey="a" class="nav-link">About</a>
+                <a href="{% url 'cms:news_list' %}" accesskey="n" class="nav-link">News</a>
+                <a href="{% url 'cms:vacancies_list' %}" accesskey="v" class="nav-link">Vacancies</a>
+                <a href="{% url 'cms:qna_list' %}" accesskey="q" class="nav-link">Q&amp;A</a>
+                <a href="{% url 'cms:contacts_list' %}" accesskey="c" class="nav-link">Contacts</a>
+                <a href="{% url 'cms:privacy_policy' %}" accesskey="p" class="nav-link">Privacy Policy</a>
+                <a href="{% url 'cms:reviews' %}" accesskey="r" class="nav-link">Reviews</a>
+                <a href="{% url 'cms:promo_codes' %}" accesskey="o" class="nav-link">Promo Codes</a>
+                <a href="{% url 'catalog:product_list' %}" accesskey="g" class="nav-link">Catalog</a>
+                <a href="{% url 'core:showcase' %}" accesskey="s" class="nav-link">Showcase</a>
+                {% if request.user.is_authenticated %}
+                    <a href="{% url 'profile' %}" accesskey="u" class="nav-link">Profile</a>
+                    {% if request.user.role == 'CUSTOMER' %}
+                        <a href="{% url 'purchasing:cart' %}" accesskey="k" class="nav-link">Cart</a>
+                    {% endif %}
+                    {% if request.user.role == 'ADMIN' or request.user.role == 'STAFF' or request.user.is_superuser %}
+                        <a href="{% url 'purchasing:active_orders' %}" accesskey="w" class="nav-link">Active Orders</a>
+                        <a href="{% url 'client_list' %}" accesskey="y" class="nav-link">Clients</a>
+                        <a href="{% url 'my_clients' %}" accesskey="m" class="nav-link">My Clients</a>
+                        <a href="{% url 'catalog:statistics' %}" accesskey="x" class="nav-link">Statistics</a>
+                    {% endif %}
+                    {% if request.user.role == 'ADMIN' or request.user.is_superuser %}
+                        <a href="{% url 'staff_list' %}" accesskey="f" class="nav-link">Staff</a>
+                    {% endif %}
+                    <a href="{% url 'logout' %}" accesskey="l" class="nav-link">Logout</a>
+                {% else %}
+                    <a href="{% url 'login' %}" accesskey="l" class="nav-link">Login</a>
+                    <a href="{% url 'register' %}" accesskey="e" class="nav-link">Register</a>
                 {% endif %}
-                {% if request.user.role == 'ADMIN' or request.user.role == 'STAFF' or request.user.is_superuser %}
-                    <a href="{% url 'purchasing:active_orders' %}" accesskey="w">Active Orders</a> |
-                    <a href="{% url 'client_list' %}" accesskey="y">Clients</a> |
-                    <a href="{% url 'my_clients' %}" accesskey="m">My Clients</a> |
-                    <a href="{% url 'catalog:statistics' %}" accesskey="x">Statistics</a> |
-                {% endif %}
-                {% if request.user.role == 'ADMIN' or request.user.is_superuser %}
-                    <a href="{% url 'staff_list' %}" accesskey="f">Staff</a> |
-                {% endif %}
-                <a href="{% url 'logout' %}" accesskey="l">Logout</a>
-            {% else %}
-                <a href="{% url 'login' %}" accesskey="l">Login</a> |
-                <a href="{% url 'register' %}" accesskey="e">Register</a>
-            {% endif %}
-        </nav>
+            </nav>
+        </div>
     </header>
 
-    <main>
+    <main class="site-main">
         {% block content %}
         {% endblock content %}
     </main>
 
-    <footer>
-        <nav aria-label="Footer navigation">
+    <div class="preloader-section" aria-label="Loading animation preloader">
+        <p class="preloader-title"><em>Infinity Preloader &mdash; Pure CSS/SVG Animation</em></p>
+        <svg class="infinity-preloader" viewBox="0 0 240 120" role="img" aria-label="Infinity Preloader">
+            <defs>
+                <linearGradient id="infinityGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#e63946"/>
+                    <stop offset="25%" stop-color="#f4a261"/>
+                    <stop offset="50%" stop-color="#2a9d8f"/>
+                    <stop offset="75%" stop-color="#457b9d"/>
+                    <stop offset="100%" stop-color="#9b5de5"/>
+                </linearGradient>
+            </defs>
+            <path class="infinity-track" d="M 60,25 C 20,25 20,95 60,95 C 95,95 145,25 180,25 C 220,25 220,95 180,95 C 145,95 95,25 60,25 Z"/>
+            <path class="infinity-runner" d="M 60,25 C 20,25 20,95 60,95 C 95,95 145,25 180,25 C 220,25 220,95 180,95 C 145,95 95,25 60,25 Z"/>
+        </svg>
+    </div>
+
+    <footer class="site-footer">
+        <nav aria-label="Footer navigation" class="footer-nav">
             <ul>
                 <li><a href="{% url 'cms:home' %}" accesskey="1">Home</a></li>
                 <li><a href="{% url 'cms:about' %}" accesskey="2">About Us</a></li>

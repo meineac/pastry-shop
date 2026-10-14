@@ -2,10 +2,10 @@
 {% block title %}About Us — Pastry Shop{% endblock %}
 
 {% block content %}
-<h1>About the Company</h1>
+<h1 class="brand-heading">About the Company</h1>
 
 {% comment %}In-page anchor navigation{% endcomment %}
-<nav aria-label="Page sections">
+<nav aria-label="Page sections" class="page-toc">
     <ul>
         <li><a href="#details">Company Details</a></li>
         <li><a href="#info">About Us</a></li>
@@ -18,33 +18,44 @@
 </nav>
 
 {% if request.user.role == 'ADMIN' %}
-    <p><a href="{% url 'cms:about_edit' %}">[Edit Company Info]</a></p>
+    <p><a href="{% url 'cms:about_edit' %}" class="btn btn-secondary">[Edit Company Info]</a></p>
 {% endif %}
 
 {% if company_info %}
 
-    {% comment %}Company logo{% endcomment %}
+    {% comment %}Company logo with CSS transform{% endcomment %}
     {% if company_info.logo %}
-    <figure>
+    <figure class="company-logo-figure">
         <img src="{{ company_info.logo.url }}"
              alt="Pastry Shop company logo"
              width="250"
              srcset="{{ company_info.logo_small.url }} 1x, {{ company_info.logo_medium.url }} 2x"
-             itemprop="logo">
+             itemprop="logo"
+             class="company-logo-img">
         <figcaption><strong>Pastry Shop</strong> — <em>Crafted with passion since <time datetime="2010">2010</time></em></figcaption>
     </figure>
     {% endif %}
 
-    {% comment %}Founder quote{% endcomment %}
-    <blockquote cite="https://pastryshop.example.com/about">
-        <p><q>We believe that great pastry is not just food — it is a moment of joy, a small luxury everyone deserves.</q></p>
-        <footer>— <cite>Marie Leblanc, Founder of Pastry Shop</cite></footer>
-    </blockquote>
+    {% comment %}Founder quote with multilingual quotes (demonstrating :lang(en), :lang(fr), :lang(ru)){% endcomment %}
+    <section class="quotes-showcase" aria-label="Quotes">
+        <blockquote cite="https://pastryshop.example.com/about" class="founder-quote">
+            <p><q lang="en">We believe that great pastry is not just food — it is a moment of joy, a small luxury everyone deserves.</q></p>
+            <footer>— <cite>Marie Leblanc, Founder of Pastry Shop</cite></footer>
+        </blockquote>
+        <p class="intl-quote-fr">
+            French Motto: <q lang="fr">La pâtisserie est l'art de la douceur, du goût et de la rigueur artisanale.</q>
+        </p>
+        <p class="intl-quote-ru">
+            Russian Motto: <q lang="ru">Искусство настоящей выпечки начинается с уважения к традициям и любви к деталям.</q>
+        </p>
+    </section>
 
     {% comment %}Company details section{% endcomment %}
-    <section id="details" aria-labelledby="details-heading">
+    <section id="details" aria-labelledby="details-heading" class="company-details-section">
         <h2 id="details-heading">Company Details</h2>
-        <p>{{ company_info.company_details }}</p>
+        <div class="requisites-callout">
+            <p class="requisites-text">{{ company_info.company_details }}</p>
+        </div>
         <p>
             We are proud to hold the
             <abbr title="Hazard Analysis Critical Control Points">HACCP</abbr>
@@ -64,40 +75,39 @@
     </section>
 
     {% comment %}About text{% endcomment %}
-    <section id="info" aria-labelledby="info-heading">
+    <section id="info" aria-labelledby="info-heading" class="about-info-section">
         <h2 id="info-heading">About Us</h2>
-        <p>{{ company_info.text_information }}</p>
+        <p class="about-lead-paragraph">{{ company_info.text_information }}</p>
 
         {% comment %}Sample API code listing{% endcomment %}
         <p>
             Developers can integrate our product catalog using our public
             <abbr title="Application Programming Interface">API</abbr>:
         </p>
-        <p>Endpoint: <code>GET /api/v1/products/?category=viennoiserie</code></p>
+        <pre class="code-block"><code>GET /api/v1/products/?category=viennoiserie</code></pre>
         <p>Returns a <abbr title="JavaScript Object Notation">JSON</abbr> array of active product records.</p>
     </section>
 
-    {% comment %}History timeline{% endcomment %}
-    <section id="history" aria-labelledby="history-heading">
+    {% comment %}History timeline with Unicode markers{% endcomment %}
+    <section id="history" aria-labelledby="history-heading" class="history-section">
         <h2 id="history-heading">History Timeline</h2>
-        <dl>
+        <dl class="history-timeline">
             {% for line in company_info.history_by_years.splitlines %}
                 {% if line %}
-                    {% with parts=line|cut:" "|slice:":4" %}
-                    <dt>
+                    <dt class="history-year-badge">
                         <time datetime="{{ line|slice:':4' }}">{{ line|slice:':4' }}</time>
                     </dt>
-                    <dd>{{ line|slice:"6:" }}</dd>
-                    {% endwith %}
+                    <dd class="history-event-desc">{{ line|slice:"6:" }}</dd>
                 {% endif %}
             {% endfor %}
         </dl>
     </section>
 
-    {% comment %}Milestones data table with merged cells and headers attribute{% endcomment %}
-    <section id="milestones" aria-labelledby="milestones-heading">
+    {% comment %}Milestones data table with caption, merged cells, and empty cell background demo{% endcomment %}
+    <section id="milestones" aria-labelledby="milestones-heading" class="milestones-section">
         <h2 id="milestones-heading">Key Milestones</h2>
-        <table>
+        <table class="milestones-table">
+            <caption>Pastry Shop Key Milestones and Recognitions (2010–Present)</caption>
             <thead>
                 <tr>
                     <th id="th-year">Year</th>
@@ -135,7 +145,8 @@
                 <tr>
                     <td headers="th-year"><time datetime="2022">2022</time></td>
                     <td headers="th-event">Expanded to three city locations</td>
-                    <td headers="th-category">Expansion</td>
+                    <!-- Intentionally empty cell to demonstrate empty-cell background styling (:empty) -->
+                    <td headers="th-category"></td>
                 </tr>
                 <tr>
                     <td headers="th-year"><time datetime="2025">2025</time></td>
@@ -154,32 +165,34 @@
         </table>
     </section>
 
-    {% comment %}Download link{% endcomment %}
-    <p>
-        <a href="/media/company/menu.pdf" download>
+    {% comment %}Download link with ::before and ::after pseudo-elements{% endcomment %}
+    <p class="download-container">
+        <a href="/media/company/menu.pdf" download class="btn-download">
             Download our full product menu (PDF)
         </a>
     </p>
 
     {% comment %}Embedded video{% endcomment %}
     {% if company_info.video_url %}
-    <section id="video" aria-labelledby="video-heading">
+    <section id="video" aria-labelledby="video-heading" class="media-section">
         <h2 id="video-heading">Our Story</h2>
-        <iframe
-            src="{{ company_info.video_url }}"
-            width="560"
-            height="315"
-            title="Pastry Shop — Our Story"
-            allowfullscreen
-            loading="lazy">
-        </iframe>
+        <div class="iframe-container">
+            <iframe
+                src="{{ company_info.video_url }}"
+                width="560"
+                height="315"
+                title="Pastry Shop — Our Story"
+                allowfullscreen
+                loading="lazy">
+            </iframe>
+        </div>
     </section>
     {% endif %}
 
     {% comment %}Native video element — required by HTML markup spec{% endcomment %}
-    <section id="video-showcase" aria-label="Video showcase">
+    <section id="video-showcase" aria-label="Video showcase" class="media-section">
         <h2>Behind the Scenes</h2>
-        <video controls width="560" preload="metadata">
+        <video controls width="560" preload="metadata" class="media-video">
             <source src="/media/company/bakery_tour.mp4" type="video/mp4">
             Your browser does not support the video element.
         </video>
@@ -187,19 +200,50 @@
     </section>
 
     {% comment %}Audio element{% endcomment %}
-    <section aria-label="Audio">
+    <section aria-label="Audio" class="media-section">
         <h2>Listen to Our Story</h2>
-        <audio controls>
+        <audio controls class="media-audio">
             <source src="/media/company/story.mp3" type="audio/mpeg">
             Your browser does not support the audio element.
         </audio>
     </section>
 
-    {% comment %}Certificate — plain text only, no styling{% endcomment %}
+    {% comment %}Certificate with border-image, watermark, gradient, and z-index layers{% endcomment %}
     {% if company_info.certificate_text %}
-    <section id="certificate" aria-labelledby="certificate-heading">
-        <h2 id="certificate-heading">Quality Certificate</h2>
-        <pre>{{ company_info.certificate_text }}</pre>
+    <section id="certificate" aria-labelledby="certificate-heading" class="certificate-section">
+        <h2 id="certificate-heading">Official Quality Certificate</h2>
+        <div class="certificate-frame">
+            <div class="certificate-watermark-layer" aria-hidden="true"></div>
+            <div class="certificate-seal-layer" aria-hidden="true">
+                <div class="official-seal">
+                    <div class="seal-inner">
+                        <span class="seal-star">&#9733;</span>
+                        <span class="seal-text">IPSC OFFICIAL SEAL &bull; GOLD STANDARD</span>
+                        <span class="seal-star">&#9733;</span>
+                    </div>
+                </div>
+            </div>
+            <div class="certificate-content-layer">
+                <header class="certificate-header">
+                    <p class="cert-authority">INTERNATIONAL PASTRY STANDARDS COUNCIL</p>
+                    <h3 class="cert-title">CERTIFICATE OF QUALITY</h3>
+                    <p class="cert-reg">Registration No. <u>IPSC-2025-00342</u></p>
+                </header>
+                <div class="certificate-body">
+                    <pre>{{ company_info.certificate_text }}</pre>
+                </div>
+                <footer class="certificate-footer">
+                    <div class="cert-sign-block cert-left">
+                        <p>City of Issue: <strong>London, United Kingdom</strong></p>
+                        <p>Date: <time datetime="2025-06-01">01/06/2025</time></p>
+                    </div>
+                    <div class="cert-sign-block cert-right">
+                        <p class="cert-signature">Marie Leblanc</p>
+                        <p>Council President &amp; Master Pâtissier</p>
+                    </div>
+                </footer>
+            </div>
+        </div>
     </section>
     {% endif %}
 

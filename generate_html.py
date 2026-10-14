@@ -48,6 +48,7 @@ urls = {
     "catalog": "/catalog/",
     "cart": "/cart/",
     "checkout": "/checkout/",
+    "showcase": "/showcase/",
 }
 
 os.makedirs("rendered_html", exist_ok=True)

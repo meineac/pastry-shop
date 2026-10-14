@@ -1,17 +1,62 @@
 {% extends 'core/base.html' %}
 
 {% block content %}
-    <h1>{{ title }}</h1>
+    <h1 class="brand-heading">{{ title }}</h1>
 
-    <form method="POST" action="{% if product %}?product_id={{ product.id }}{% endif %}">
+    <form method="POST" action="{% if product %}?product_id={{ product.id }}{% endif %}" class="review-create-form">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Submit Review</button>
+        <fieldset class="form-fieldset">
+            <legend class="form-legend">Customer Experience Feedback</legend>
+
+            <!-- Required Rating Select (font: menu) -->
+            <p class="form-field">
+                <label for="id_rating" class="form-label">Overall Rating (1–5 Stars):</label>
+                {{ form.rating }}
+                {% if form.rating.errors %}<span class="form-error">{{ form.rating.errors }}</span>{% endif %}
+            </p>
+
+            <!-- Numeric Rating Score demonstrating :out-of-range & :in-range (font: status-bar) -->
+            <p class="form-field">
+                <label for="id_numeric_score" class="form-label">Numeric Quality Score (1 to 5):</label>
+                <input type="number" id="id_numeric_score" name="numeric_score" min="1" max="5" value="5" class="form-input form-number-input">
+                <small class="form-hint">Enter a rating between 1 and 5. Values outside 1–5 trigger :out-of-range warning styles.</small>
+            </p>
+
+            <!-- Review Text Textarea (font: message-box) -->
+            <p class="form-field">
+                <label for="id_review_text" class="form-label">Review Comments (Required):</label>
+                {{ form.review_text }}
+                {% if form.review_text.errors %}<span class="form-error">{{ form.review_text.errors }}</span>{% endif %}
+            </p>
+
+            <!-- Tags input (font: status-bar) -->
+            <p class="form-field">
+                <label for="id_tags_string" class="form-label">Tags (Optional, comma-separated):</label>
+                {{ form.tags_string }}
+            </p>
+
+            <!-- Checked Checkbox demonstrating :checked and input:checked + label -->
+            <p class="form-field form-checkbox-field">
+                <input type="checkbox" id="id_recommend" name="recommend" value="yes" checked class="form-checkbox">
+                <label for="id_recommend" class="form-checkbox-label">I would recommend this bakery to a friend</label>
+            </p>
+
+            <!-- Disabled Checkbox demonstrating :disabled -->
+            <p class="form-field form-checkbox-field">
+                <input type="checkbox" id="id_verified_badge" name="verified_badge" disabled class="form-checkbox">
+                <label for="id_verified_badge" class="form-checkbox-label form-disabled-label">Verified Purchase Badge (System evaluated)</label>
+            </p>
+
+            <!-- Submit Button (font: caption) -->
+            <p class="form-actions">
+                <button type="submit" class="btn btn-primary form-submit-btn">Submit Review</button>
+            </p>
+        </fieldset>
     </form>
 
     {% if product %}
-        <p><a href="{% url 'catalog:product_detail' product_id=product.id %}">Back to Product Details</a></p>
+        <p><a href="{% url 'catalog:product_detail' product_id=product.id %}" class="btn btn-secondary">Back to Product Details</a></p>
     {% else %}
-        <p><a href="{% url 'cms:reviews' %}">Back to Reviews</a></p>
+        <p><a href="{% url 'cms:reviews' %}" class="btn btn-secondary">Back to Reviews</a></p>
     {% endif %}
 {% endblock %}

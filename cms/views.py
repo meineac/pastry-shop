@@ -127,6 +127,8 @@ def news_list_view(request):
             Q(short_summary__icontains=query) |
             Q(tags__name__icontains=query)
         ).distinct()
+    if not query and not tag_ids:
+        news = news[:7]
 
     tags = NewsTag.objects.filter(news_articles__isnull=False).distinct()
 

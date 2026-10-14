@@ -2,50 +2,54 @@
 {% block title %}Q&amp;A — Pastry Shop{% endblock %}
 
 {% block content %}
-<h1>Frequently Asked Questions</h1>
+<h1 class="brand-heading">Frequently Asked Questions &amp; Glossary</h1>
 
 {% if request.user.role == 'ADMIN' %}
-    <p><a href="{% url 'cms:qna_create' %}">[Add Q&amp;A]</a></p>
+    <p><a href="{% url 'cms:qna_create' %}" class="btn btn-secondary">[Add Q&amp;A]</a></p>
 {% endif %}
 
-<form method="GET" >
+<form method="GET" class="filter-form">
     <fieldset>
         <legend>Search Q&amp;A</legend>
-        <label for="id_q">Search:</label>
-        <input type="search" id="id_q" name="q" placeholder="Search Q&amp;A..." value="{{ query }}" maxlength="200">
-        <select name="tags" multiple>
-            {% for tag in tags %}
-                <option value="{{ tag.id }}" {% if tag.id in current_tags %}selected{% endif %}>{{ tag.name }}</option>
-            {% endfor %}
-        </select>
-        <button type="submit">Filter / Search</button>
+        <div class="form-row">
+            <label for="id_q">Search:</label>
+            <input type="search" id="id_q" name="q" placeholder="Search Q&amp;A..." value="{{ query }}" maxlength="200" class="form-input">
+            <select name="tags" multiple aria-label="Filter by tag" class="form-select">
+                {% for tag in tags %}
+                    <option value="{{ tag.id }}" {% if tag.id in current_tags %}selected{% endif %}>{{ tag.name }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="btn btn-primary">Filter / Search</button>
+        </div>
     </fieldset>
 </form>
 
 <hr>
 
-<ol>
+<ol class="qna-accordion-list">
 {% for qa in qna %}
-    <li>
-        <details>
-            <summary>
-                <strong>{{ qa.question_text }}</strong>
+    <li class="qna-item">
+        <details class="qna-details">
+            <summary class="qna-summary">
+                <strong class="qna-question-title">{{ qa.question_text }}</strong>
                 &mdash;
-                <time datetime="{{ qa.created_at|date:'Y-m-d' }}">{{ qa.created_at|date:"d/m/Y" }}</time>
+                <time datetime="{{ qa.created_at|date:'Y-m-d' }}" class="qna-date-badge">{{ qa.created_at|date:"d/m/Y" }}</time>
                 {% if qa.tags.all %}
                     &mdash;
                     {% for tag in qa.tags.all %}
-                        <em>{{ tag.name }}</em>{% if not forloop.last %}, {% endif %}
+                        <em class="qna-tag">{{ tag.name }}</em>{% if not forloop.last %}, {% endif %}
                     {% endfor %}
                 {% endif %}
             </summary>
-            <p><strong>A:</strong> {{ qa.answer_text }}</p>
-            {% if request.user.role == 'ADMIN' %}
-                <p>
-                    <a href="{% url 'cms:qna_edit' pk=qa.id %}">[Edit]</a>
-                    <a href="{% url 'cms:qna_delete' pk=qa.id %}">[Delete]</a>
-                </p>
-            {% endif %}
+            <div class="qna-answer-body">
+                <p><strong>A:</strong> {{ qa.answer_text }}</p>
+                {% if request.user.role == 'ADMIN' %}
+                    <p class="admin-actions">
+                        <a href="{% url 'cms:qna_edit' pk=qa.id %}" class="btn btn-secondary">[Edit]</a>
+                        <a href="{% url 'cms:qna_delete' pk=qa.id %}" class="btn btn-danger">[Delete]</a>
+                    </p>
+                {% endif %}
+            </div>
         </details>
     </li>
 {% empty %}

@@ -52,16 +52,90 @@ BANNERS = [
 ]
 
 NEWS_ITEMS = [
-    {"title": "New Summer Menu", "summary": "Refresh yourself with our new fruit tarts.", "text": "We are launching a new lineup of summer fruit tarts packed with seasonal berries and tropical flavors."},
-    {"title": "Award-Winning Pastry", "summary": "Our signature chocolate entremet won gold.", "text": "We are proud to announce our chocolate entremet took first place at the national pastry competition."},
-    {"title": "Pastry Class Opening", "summary": "Learn the secrets of French baking.", "text": "Join our master bakers for an intensive weekend course on lamination and viennoiserie."},
-    {"title": "Holiday Specials", "summary": "Pre-order your yule logs now.", "text": "The holiday season is here! Secure your festive treats including our famous Bûche de Noël."},
-    {"title": "New Collaboration", "summary": "Matcha meets classic French techniques.", "text": "We've partnered with a premium tea supplier to bring you a unique line of matcha-infused pastries."},
-    {"title": "Sustainability Effort", "summary": "Moving to 100% organic flour.", "text": "As part of our commitment to the environment, all our products now use locally sourced, organic flour."},
-    {"title": "Delivery Expanded", "summary": "We now deliver city-wide.", "text": "You can now enjoy our pastries delivered directly to your door anywhere in the metropolitan area."},
-    {"title": "Store Renovation", "summary": "A fresh look for our flagship store.", "text": "We've updated our dining area to provide a more comfortable and modern experience for our guests."},
-    {"title": "Loyalty Program", "summary": "Earn points on every purchase.", "text": "Sign up for our new rewards program and earn free pastries, coffee, and exclusive discounts."},
-    {"title": "Vegan Options", "summary": "Delicious plant-based treats.", "text": "We've expanded our menu to include 100% vegan cakes, cookies, and croissants without compromising taste."},
+    {
+        "title": "New Summer Menu",
+        "summary": "Refresh your summer palate with our handcrafted seasonal fruit tartlets, chilled elderflower mousselines, and sun-ripened organic berry creations.",
+        "text": (
+            "Summer at Pastry Shop is a celebration of vibrant colors and botanical fragrances harvested from small partner orchards. "
+            "Our new tartlet crust is baked from stone-ground almond flour and French butter, delivering a rich sablé crumble that resists moisture.\n\n"
+            "Beneath the glittering berry dome lies an infused crème diplomat perfumed with fresh garden lemon verbena leaves. "
+            "Hand-placed redcurrants, blackberries, and wild woodland strawberries are then glazed with an organic elderflower reduction.\n\n"
+            "Whether enjoyed on our sunny garden terrace or packed in our signature gift box, these seasonal creations bring refreshing acidity to warm afternoons. "
+            "Pair them with our chilled hibiscus tea for the ultimate midday culinary indulgence."
+        ),
+    },
+    {
+        "title": "Award-Winning Pastry",
+        "summary": "Our grand cru dark chocolate creation with roasted hazelnut praline won highest honors at the National Confectionery Guild championship.",
+        "text": (
+            "Designed over eight months of meticulous formulation, the Royal Truffle Entremet represents the pinnacle of modern French pastry artistry. "
+            "At its core lies a flourless biscuit infused with single-origin Madagascan cacao nibs, delivering deep earthy undertones.\n\n"
+            "Encasing the delicate sponge is a light-as-air dark chocolate mousse balanced with sea salt caramel and crunchy roasted Piedmont hazelnuts. "
+            "The multi-layered cake is blasted to minus thirty degrees before taking its final bath in our obsidian cocoa mirror glaze.\n\n"
+            "Food critics and guild judges unanimously praised the harmony of contrasting textures and the refined balance of cocoa acidity. "
+            "The entremet is now available daily in our Baker Street showcase and for bespoke celebration pre-orders."
+        ),
+    },
+    {
+        "title": "Pastry Class Opening",
+        "summary": "Step into our professional kitchen studio for hands-on intensive workshops guided step-by-step by master pâtissier Marie Leblanc herself.",
+        "text": (
+            "For the first time since our founding, Pastry Shop is opening its kitchen doors to amateur bakers and passionate food lovers. "
+            "Our weekend masterclasses accommodate small groups of six students to guarantee personalized attention at every stage of preparation.\n\n"
+            "Over two immersive days, participants will master the technical secrets of macaronage, silky fruit curds, and flaky puff pastry. "
+            "Each student is provided with dedicated marble workstations, professional copper confectionery pots, and premium raw ingredients.\n\n"
+            "Every participant takes home their own customized pastry showcase box along with our founder's hand-bound recipe compendium. "
+            "Reservations open on the first Monday of every month through our website customer portal."
+        ),
+    },
+    {
+        "title": "Holiday Specials",
+        "summary": "Celebrate festive gatherings with our limited-edition Bûches de Noël, spiced gingerbread entremets, and gold-leaf candied orange marzipan.",
+        "text": (
+            "The winter holiday season transforms our kitchen into a bustling workshop of traditional festive confectionery and sweet celebration. "
+            "This year, our pastry brigade has prepared three distinct holiday logs designed to delight every member of your family gathering.\n\n"
+            "Highlights include a dark cherry Valrhona yule log rolled in cocoa velvet and a roasted chestnut cream sponge soaked in rum syrup. "
+            "Each centerpiece is crowned with hand-sculpted sugar mushrooms and glistening edible gold leaf imported from Florence.\n\n"
+            "Holiday pre-orders are strictly limited to ensure uncompromising artisanal excellence in every single batch. "
+            "Reserve your festive dessert today to guarantee delivery in time for Christmas Eve and New Year celebrations."
+        ),
+    },
+    {
+        "title": "New Collaboration",
+        "summary": "Kyoto ceremonial matcha joins classic French viennoiserie in our exclusive cross-cultural partnership with heritage tea masters.",
+        "text": (
+            "True culinary innovation often sparks at the intersection of two storied gastronomic traditions honoring craft and contemplation. "
+            "We have partnered with historic Uji tea producers to import first-harvest ceremonial matcha directly to our London bakehouse.\n\n"
+            "Our signature matcha croissant features vibrant green laminations infused with earthy tea solids and filled with yuzu citrus ganache. "
+            "The subtle savory astringency of stone-ground tencha leaves cuts beautifully through rich Normandy butter layers.\n\n"
+            "This limited-edition collaboration will run throughout the coming season across all store locations. "
+            "Stop by our café counter to experience this harmonious dialogue between Japanese tea culture and French pastry art."
+        ),
+    },
+    {
+        "title": "Sustainability Effort",
+        "summary": "Discover how our direct fair-trade partnerships with local organic dairy farmers ensure uncompromised purity and ethical sustainability in every bite.",
+        "text": (
+            "True culinary craftsmanship begins long before flour meets water—it begins on pasture lands and fertile country soils. "
+            "We have partnered with heritage dairy farms in Somerset that practice regenerative farming and pasture grazing throughout the year.\n\n"
+            "Fresh heavy cream and golden butter arrive at our bakery doors within twenty-four hours of churning, preserving essential aromatics and live cultures. "
+            "This pristine milk forms the foundation of our silky mousselines, ganaches, and slow-cultured brioche doughs.\n\n"
+            "By paying fair premiums directly to smallholder farming families, we support sustainable agricultural practices while providing our guests with pure ingredients. "
+            "Transparent food systems make every mouthful both delicious and responsible."
+        ),
+    },
+    {
+        "title": "Delivery Expanded",
+        "summary": "Enjoy oven-fresh croissants, chilled entremets, and artisanal celebration cakes delivered directly to your doorstep with our temperature-controlled fleet.",
+        "text": (
+            "Getting warm morning pastries and delicate chilled mousse cakes safely across the city requires specialized delivery logistics. "
+            "We are thrilled to unveil our dedicated electric courier fleet equipped with dual-zone climate-controlled compartments.\n\n"
+            "Viennoiserie and warm breads travel in insulated gentle warming chambers, while delicate tarts and macarons remain chilled at four degrees. "
+            "Real-time route optimization ensures your morning pastry arrives crisp, warm, and ready for breakfast within forty minutes of dispatch.\n\n"
+            "The expanded delivery zone now covers all metropolitan districts seven days a week from seven in the morning until eight at night. "
+            "Place your order through our simplified online checkout to experience bakery-fresh bliss in the comfort of your home."
+        ),
+    },
 ]
 
 VACANCIES = [

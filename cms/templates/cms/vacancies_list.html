@@ -2,55 +2,59 @@
 {% block title %}Vacancies — Pastry Shop{% endblock %}
 
 {% block content %}
-<h1>Vacancies</h1>
+<h1 class="brand-heading">Career Vacancies</h1>
 
 {% if request.user.role == 'ADMIN' %}
-    <p><a href="{% url 'cms:vacancy_create' %}">[Add Vacancy]</a></p>
+    <p><a href="{% url 'cms:vacancy_create' %}" class="btn btn-secondary">[Add Vacancy]</a></p>
 {% endif %}
 
-<form method="GET" >
+<form method="GET" class="filter-form">
     <fieldset>
         <legend>Search Vacancies</legend>
-        <label for="id_q">Search:</label>
-        <input type="search" id="id_q" name="q" placeholder="Search vacancies..." value="{{ query }}" maxlength="200">
-        <select name="tags" multiple aria-label="Filter by tag">
-            {% for tag in tags %}
-                <option value="{{ tag.id }}" {% if tag.id in current_tags %}selected{% endif %}>{{ tag.name }}</option>
-            {% endfor %}
-        </select>
-        <button type="submit">Filter / Search</button>
+        <div class="form-row">
+            <label for="id_q">Search:</label>
+            <input type="search" id="id_q" name="q" placeholder="Search vacancies..." value="{{ query }}" maxlength="200" class="form-input">
+            <label for="id_tags">Filter by tag:</label>
+            <select id="id_tags" name="tags" multiple aria-label="Filter by tag" class="form-select">
+                {% for tag in tags %}
+                    <option value="{{ tag.id }}" {% if tag.id in current_tags %}selected{% endif %}>{{ tag.name }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="btn btn-primary">Filter / Search</button>
+        </div>
     </fieldset>
 </form>
 
 <hr>
 
-<ul>
+<!-- Floating blocks layout with clear -->
+<ul class="vacancies-float-list">
 {% for vacancy in vacancies %}
-    <li itemscope itemtype="https://schema.org/JobPosting">
-        <h2 itemprop="title">{{ vacancy.title }}</h2>
+    <li itemscope itemtype="https://schema.org/JobPosting" class="vacancy-float-card">
+        <h2 itemprop="title" class="vacancy-title">{{ vacancy.title }}</h2>
         {% if request.user.role == 'ADMIN' %}
-        <p>
-            <a href="{% url 'cms:vacancy_edit' pk=vacancy.id %}">[Edit]</a>
-            <a href="{% url 'cms:vacancy_delete' pk=vacancy.id %}">[Delete]</a>
+        <p class="admin-actions">
+            <a href="{% url 'cms:vacancy_edit' pk=vacancy.id %}" class="btn btn-secondary">[Edit]</a>
+            <a href="{% url 'cms:vacancy_delete' pk=vacancy.id %}" class="btn btn-danger">[Delete]</a>
         </p>
         {% endif %}
-        <p>
+        <p class="vacancy-meta">
             <strong>Updated:</strong>
             <time datetime="{{ vacancy.updated_at|date:'Y-m-d' }}" itemprop="datePosted">
                 {{ vacancy.updated_at|date:"d/m/Y" }}
             </time>
         </p>
         {% if vacancy.tags.all %}
-        <p>
+        <p class="vacancy-tags">
             <strong>Tags:</strong>
             {% for tag in vacancy.tags.all %}
                 <em>{{ tag.name }}</em>{% if not forloop.last %}, {% endif %}
             {% endfor %}
         </p>
         {% endif %}
-        <p itemprop="description">{{ vacancy.description }}</p>
-        <address>
-            Apply: <a href="mailto:jobs@pastryshop.example.com">jobs@pastryshop.example.com</a>
+        <p itemprop="description" class="vacancy-desc">{{ vacancy.description }}</p>
+        <address class="vacancy-apply">
+            Apply: <a href="mailto:jobs@pastryshop.example.com" class="apply-email">jobs@pastryshop.example.com</a>
         </address>
     </li>
 {% empty %}

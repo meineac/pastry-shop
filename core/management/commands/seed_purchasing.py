@@ -55,12 +55,23 @@ class Command(BaseCommand):
         self.stdout.write("Seeding promo codes...")
         for i in range(1, 11):
             code = f"PROMO{i * 10}"
-            PromoCode.objects.get_or_create(
+            if i <= 5:
+                status = PromoCode.Status.ACTIVE
+                exp_date = date.today() + timedelta(days=30 * i)
+                conditions = f"Valid for orders over minimum amount. Active code #{i}."
+            else:
+                status = PromoCode.Status.ARCHIVED
+                exp_date = date.today() - timedelta(days=15 * (i - 5))
+                conditions = f"Seasonal campaign concluded on {exp_date.strftime('%d/%m/%Y')}."
+
+            PromoCode.objects.update_or_create(
                 code=code,
                 defaults={
-                    "expiration_date": date.today() + timedelta(days=365),
-                    "discount_percentage": Decimal(random.randint(5, 20)),
-                    "minimum_purchase_amount": Decimal(random.randint(10, 50)),
-                    "conditions_of_application": "Standard discount",
+                    "expiration_date": exp_date,
+                    "status": status,
+                    "discount_percentage": Decimal(5 + (i * 2)),
+                    "minimum_purchase_amount": Decimal(10 + (i * 5)),
+                    "conditions_of_application": conditions,
+                    "is_hidden": False,
                 },
             )

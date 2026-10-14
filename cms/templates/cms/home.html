@@ -2,14 +2,94 @@
 {% block title %}Home — Pastry Shop{% endblock %}
 
 {% block content %}
-<h1 itemprop="name">Welcome to <mark>Pastry Shop</mark></h1>
+<h1 itemprop="name" class="brand-heading">Welcome to <mark>Pastry Shop</mark></h1>
 
-<p><em>Handcrafted with love, baked with precision.</em></p>
+<p class="brand-tagline"><em>Handcrafted with love, baked with precision.</em></p>
+
+<!-- ================================================================== -->
+<!-- HERO ANIMATION STAGE (VARIANT: «Кондитерская») -->
+<!-- Pastries spin & drop into floating cloud; cloud smiles & shifts color; -->
+<!-- company name appears and stays on screen. -->
+<!-- ================================================================== -->
+<section class="pastry-animation-stage" aria-label="Pastry Shop Welcome Animation">
+    <div class="pastry-stage-scene">
+        <!-- Pastry Item 1: Flaky Croissant -->
+        <div class="pastry-item croissant" title="Butter Croissant">
+            <svg viewBox="0 0 60 60" width="52" height="52" role="img" aria-label="Croissant">
+                <path d="M 8,32 C 12,18 24,10 40,12 C 52,14 56,26 50,38 C 42,48 24,52 14,46 C 6,40 4,36 8,32 Z" fill="#e69c45" stroke="#b36b20" stroke-width="2"/>
+                <path d="M 18,22 C 24,16 34,16 42,20" fill="none" stroke="#fae09c" stroke-width="2"/>
+                <path d="M 22,30 C 28,24 38,24 46,30" fill="none" stroke="#fae09c" stroke-width="2"/>
+            </svg>
+        </div>
+        <!-- Pastry Item 2: Raspberry Macaron -->
+        <div class="pastry-item macaron" title="Raspberry Macaron">
+            <svg viewBox="0 0 60 60" width="46" height="46" role="img" aria-label="Macaron">
+                <ellipse cx="30" cy="20" rx="22" ry="9" fill="#e85d75" stroke="#ba2d45" stroke-width="2"/>
+                <rect x="9" y="20" width="42" height="6" rx="2" fill="#fff0f5"/>
+                <ellipse cx="30" cy="29" rx="22" ry="9" fill="#e85d75" stroke="#ba2d45" stroke-width="2"/>
+            </svg>
+        </div>
+        <!-- Pastry Item 3: Vanilla Cupcake -->
+        <div class="pastry-item cupcake" title="Vanilla Cupcake">
+            <svg viewBox="0 0 60 60" width="48" height="48" role="img" aria-label="Cupcake">
+                <path d="M 16,32 L 20,52 L 40,52 L 44,32 Z" fill="#d49b6a" stroke="#8b5226" stroke-width="2"/>
+                <path d="M 12,32 C 12,20 22,14 30,14 C 38,14 48,20 48,32 Z" fill="#fff4e0" stroke="#f0cf9e" stroke-width="2"/>
+                <circle cx="30" cy="12" r="5" fill="#d90429"/>
+            </svg>
+        </div>
+        <!-- Pastry Item 4: Wild Berry Tartlet -->
+        <div class="pastry-item tart" title="Berry Tartlet">
+            <svg viewBox="0 0 60 60" width="48" height="48" role="img" aria-label="Berry Tart">
+                <path d="M 10,34 L 14,48 L 46,48 L 50,34 Z" fill="#c7823e" stroke="#874e17" stroke-width="2"/>
+                <ellipse cx="30" cy="34" rx="20" ry="6" fill="#6a040f"/>
+                <circle cx="24" cy="30" r="4" fill="#9d0208"/>
+                <circle cx="32" cy="28" r="4" fill="#9d0208"/>
+                <circle cx="38" cy="31" r="3.5" fill="#9d0208"/>
+            </svg>
+        </div>
+        <!-- Pastry Item 5: Chocolate Éclair -->
+        <div class="pastry-item eclair" title="Chocolate Éclair">
+            <svg viewBox="0 0 60 60" width="52" height="52" role="img" aria-label="Éclair">
+                <rect x="8" y="24" width="44" height="14" rx="7" fill="#dfa267" stroke="#935b23" stroke-width="2"/>
+                <rect x="10" y="23" width="40" height="8" rx="4" fill="#472615"/>
+                <path d="M 14,27 Q 24,25 34,27" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" fill="none" opacity="0.6"/>
+            </svg>
+        </div>
+
+        <!-- Floating Cloud below that smiles and shifts color -->
+        <div class="floating-cloud-wrapper">
+            <svg class="pastry-cloud-svg" viewBox="0 0 320 180" width="300" height="160" role="img" aria-label="Floating Smiling Cloud">
+                <!-- Cloud Puffy Body -->
+                <path class="cloud-body" d="M 70,120 
+                         C 40,120 20,95 35,70 
+                         C 20,40 55,20 85,35 
+                         C 110,10 160,10 185,30 
+                         C 215,10 265,25 270,55 
+                         C 295,65 305,100 280,120 
+                         Z" />
+                <!-- Cloud Face Elements -->
+                <g class="cloud-face">
+                    <path class="cloud-eye eye-left" d="M 115,70 Q 125,62 135,70" />
+                    <path class="cloud-eye eye-right" d="M 185,70 Q 195,62 205,70" />
+                    <circle class="cloud-blush blush-left" cx="108" cy="80" r="10" />
+                    <circle class="cloud-blush blush-right" cx="212" cy="80" r="10" />
+                    <path class="cloud-mouth" d="M 142,82 Q 160,102 178,82" />
+                </g>
+            </svg>
+        </div>
+
+        <!-- Company title appears and stays on screen -->
+        <div class="animated-company-wrapper">
+            <h2 class="animated-company-title">Pastry Shop</h2>
+            <p class="animated-company-subtitle"><em>Artisanal Pâtisserie &bull; Haute Boulangerie</em></p>
+        </div>
+    </div>
+</section>
 
 {% comment %}Quatrain with fixed breaks (br) and potential breaks (wbr){% endcomment %}
-<section aria-label="Our motto">
+<section aria-label="Our motto" class="motto-section">
     <blockquote cite="https://pastryshop.example.com">
-        <p>
+        <p class="motto-quatrain">
             A flake of butter, a pinch of salt,<wbr> a twist of dough,<br>
             Golden in the oven, rising warm and slow.<br>
             Each layer tells a story,<wbr> each crumb a memory,<br>
@@ -17,17 +97,21 @@
         </p>
         <cite>— The Pastry Shop</cite>
     </blockquote>
+    <p class="motto-lang-quote">
+        <q lang="fr">La vie est trop courte pour manger de mauvaises pâtisseries.</q>
+    </p>
 </section>
 
 {% comment %}Company logo{% endcomment %}
 {% if company_info and company_info.logo %}
-<section aria-label="Brand">
-    <figure>
+<section aria-label="Brand" class="brand-section">
+    <figure class="brand-figure">
         <img src="{{ company_info.logo.url }}"
              alt="Pastry Shop Logo"
              width="200"
              srcset="{{ company_info.logo_small.url }} 1x, {{ company_info.logo_medium.url }} 2x"
-             itemprop="logo">
+             itemprop="logo"
+             class="brand-logo-img">
         <figcaption><strong>Pastry Shop</strong> — est. <time datetime="2010">2010</time></figcaption>
     </figure>
 </section>
@@ -35,20 +119,20 @@
 
 {% comment %}Promotional banners{% endcomment %}
 {% if banners %}
-<section aria-label="Promotions">
+<section aria-label="Promotions" class="promotions-section">
     <h2>Current Promotions</h2>
-    <ul>
+    <ul class="promotions-list">
     {% for banner in banners %}
-        <li>
+        <li class="promotion-item">
             {% if banner.link_url %}
             <a href="{{ banner.link_url }}" rel="noopener">
             {% endif %}
-                <figure>
+                <figure class="banner-figure">
                     <img src="{{ banner.image.url }}"
                          alt="{{ banner.title }}"
                          width="800"
                          sizes="100vw" srcset="{{ banner.image_small.url }} 400w, {{ banner.image_medium.url }} 800w, {{ banner.image_large.url }} 1600w"
-                         >
+                         class="banner-img">
                     {% if banner.title %}<figcaption>{{ banner.title }}</figcaption>{% endif %}
                 </figure>
             {% if banner.link_url %}
@@ -61,90 +145,100 @@
 {% endif %}
 
 {% comment %}Product catalog preview{% endcomment %}
-<section id="catalog-preview" aria-label="Catalog preview">
+<section id="catalog-preview" aria-label="Catalog preview" class="catalog-preview-section">
     <h2>Our Products</h2>
     <p>A selection of our most popular items. <a href="{% url 'catalog:product_list' %}">View the full catalog &rarr;</a></p>
-    <ul>
+    <ul class="product-grid">
     {% for product in products_preview %}
-        <li itemscope itemtype="https://schema.org/Product">
+        <li itemscope itemtype="https://schema.org/Product" class="product-card">
             {% if product.photo %}
-            <figure>
+            <figure class="product-card-figure">
                 <a href="{% url 'catalog:product_detail' product_id=product.id %}">
                     <img src="{{ product.photo.url }}"
                          alt="{{ product.name }}"
                          width="150"
                          sizes="100vw" srcset="{{ product.photo_small.url }} 150w, {{ product.photo_medium.url }} 300w"
-                         itemprop="image">
+                         itemprop="image"
+                         class="product-thumb">
                 </a>
                 <figcaption itemprop="name">{{ product.name }}</figcaption>
             </figure>
             {% endif %}
-            <p>
+            <h3 class="product-card-title">
                 <a href="{% url 'catalog:product_detail' product_id=product.id %}" itemprop="url">
                     <strong>{{ product.name }}</strong>
                 </a>
-            </p>
-            <p itemprop="offers" itemscope itemtype="https://schema.org/Offer">
+            </h3>
+            <p itemprop="offers" itemscope itemtype="https://schema.org/Offer" class="product-card-price">
                 Price: <strong><span itemprop="price">${{ product.price }}</span></strong>
                 / {{ product.unit }}
             </p>
+            <p><a href="{% url 'catalog:product_detail' product_id=product.id %}" class="btn btn-secondary">Details</a></p>
         </li>
     {% empty %}
         <li>No products available yet.</li>
     {% endfor %}
     </ul>
-    <p><a href="{% url 'catalog:product_list' %}"><strong>Browse all products &rarr;</strong></a></p>
+    <p><a href="{% url 'catalog:product_list' %}" class="btn btn-primary"><strong>Browse all products &rarr;</strong></a></p>
 </section>
 
 {% comment %}Latest news{% endcomment %}
-<section aria-label="Latest news">
+<section aria-label="Latest news" class="latest-news-section">
     <h2>Latest News</h2>
     {% if latest_news %}
-        <article itemscope itemtype="https://schema.org/NewsArticle">
+        <article itemscope itemtype="https://schema.org/NewsArticle" class="latest-news-card">
+            <span class="latest-badge" aria-label="Latest article badge">Latest Article</span>
             {% if latest_news.image %}
-            <figure>
+            <figure class="latest-news-figure">
                 <img src="{{ latest_news.image.url }}"
                      alt="{{ latest_news.title }}"
                      width="300"
                      sizes="100vw" srcset="{{ latest_news.image_small.url }} 300w, {{ latest_news.image_medium.url }} 600w"
-                     itemprop="image">
+                     itemprop="image"
+                     class="latest-news-img">
                 <figcaption>{{ latest_news.title }}</figcaption>
-            </figure>
-            {% endif %}
-            <h3 itemprop="headline">{{ latest_news.title }}</h3>
-            <p>
-                <strong>Published:</strong>
-                <time datetime="{{ latest_news.created_at|date:'Y-m-d' }}" itemprop="datePublished">
+                <time datetime="{{ latest_news.created_at|date:'Y-m-d' }}" itemprop="datePublished" class="news-date-badge">
                     {{ latest_news.created_at|date:"d/m/Y" }}
                 </time>
-            </p>
-            <p itemprop="description">{{ latest_news.short_summary }}</p>
-            <p><a href="{% url 'cms:news_detail' pk=latest_news.id %}"><strong>Read More &rarr;</strong></a></p>
+            </figure>
+            {% endif %}
+            <div class="latest-news-body">
+                <h3 itemprop="headline">{{ latest_news.title }}</h3>
+                <p>
+                    <strong>Published:</strong>
+                    <time datetime="{{ latest_news.created_at|date:'Y-m-d' }}" itemprop="datePublished">
+                        {{ latest_news.created_at|date:"d/m/Y" }}
+                    </time>
+                </p>
+                <p itemprop="description" class="news-summary">{{ latest_news.short_summary }}</p>
+                <p><a href="{% url 'cms:news_detail' pk=latest_news.id %}" class="btn btn-primary"><strong>Read More &rarr;</strong></a></p>
+            </div>
         </article>
     {% else %}
         <p>No news available yet.</p>
     {% endif %}
 </section>
 
-{% comment %}Partner companies{% endcomment %}
+{% comment %}Partner companies (Circular blocks requirement){% endcomment %}
 {% if partners %}
-<section aria-label="Our partners">
+<section aria-label="Our partners" class="partners-section">
     <h2>Our Partners</h2>
-    <ul>
+    <ul class="partner-list">
     {% for partner in partners %}
-        <li itemscope itemtype="https://schema.org/Organization">
-            <a href="{{ partner.website_url }}" rel="noopener noreferrer" target="_blank" itemprop="url">
+        <li itemscope itemtype="https://schema.org/Organization" class="partner-item">
+            <a href="{{ partner.website_url }}" rel="noopener noreferrer" target="_blank" itemprop="url" class="partner-circle">
                 {% if partner.logo %}
-                <figure>
+                <figure class="partner-figure">
                     <img src="{{ partner.logo.url }}"
                          alt="{{ partner.name }} logo"
                          width="120"
                          sizes="100vw" srcset="{{ partner.logo_small.url }} 120w"
-                         itemprop="logo">
-                    <figcaption itemprop="name">{{ partner.name }}</figcaption>
+                         itemprop="logo"
+                         class="partner-logo-img">
+                    <figcaption itemprop="name" class="partner-name">{{ partner.name }}</figcaption>
                 </figure>
                 {% else %}
-                <strong itemprop="name">{{ partner.name }}</strong>
+                <strong itemprop="name" class="partner-name">{{ partner.name }}</strong>
                 {% endif %}
             </a>
         </li>
@@ -153,10 +247,11 @@
 </section>
 {% endif %}
 
-{% comment %}Location & weather info{% endcomment %}
-<section aria-label="Location and conditions">
+{% comment %}Location & weather info (Data table with caption & no double borders){% endcomment %}
+<section aria-label="Location and conditions" class="conditions-section">
     <h2>Your Location &amp; Current Conditions</h2>
-    <table>
+    <table class="conditions-table">
+        <caption>Current Regional Weather and System Timezone Information</caption>
         <thead>
             <tr>
                 <th id="col-info">Information</th>

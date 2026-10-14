@@ -2,45 +2,46 @@
 {% block title %}Reviews — Pastry Shop{% endblock %}
 
 {% block content %}
-<h1>Store Reviews</h1>
+<h1 class="brand-heading">Store Reviews &amp; Testimonials</h1>
 
 {% if not request.user.is_authenticated or request.user.role == 'CUSTOMER' %}
-<p>
-    <a href="{% url 'cms:review_create' %}">[Add Review]</a>
+<p class="review-cta">
+    <a href="{% url 'cms:review_create' %}" class="btn btn-primary">[Add Review]</a>
 </p>
 {% endif %}
 
 <hr>
 
-<ul>
+<ul class="reviews-list">
 {% for review in reviews %}
-    <li itemscope itemtype="https://schema.org/Review">
-        <p>
-            <strong itemprop="author">{{ review.author.username }}</strong>
+    <li itemscope itemtype="https://schema.org/Review" class="review-card">
+        <div class="review-header">
+            <strong itemprop="author" class="review-author">{{ review.author.username }}</strong>
             &mdash;
-            <time datetime="{{ review.created_at|date:'Y-m-d' }}" itemprop="datePublished">
+            <time datetime="{{ review.created_at|date:'Y-m-d' }}" itemprop="datePublished" class="review-date">
                 {{ review.created_at|date:"d/m/Y" }}
             </time>
-        </p>
-        <p itemprop="reviewRating" itemscope itemtype="https://schema.org/Rating">
+        </div>
+        <p itemprop="reviewRating" itemscope itemtype="https://schema.org/Rating" class="review-rating">
             <strong>Rating:</strong>
-            <span itemprop="ratingValue">{{ review.rating }}</span> / 5
+            <span itemprop="ratingValue" class="rating-value">{{ review.rating }}</span> / 5
+            <span class="stars-visual" aria-hidden="true">★</span>
         </p>
         {% if review.tags.all %}
-        <p>
+        <p class="review-tags">
             <strong>Tags:</strong>
             {% for tag in review.tags.all %}
-                <em>{{ tag.name }}</em>{% if not forloop.last %}, {% endif %}
+                <em class="review-tag">{{ tag.name }}</em>{% if not forloop.last %}, {% endif %}
             {% endfor %}
         </p>
         {% endif %}
-        <blockquote itemprop="reviewBody">
-            <q>{{ review.review_text }}</q>
+        <blockquote itemprop="reviewBody" class="review-quote">
+            <q lang="en">{{ review.review_text }}</q>
         </blockquote>
         {% if request.user == review.author %}
-        <p>
-            <a href="{% url 'cms:review_edit' pk=review.id %}">[Edit]</a>
-            <a href="{% url 'cms:review_delete' pk=review.id %}">[Delete]</a>
+        <p class="review-actions">
+            <a href="{% url 'cms:review_edit' pk=review.id %}" class="btn btn-secondary">[Edit]</a>
+            <a href="{% url 'cms:review_delete' pk=review.id %}" class="btn btn-danger">[Delete]</a>
         </p>
         {% endif %}
     </li>

@@ -2,11 +2,12 @@
 
 These rules apply to ALL work on this project. They are derived from the project requirements specification and must be followed at all times.
 
-## Styling Constraint
+## Styling Requirements (Lab Work #2 — CSS3)
 
-- **NO CSS or other styles.** The project uses pure HTML and Python only.
-- Do NOT add `style=` inline attributes, `<style>` blocks, CSS files, or `class=` attributes intended for styling.
-- Use semantic HTML elements for visual meaning (e.g., `<strong>` instead of `style="font-weight:bold"`).
+- **Pure custom CSS3**: All styles are written in `core/static/core/css/styles.css`. No external CSS frameworks (Bootstrap, Tailwind, Bulma, etc.) or external reset CDNs. Google Fonts is permitted for web fonts.
+- **Maintain semantic HTML5 & Microdata**: All semantic tags, Schema.org microdata, and validation attributes from LR1 must be preserved.
+- **Zero client-side JavaScript**: Preloaders and hero animations must be implemented using pure HTML5 + CSS3/SVG animations with zero JavaScript.
+
 
 ## Base Template Inheritance
 

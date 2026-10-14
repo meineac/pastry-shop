@@ -2,67 +2,74 @@
 {% block title %}News — Pastry Shop{% endblock %}
 
 {% block content %}
-<h1>News &amp; Articles</h1>
+<h1 class="brand-heading">News &amp; Articles</h1>
 
 {% if request.user.role == 'ADMIN' %}
-    <p><a href="{% url 'cms:news_create' %}">[Add News]</a></p>
+    <p><a href="{% url 'cms:news_create' %}" class="btn btn-secondary">[Add News]</a></p>
 {% endif %}
 
-<form method="GET" >
+<form method="GET" class="filter-form">
     <fieldset>
-        <legend>Search &amp; Filter</legend>
-        <label for="id_q">Search:</label>
-        <input type="search" id="id_q" name="q" placeholder="Search news..." value="{{ query }}" maxlength="200">
-        <select name="tags" multiple aria-label="Filter by tag">
-            {% for tag in tags %}
-                <option value="{{ tag.id }}" {% if tag.id in current_tags %}selected{% endif %}>{{ tag.name }}</option>
-            {% endfor %}
-        </select>
-        <button type="submit">Filter / Search</button>
+        <legend>Search &amp; Filter Articles</legend>
+        <div class="form-row">
+            <label for="id_q">Search:</label>
+            <input type="search" id="id_q" name="q" placeholder="Search news..." value="{{ query }}" maxlength="200" class="form-input">
+            
+            <label for="id_tags">Filter by tag:</label>
+            <select id="id_tags" name="tags" multiple aria-label="Filter by tag" class="form-select">
+                {% for tag in tags %}
+                    <option value="{{ tag.id }}" {% if tag.id in current_tags %}selected{% endif %}>{{ tag.name }}</option>
+                {% endfor %}
+            </select>
+            
+            <button type="submit" class="btn btn-primary">Filter / Search</button>
+        </div>
     </fieldset>
 </form>
 
 <hr>
 
-<ul>
+<ul class="news-list">
 {% for item in news %}
-    <li itemscope itemtype="https://schema.org/NewsArticle">
+    <li itemscope itemtype="https://schema.org/NewsArticle" class="news-card">
         {% if item.image %}
-        <figure>
+        <figure class="news-card-figure">
             <img src="{{ item.image.url }}"
                  alt="{{ item.title }}"
                  width="200"
                  srcset="{{ item.image_small.url }} 200w, {{ item.image_medium.url }} 400w"
                  sizes="200px"
-                 itemprop="image">
+                 itemprop="image"
+                 class="news-card-thumb">
             <figcaption>{{ item.title }}</figcaption>
         </figure>
         {% endif %}
-        <h2 itemprop="headline">{{ item.title }}</h2>
-        <p>
-            <strong>Published:</strong>
-            <time datetime="{{ item.created_at|date:'Y-m-d' }}" itemprop="datePublished">
-                {{ item.created_at|date:"d/m/Y" }}
-            </time>
-        </p>
-        {% if item.tags.all %}
-        <p>
-            <strong>Tags:</strong>
-            {% for tag in item.tags.all %}
-                <em>{{ tag.name }}</em>{% if not forloop.last %}, {% endif %}
-            {% endfor %}
-        </p>
-        {% endif %}
-        <p itemprop="description">{{ item.short_summary }}</p>
-        <p>
-            <a href="{% url 'cms:news_detail' pk=item.id %}">[Read More]</a>
-        </p>
-        {% if request.user.role == 'ADMIN' %}
-        <p>
-            <a href="{% url 'cms:news_edit' pk=item.id %}">[Edit]</a>
-            <a href="{% url 'cms:news_delete' pk=item.id %}">[Delete]</a>
-        </p>
-        {% endif %}
+        <div class="news-card-content">
+            <h2 itemprop="headline" class="news-card-title">{{ item.title }}</h2>
+            <p class="news-meta">
+                <strong>Published:</strong>
+                <time datetime="{{ item.created_at|date:'Y-m-d' }}" itemprop="datePublished">
+                    {{ item.created_at|date:"d/m/Y" }}
+                </time>
+            </p>
+            {% if item.tags.all %}
+            <p class="news-tags">
+                <strong>Tags:</strong>
+                {% for tag in item.tags.all %}
+                    <em>{{ tag.name }}</em>{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+            </p>
+            {% endif %}
+            <!-- Summary with ellipsis overflow requirement -->
+            <p itemprop="description" class="news-summary">{{ item.short_summary }}</p>
+            <p class="news-actions">
+                <a href="{% url 'cms:news_detail' pk=item.id %}" class="btn btn-primary">[Read More]</a>
+                {% if request.user.role == 'ADMIN' %}
+                    <a href="{% url 'cms:news_edit' pk=item.id %}" class="btn btn-secondary">[Edit]</a>
+                    <a href="{% url 'cms:news_delete' pk=item.id %}" class="btn btn-danger">[Delete]</a>
+                {% endif %}
+            </p>
+        </div>
     </li>
 {% empty %}
     <li>No news articles found.</li>
