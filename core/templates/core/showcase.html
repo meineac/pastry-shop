@@ -3,10 +3,12 @@
 {% block title %}HTML Features Showcase{% endblock %}
 
 {% block content %}
+<main>
 <!-- Microdata, Container elements & Global attributes -->
 <article itemscope itemtype="https://schema.org/TechArticle" id="showcase-article" lang="en" dir="ltr" title="HTML Elements Showcase" class="showcase-article" data-showcase="true" itemid="urn:uuid:12345678-1234-1234-1234-123456789012" itemref="extra-details">
   <header>
     <h1 itemprop="headline" translate="no">HTML Features Showcase</h1>
+    <p><strong>Comprehensive Tag Collection</strong></p>
     <p>This page explicitly demonstrates every single tag, attribute, and semantic element required in the assignment task.</p>
     <p id="extra-details" itemprop="abstract">This paragraph provides extra details referenced by itemref.</p>
     <p hidden>This paragraph is hidden from view using the hidden attribute.</p>
@@ -25,11 +27,15 @@
   <hr>
 
   <section id="semantic-text">
-    <h2>Semantic Text &amp; Specific Tags</h2>
+    <h3>Semantic Text &amp; Specific Tags</h3>
     <!-- Container elements: div, span -->
     <div tabindex="0">
-      <p>Here is an example of <mark>highlighted</mark> text, <em>emphasized</em> text, and <strong>strong</strong> text in a <span>span</span> container.</p>
+      <p draggable="true">Here is an example of <mark>highlighted</mark> text, <em>emphasized</em> text, and <strong>strong</strong> text in a <span>span</span> container. We can also use <b>bold</b> (attention), <i>italic</i> (idiomatic), <s>strikethrough</s> (no longer relevant), <u>underline</u> (unarticulated), and <small>small print</small>.</p>
       
+      <p>Math formulas use <sub>subscript</sub> for H<sub>2</sub>O and <sup>superscript</sup> for E = mc<sup>2</sup>.</p>
+      
+      <p>When defining a <var>variable</var>, the output might look like <samp>Sample output</samp>. Please press <kbd>Ctrl</kbd> + <kbd>C</kbd> to copy.</p>
+
       <!-- Date-time -->
       <p>The showcase was published on <time datetime="2026-09-24">24/09/2026</time>.</p>
       
@@ -55,7 +61,7 @@
   </section>
 
   <section id="quatrain">
-    <h2>Quatrain (Poem)</h2>
+    <h3>Quatrain (Poem)</h3>
     <!-- Fixed and potential line breaks -->
     <p>
       Code is written in the night,<br>
@@ -66,7 +72,7 @@
   </section>
 
   <section id="lists-figures">
-    <h2>Lists, Figures, Links &amp; Vertical Nav</h2>
+    <h3>Lists, Figures, Links &amp; Vertical Nav</h3>
     <!-- Vertical navigation (using ul inside nav) -->
     <nav aria-label="Vertical internal navigation">
       <ul>
@@ -76,9 +82,9 @@
     </nav>
 
     <!-- Ordered List -->
-    <ol>
+    <ol start="1" reversed>
+      <li value="2">Second step</li>
       <li>First step</li>
-      <li>Second step</li>
     </ol>
     
     <!-- Definition List -->
@@ -91,31 +97,39 @@
 
     <!-- Figure, image (with srcset/sizes), and figcaption -->
     <figure>
-      <img src="/media/company/logo-300.jpg" alt="Pastry Shop Logo" width="300" 
-           srcset="/media/company/logo-300.jpg 1x, /media/company/logo-600.jpg 2x, /media/company/logo-900.jpg 3x">
+      <a href="/media/company/logo-300.jpg">
+        <img src="/media/company/logo-300.jpg" alt="Pastry Shop Logo" width="300" height="300"
+             srcset="/media/company/logo-300.jpg 1x, /media/company/logo-600.jpg 2x" sizes="(max-width: 600px) 100vw, 50vw" ismap>
+      </a>
       <figcaption>Figure 1: Responsive Company Logo</figcaption>
     </figure>
 
     <p>
       <!-- Various Links including anchor and download -->
-      <a href="{% url 'cms:home' %}">Standard link to Home</a><br>
-      <a href="/media/company/menu.pdf" download>Download Menu (PDF)</a><br>
+      <a href="{% url 'cms:home' %}" target="_blank" rel="noopener" hreflang="en" type="text/html">Standard link to Home</a><br>
+      <a href="/media/company/menu.pdf" download="menu_download.pdf">Download Menu (PDF)</a><br>
       <a href="#showcase-article">Anchor link to top</a>
     </p>
   </section>
 
   <section id="data-table">
-    <h2>Data Table</h2>
+    <h3>Data Table</h3>
     <!-- Table with all required elements/attributes -->
-    <table border="1">
+    <table>
+      <caption>Product Inventory Table</caption>
+      <colgroup span="1"></colgroup>
+      <colgroup>
+        <col>
+        <col>
+      </colgroup>
       <thead>
         <tr>
-          <th id="th-name" rowspan="2">Item Name</th>
-          <th id="th-details" colspan="2">Details</th>
+          <th id="th-name" rowspan="2" scope="col">Item Name</th>
+          <th id="th-details" colspan="2" scope="colgroup">Details</th>
         </tr>
         <tr>
-          <th id="th-price">Price (USD)</th>
-          <th id="th-stock">Stock</th>
+          <th id="th-price" scope="col">Price (USD)</th>
+          <th id="th-stock" scope="col">Stock</th>
         </tr>
       </thead>
       <tbody>
@@ -130,78 +144,155 @@
           <td headers="th-details th-stock">300</td>
         </tr>
       </tbody>
+      <tfoot>
+        <tr>
+          <td>Total</td>
+          <td colspan="2">450 items</td>
+        </tr>
+      </tfoot>
     </table>
   </section>
 
   <section id="forms">
-    <h2>Forms &amp; Controls</h2>
-    <form action="#" method="get" data-form-type="feedback">
+    <h3>Forms &amp; Controls</h3>
+    <form action="#" method="get" name="main_form" data-form-type="feedback" target="_self" enctype="application/x-www-form-urlencoded" autocomplete="on">
       <!-- Fieldset and Legend -->
-      <fieldset>
+      <fieldset title="Feedback form fields">
         <legend>Feedback Form</legend>
         
         <!-- Validation (required, pattern, minlength, maxlength) -->
         <label for="username">Username (Letters only):</label>
-        <input type="text" id="username" name="username" required minlength="3" maxlength="20" pattern="[A-Za-z]+"><br><br>
+        <input type="text" id="username" name="username" required minlength="3" maxlength="20" pattern="[A-Za-z]+" autofocus placeholder="Your name" size="20"><br><br>
         
-        <!-- Validation (min, max) -->
+        <label for="pwd">Password:</label>
+        <input type="password" id="pwd" name="pwd" maxlength="8"><br><br>
+
+        <!-- Validation (min, max, step) -->
         <label for="rating">Rating (1-10):</label>
-        <input type="number" id="rating" name="rating" min="1" max="10"><br><br>
+        <input type="number" id="rating" name="rating" min="1" max="10" step="1"><br><br>
         
+        <label for="rng">Volume:</label>
+        <input type="range" id="rng" name="rng" min="0" max="100" step="10"><br><br>
+
         <!-- Various input types -->
         <label for="fav_color">Favorite Color:</label>
-        <input type="color" id="fav_color" name="fav_color"><br><br>
+        <input type="color" id="fav_color" name="fav_color" value="#ff0000"><br><br>
         
         <label for="exam_date">Exam Date:</label>
         <input type="date" id="exam_date" name="exam_date"><br><br>
 
+        <label for="exam_time">Time:</label>
+        <input type="time" id="exam_time" name="exam_time"><br><br>
+
+        <label for="exam_dt">Date &amp; Time:</label>
+        <input type="datetime-local" id="exam_dt" name="exam_dt"><br><br>
+
+        <label for="exam_month">Month:</label>
+        <input type="month" id="exam_month" name="exam_month"><br><br>
+
+        <label for="exam_week">Week:</label>
+        <input type="week" id="exam_week" name="exam_week"><br><br>
+
         <label for="user_email">Email:</label>
-        <input type="email" id="user_email" name="user_email"><br><br>
+        <input type="email" id="user_email" name="user_email" multiple><br><br>
+
+        <label for="website">Website:</label>
+        <input type="url" id="website" name="website"><br><br>
+
+        <label for="phone">Phone:</label>
+        <input type="tel" id="phone" name="phone"><br><br>
+
+        <label for="q">Search query:</label>
+        <input type="search" id="q" name="q"><br><br>
 
         <label for="upload_file">Upload assignment:</label>
-        <input type="file" id="upload_file" name="upload_file"><br><br>
+        <input type="file" id="upload_file" name="upload_file" accept="image/*,.pdf"><br><br>
+
+        <input type="hidden" name="secret_token" value="12345">
 
         <!-- Radio buttons -->
         <p>Status:</p>
-        <input type="radio" id="status_student" name="status" value="student">
+        <input type="radio" id="status_student" name="status" value="student" checked>
         <label for="status_student">Student</label><br>
-        <input type="radio" id="status_teacher" name="status" value="teacher">
-        <label for="status_teacher">Teacher</label><br><br>
+        <input type="radio" id="status_teacher" name="status" value="teacher" disabled>
+        <label for="status_teacher">Teacher (disabled)</label><br><br>
 
         <!-- Checkbox -->
-        <input type="checkbox" id="agree" name="agree" value="yes" required>
-        <label for="agree">I confirm the code is valid.</label><br><br>
+        <input type="checkbox" id="agree" name="agree" value="yes" required checked>
+        <label for="agree">I confirm the code is valid.</label><br>
+        <input type="checkbox" id="newsletter" name="newsletter" value="yes" readonly>
+        <label for="newsletter">Subscribe to newsletter (readonly)</label><br><br>
 
-        <!-- Select dropdown -->
+        <!-- Select dropdown with optgroup -->
         <label for="course">Course:</label>
-        <select id="course" name="course">
-          <option value="web_dev">Web Development</option>
-          <option value="databases">Databases</option>
+        <select id="course" name="course" multiple size="3">
+          <optgroup label="Frontend">
+            <option value="web_dev" selected>Web Development</option>
+            <option value="css_adv">CSS Advanced</option>
+          </optgroup>
+          <optgroup label="Backend" disabled>
+            <option value="databases">Databases</option>
+          </optgroup>
         </select><br><br>
+
+        <!-- Datalist -->
+        <label for="browser">Choose a browser:</label>
+        <input list="browsers" name="browser" id="browser">
+        <datalist id="browsers">
+          <option value="Chrome" label="Google Chrome">
+          <option value="Firefox" label="Mozilla Firefox">
+          <option value="Safari">
+        </datalist><br><br>
 
         <!-- Textarea -->
         <label for="feedback">Comments:</label><br>
-        <textarea id="feedback" name="feedback" rows="4" cols="40" placeholder="Enter text here..." spellcheck="true"></textarea><br><br>
+        <textarea id="feedback" name="feedback" rows="4" cols="40" placeholder="Enter text here..." spellcheck="true" maxlength="500">Default text</textarea><br><br>
         
         <!-- Buttons -->
-        <button type="submit" accesskey="s">Submit</button>
+        <button type="submit" accesskey="s" name="btn_submit" value="submit" formaction="#" formmethod="get"><strong>Submit</strong> Form</button>
         <button type="reset" accesskey="x">Reset</button>
+        <button type="button" disabled>Disabled Button</button><br><br>
+
+        <p>Image Button:</p>
+        <input type="image" src="/media/company/logo-300.jpg" alt="Submit Image" width="50" height="50">
       </fieldset>
     </form>
   </section>
 
   <section id="embedded">
-    <h2>Embedded Content (Iframe, Video, Audio)</h2>
+    <h3>Embedded Content (Iframe, Video, Audio, Object)</h3>
     
-    <!-- Iframe (e.g. OpenStreetMap) -->
-    <iframe src="https://www.openstreetmap.org/export/embed.html?bbox=-0.162%2C51.514%2C-0.142%2C51.528&amp;layer=mapnik" width="425" height="350" title="Map of London"></iframe>
+    <!-- Picture -->
+    <picture>
+      <source media="(max-width: 600px)" srcset="/media/company/logo-300.jpg" type="image/jpeg">
+      <img src="/media/company/logo-600.jpg" alt="Responsive Picture Logo">
+    </picture>
     <br><br>
 
+    <!-- Iframe (e.g. OpenStreetMap) -->
+    <iframe src="https://www.openstreetmap.org/export/embed.html?bbox=-0.162%2C51.514%2C-0.142%2C51.528&amp;layer=mapnik" width="425" height="350" name="map_frame" title="Map of London" sandbox="allow-scripts allow-same-origin">
+      <p>Your browser does not support iframes.</p>
+    </iframe>
+    <br><br>
+
+    <!-- Embed and Object (Commented out) -->
+    <!--
+    <embed src="/media/company/menu.pdf" type="application/pdf" width="300" height="200">
+    <br><br>
+    
+    <object data="/media/company/menu.pdf" type="application/pdf" width="300" height="200" name="menu_object">
+      <param name="view" value="Fit">
+      <p>PDF cannot be displayed.</p>
+    </object>
+    <br><br>
+    -->
+
+    <!-- YouTube Video Iframe -->
     <iframe width="560" height="315" src="https://www.youtube.com/embed/2ZoXtl2OvpA?si=hs6NSZd1ymTq0OPZ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
     <br><br>
 
     <!-- Video -->
-    <video width="320" height="240" controls>
+    <video width="320" height="240" controls preload="metadata" loop muted poster="/media/company/logo-300.jpg">
       <source src="/media/showcase/Wait A Minute, Who Are You Meme.mp4" type="video/mp4">
       <track src="/media/showcase/[English (auto-generated)] Wait A Minute, Who Are You Meme [DownSub.com].vtt" kind="subtitles" srclang="en" label="English" default>
       Your browser does not support the video tag.
@@ -209,10 +300,32 @@
     <br><br>
 
     <!-- Audio (Fallback dummy source) -->
-    <audio controls>
+    <audio controls preload="auto" loop muted>
       <source src="/media/showcase/67.mp3" type="audio/mpeg">
       Your browser does not support the audio element.
     </audio>
+    <br><br>
+
+    <!-- Details and Summary -->
+    <details>
+      <summary>Click to view extra embedded info</summary>
+      <p>This is hidden information inside a details block.</p>
+    </details>
+
   </section>
+
+  <aside>
+    <h3>Aside Section</h3>
+    <h4>Related Information</h4>
+    <h5>More details</h5>
+    <h6>Deepest heading level</h6>
+    <p>This side note shows headings h3 to h6. The main document uses h1, h2, and h3.</p>
+  </aside>
+
+  <footer>
+    <p>&copy; 2026 Author of the Showcase</p>
+  </footer>
+
 </article>
+</main>
 {% endblock %}
