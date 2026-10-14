@@ -186,7 +186,7 @@
 <section aria-label="Latest news" class="latest-news-section">
     <h2>Latest News</h2>
     {% if latest_news %}
-        <article itemscope itemtype="https://schema.org/NewsArticle" class="latest-news-card">
+        <article itemscope itemtype="https://schema.org/NewsArticle" class="latest-news-card{% if not latest_news.image %} no-image{% endif %}">
             <span class="latest-badge" aria-label="Latest article badge">Latest Article</span>
             {% if latest_news.image %}
             <figure class="latest-news-figure">

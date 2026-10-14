@@ -54,9 +54,10 @@
                 <a href="{% url 'catalog:product_detail' product_id=product.id %}">
                     <img src="{{ product.photo.url }}"
                          alt="{{ product.name }}"
-                         width="100"
-                         srcset="{{ product.photo_small.url }} 100w"
-                         sizes="100px"
+                         width="300"
+                         height="190"
+                         srcset="{{ product.photo_small.url }} 300w, {{ product.photo_medium.url }} 600w"
+                         sizes="(max-width: 600px) 100vw, 300px"
                          itemprop="image"
                          class="product-thumb">
                 </a>
