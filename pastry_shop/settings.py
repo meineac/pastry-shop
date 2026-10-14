@@ -13,9 +13,14 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 import os
 from pathlib import Path
 import dj_database_url
+from .env import load_env
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Automatically load environment variables from .env if present.
+# Variables already defined in os.environ (e.g. from Render or Docker) are not overwritten.
+load_env(BASE_DIR / ".env")
 
 
 # Quick-start development settings - unsuitable for production

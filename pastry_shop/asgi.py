@@ -10,7 +10,9 @@ https://docs.djangoproject.com/en/6.0/howto/deployment/asgi/
 import os
 
 from django.core.asgi import get_asgi_application
+from pastry_shop.env import load_env
 
+load_env()
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "pastry_shop.settings")
 
 application = get_asgi_application()

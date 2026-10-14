@@ -4,9 +4,12 @@
 import os
 import sys
 
+from pastry_shop.env import load_env
+
 
 def main():
     """Run administrative tasks."""
+    load_env()
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "pastry_shop.settings")
     try:
         from django.core.management import execute_from_command_line

@@ -14,10 +14,6 @@ pip install -r requirements.txt
 ```
 
 ```
-set -a; source .env; set +a
-```
-
-```
 python manage.py migrate
 ```
 
