@@ -348,7 +348,7 @@ class HomeLocationViewTests(TestCase):
 
 
 # ---------------------------------------------------------------------------
-# Tests: management command populate_db
+# Tests: management command seed_catalog
 # ---------------------------------------------------------------------------
 
 class PopulateDbCommandTests(TestCase):
@@ -359,10 +359,10 @@ class PopulateDbCommandTests(TestCase):
         from catalog.models import Manufacturer
 
         out = StringIO()
-        call_command("populate_db", stdout=out)
+        call_command("seed_catalog", stdout=out)
 
         self.assertGreater(Manufacturer.objects.count(), 0)
-        self.assertIn("successfully populated", out.getvalue())
+        self.assertIn("Catalog seeded successfully!", out.getvalue())
 
     def test_command_creates_categories(self):
         from io import StringIO
@@ -370,7 +370,7 @@ class PopulateDbCommandTests(TestCase):
         from catalog.models import Category
 
         out = StringIO()
-        call_command("populate_db", stdout=out)
+        call_command("seed_catalog", stdout=out)
 
         self.assertGreater(Category.objects.count(), 0)
 
@@ -380,7 +380,7 @@ class PopulateDbCommandTests(TestCase):
         from catalog.models import Product
 
         out = StringIO()
-        call_command("populate_db", stdout=out)
+        call_command("seed_catalog", stdout=out)
 
         self.assertGreater(Product.objects.count(), 0)
 
@@ -390,12 +390,13 @@ class PopulateDbCommandTests(TestCase):
         from django.core.management import call_command
         from catalog.models import Manufacturer, Category, Product
 
-        call_command("populate_db", stdout=StringIO())
+        call_command("seed_catalog", stdout=StringIO())
         count_m = Manufacturer.objects.count()
         count_c = Category.objects.count()
         count_p = Product.objects.count()
 
-        call_command("populate_db", stdout=StringIO())
+        call_command("seed_catalog", stdout=StringIO())
         self.assertEqual(Manufacturer.objects.count(), count_m)
         self.assertEqual(Category.objects.count(), count_c)
         self.assertEqual(Product.objects.count(), count_p)
+
