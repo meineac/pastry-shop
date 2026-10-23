@@ -1,21 +1,40 @@
 {% extends 'core/base.html' %}
 
-{% block title %}Order History{% endblock %}
+{% block title %}Order History — Pastry Shop{% endblock %}
 
 {% block content %}
-    <h1>Order History</h1>
-    <a href="{% url 'profile' %}">Back to Profile</a>
+<div class="orders-page-container">
+    <div class="page-nav-back">
+        <a href="{% url 'profile' %}" class="back-link">&larr; Back to Profile</a>
+    </div>
 
-    <ul>
+    <div class="page-title-banner">
+        <h1>Order History</h1>
+        <p class="page-subtitle">Review your past pastries, treats, and deliveries.</p>
+    </div>
+
+    <div class="orders-card-grid">
         {% for order in history_orders %}
-            <li>
-                Order #{{ order.id }} - {{ order.status }}
-                (Created: {{ order.created_at|date:"d/m/Y" }}, Updated: {{ order.updated_at|date:"d/m/Y" }})
-                - Total Price: ${{ order.final_price }}
-                <a href="{% url 'purchasing:order_details' order.id %}">[Details]</a>
-            </li>
+            <article class="order-history-card">
+                <div class="order-card-header">
+                    <div class="order-id-group">
+                        <span class="order-title">Order #{{ order.id }}</span>
+                        <span class="status-badge status-{{ order.status|lower }}">{{ order.status }}</span>
+                    </div>
+                    <span class="order-price-badge">Total Price: ${{ order.final_price }}</span>
+                </div>
+                <div class="order-card-meta">
+                    <span>(Created: <time datetime="{{ order.created_at|date:'Y-m-d' }}">{{ order.created_at|date:"d/m/Y" }}</time>, Updated: <time datetime="{{ order.updated_at|date:'Y-m-d' }}">{{ order.updated_at|date:"d/m/Y" }}</time>)</span>
+                </div>
+                <div class="order-card-footer">
+                    <a href="{% url 'purchasing:order_details' order.id %}" class="btn-action-small btn-secondary">View Details</a>
+                </div>
+            </article>
         {% empty %}
-            <li>No history orders.</li>
+            <div class="empty-state-card">
+                <p>No history orders.</p>
+            </div>
         {% endfor %}
-    </ul>
+    </div>
+</div>
 {% endblock %}

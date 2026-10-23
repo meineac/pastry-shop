@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
 from django.db.models import Q
 from django.contrib import messages
 from django.utils import timezone as dj_tz
@@ -20,7 +21,13 @@ def generic_create_view(request, form_class, redirect_url, title):
             return redirect(redirect_url)
     else:
         form = form_class()
-    return render(request, 'cms/generic_form.html', {'form': form, 'title': title})
+    cancel_url = '/'
+    if isinstance(redirect_url, str):
+        try:
+            cancel_url = reverse(redirect_url)
+        except Exception:
+            cancel_url = redirect_url
+    return render(request, 'cms/generic_form.html', {'form': form, 'title': title, 'cancel_url': cancel_url})
 
 def generic_edit_view(request, model, form_class, redirect_url, title, pk):
     obj = get_object_or_404(model, pk=pk)
@@ -36,7 +43,25 @@ def generic_edit_view(request, model, form_class, redirect_url, title, pk):
             return redirect(redirect_url)
     else:
         form = form_class(instance=obj)
-    return render(request, 'cms/generic_form.html', {'form': form, 'title': title})
+    cancel_url = '/'
+    if callable(redirect_url):
+        res = redirect_url(obj)
+        if isinstance(res, tuple):
+            try:
+                cancel_url = reverse(res[0], args=res[1:])
+            except Exception:
+                cancel_url = '/'
+        elif isinstance(res, str):
+            try:
+                cancel_url = reverse(res)
+            except Exception:
+                cancel_url = res
+    elif isinstance(redirect_url, str):
+        try:
+            cancel_url = reverse(redirect_url)
+        except Exception:
+            cancel_url = redirect_url
+    return render(request, 'cms/generic_form.html', {'form': form, 'title': title, 'cancel_url': cancel_url})
 
 def generic_delete_view(request, model, redirect_url, title, pk):
     obj = get_object_or_404(model, pk=pk)
@@ -107,7 +132,7 @@ def about_company_edit_view(request):
             return redirect('cms:about')
     else:
         form = CompanyInfoForm(instance=company_info)
-    return render(request, 'cms/generic_form.html', {'form': form, 'title': 'Edit About Company'})
+    return render(request, 'cms/generic_form.html', {'form': form, 'title': 'Edit About Company', 'cancel_url': reverse('cms:about')})
 
 # --- NEWS ---
 def news_list_view(request):
@@ -296,7 +321,7 @@ def review_edit_view(request, pk):
             return redirect('cms:reviews')
     else:
         form = ReviewForm(instance=review)
-    return render(request, 'cms/generic_form.html', {'form': form, 'title': 'Edit Review'})
+    return render(request, 'cms/generic_form.html', {'form': form, 'title': 'Edit Review', 'cancel_url': reverse('cms:reviews')})
 
 @role_required(['CUSTOMER'])
 def review_delete_view(request, pk):

@@ -1,46 +1,68 @@
 {% extends 'core/base_auth.html' %}
+
 {% block title %}Register — Pastry Shop{% endblock %}
 
 {% block content %}
-<h1>Create Account</h1>
-<form method="post">
-    {% csrf_token %}
-    <fieldset>
-        <legend>Account Information</legend>
-        {{ form.username.label_tag }} {{ form.username }}
-        {{ form.first_name.label_tag }} {{ form.first_name }}
-        {{ form.last_name.label_tag }} {{ form.last_name }}
-        {{ form.email.label_tag }} {{ form.email }}
-        {{ form.password.label_tag }} {{ form.password }}
-        {{ form.password_confirm.label_tag }} {{ form.password_confirm }}
-    </fieldset>
-    <fieldset>
-        <legend>Personal Details</legend>
-        {{ form.date_of_birth.label_tag }} {{ form.date_of_birth }}
-        {{ form.phone_number.label_tag }} {{ form.phone_number }}
-        {% if form.phone_number.help_text %}
-            <small>{{ form.phone_number.help_text }}</small>
-        {% endif %}
-        <p>
-            {{ form.agree_to_privacy_policy }}
-            <label for="{{ form.agree_to_privacy_policy.id_for_label }}">
-                I agree to the <a href="{% url 'cms:privacy_policy' %}" target="_blank">Privacy Policy</a>
-            </label>
-        </p>
-    </fieldset>
-    {% if form.errors %}
-    <ul>
-        {% for field in form %}
-            {% for error in field.errors %}
-                <li><strong>{{ field.label }}:</strong> {{ error }}</li>
-            {% endfor %}
-        {% endfor %}
-        {% for error in form.non_field_errors %}
-            <li>{{ error }}</li>
-        {% endfor %}
-    </ul>
-    {% endif %}
-    <button type="submit">Register</button>
-</form>
-<p><a href="{% url 'login' %}">Already have an account? Login</a></p>
+<div class="auth-page-container">
+    <div class="auth-card" style="max-width: 580px;">
+        <div style="text-align: center; margin-bottom: 1.25rem;">
+            <a href="{% url 'cms:home' %}" style="display: inline-block; text-decoration: none;">
+                <span style="font-family: var(--font-serif); font-size: 2.2rem; color: var(--color-primary); font-weight: 700;">Pastry Shop</span>
+            </a>
+        </div>
+        <h1>Create Account</h1>
+
+        <form method="post">
+            {% csrf_token %}
+            <fieldset style="border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: 1.25rem; margin-bottom: 1.5rem;">
+                <legend style="padding: 0 0.5rem; font-family: var(--font-serif); font-size: 1.15rem; color: var(--color-primary); font-weight: 600;">Account Information</legend>
+                <p>{{ form.username.label_tag }} {{ form.username }}</p>
+                <p>{{ form.first_name.label_tag }} {{ form.first_name }}</p>
+                <p>{{ form.last_name.label_tag }} {{ form.last_name }}</p>
+                <p>{{ form.email.label_tag }} {{ form.email }}</p>
+                <p>{{ form.password.label_tag }} {{ form.password }}</p>
+                <p>{{ form.password_confirm.label_tag }} {{ form.password_confirm }}</p>
+            </fieldset>
+
+            <fieldset style="border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: 1.25rem; margin-bottom: 1.5rem;">
+                <legend style="padding: 0 0.5rem; font-family: var(--font-serif); font-size: 1.15rem; color: var(--color-primary); font-weight: 600;">Personal Details</legend>
+                <p>{{ form.date_of_birth.label_tag }} {{ form.date_of_birth }}</p>
+                <p>
+                    {{ form.phone_number.label_tag }} {{ form.phone_number }}
+                    {% if form.phone_number.help_text %}
+                        <small style="color: var(--color-text-muted); display: block; margin-top: 0.25rem;">{{ form.phone_number.help_text }}</small>
+                    {% endif %}
+                </p>
+                <p style="margin-top: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                    {{ form.agree_to_privacy_policy }}
+                    <label for="{{ form.agree_to_privacy_policy.id_for_label }}" style="margin: 0; font-weight: normal;">
+                        I agree to the <a href="{% url 'cms:privacy_policy' %}" target="_blank">Privacy Policy</a>
+                    </label>
+                </p>
+            </fieldset>
+
+            {% if form.errors %}
+                <ul class="messages-list" style="margin-bottom: 1.5rem;">
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                            <li class="message-banner" style="background-color: #fef2f2; border-color: #fecaca; color: #991b1b;"><strong>{{ field.label }}:</strong> {{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                    {% for error in form.non_field_errors %}
+                        <li class="message-banner" style="background-color: #fef2f2; border-color: #fecaca; color: #991b1b;">{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            <button type="submit">Register</button>
+        </form>
+
+        <div class="auth-card-footer">
+            <a href="{% url 'login' %}" class="back-link">Already have an account? Login &rarr;</a>
+        </div>
+        <div style="text-align: center; margin-top: 1rem;">
+            <a href="{% url 'cms:home' %}" style="font-size: 0.85rem; color: var(--color-text-muted);">&larr; Return to Storefront</a>
+        </div>
+    </div>
+</div>
 {% endblock %}

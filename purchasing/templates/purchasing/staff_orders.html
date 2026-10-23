@@ -1,72 +1,91 @@
 {% extends 'core/base.html' %}
 
-{% block title %}Current Running Orders{% endblock %}
+{% block title %}Current Running Orders — Staff Portal — Pastry Shop{% endblock %}
 
 {% block content %}
-<h1>Current Running Orders</h1>
+<div class="staff-portal-page running-orders-page">
+    <div class="page-title-banner">
+        <h1>Current Running Orders</h1>
+        <p class="page-subtitle">Track, prepare, and advance ongoing customer orders in real time.</p>
+    </div>
 
-{% if messages %}
-    <ul>
-        {% for message in messages %}
-            <li>{{ message }}</li>
-        {% endfor %}
-    </ul>
-{% endif %}
-
-{% if orders %}
-    <table>
-        <thead>
-            <tr>
-                <th>Order ID</th>
-                <th>Client</th>
-                <th>Created At</th>
-                <th>Delivery Type</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for order in orders %}
-                <tr>
-                    <td>{{ order.id }}</td>
-                    <td><a href="{% url 'client_card' order.client.id %}">{{ order.client.user.username }}</a></td>
-                    <td>{{ order.created_at|date:"d/m/Y H:i" }}</td>
-                    <td>{{ order.get_delivery_type_display }}</td>
-                    <td><strong>{{ order.get_status_display }}</strong></td>
-                    <td>
-                        <!-- Status progression forms -->
-                        {% if order.status == 'PENDING' %}
-                            <form method="post" action="{% url 'purchasing:update_order_status' order.id %}">
-                                {% csrf_token %}
-                                <input type="hidden" name="new_status" value="PROCESSING">
-                                <button type="submit">Mark Processing</button>
-                            </form>
-                        {% elif order.status == 'PROCESSING' %}
-                            <form method="post" action="{% url 'purchasing:update_order_status' order.id %}">
-                                {% csrf_token %}
-                                <input type="hidden" name="new_status" value="READY">
-                                <button type="submit">Mark Ready</button>
-                            </form>
-                        {% elif order.status == 'READY' %}
-                            <form method="post" action="{% url 'purchasing:update_order_status' order.id %}">
-                                {% csrf_token %}
-                                <input type="hidden" name="new_status" value="COMPLETED">
-                                <button type="submit">Mark Completed</button>
-                            </form>
-                        {% endif %}
-
-                        <!-- Cancellation form -->
-                        <form method="post" action="{% url 'purchasing:update_order_status' order.id %}">
-                            {% csrf_token %}
-                            <input type="hidden" name="new_status" value="CANCELLED">
-                            <button type="submit"><strong>Cancel Order</strong></button>
-                        </form>
-                    </td>
-                </tr>
+    {% if messages %}
+        <ul class="messages-list">
+            {% for message in messages %}
+                <li class="message-banner">{{ message }}</li>
             {% endfor %}
-        </tbody>
-    </table>
-{% else %}
-    <p>No active orders found.</p>
-{% endif %}
+        </ul>
+    {% endif %}
+
+    {% if orders %}
+        <div class="client-section-card" style="padding: 1.5rem;">
+            <div class="table-responsive-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th scope="col">Order ID</th>
+                            <th scope="col">Client</th>
+                            <th scope="col">Created At</th>
+                            <th scope="col">Delivery Type</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                            <tr>
+                                <td><strong>#{{ order.id }}</strong></td>
+                                <td>
+                                    <a href="{% url 'client_card' order.client.id %}" style="font-weight: 600;">{{ order.client.user.username }}</a>
+                                </td>
+                                <td><time datetime="{{ order.created_at|date:'Y-m-d H:i' }}">{{ order.created_at|date:"d/m/Y H:i" }}</time></td>
+                                <td>{{ order.get_delivery_type_display }}</td>
+                                <td>
+                                    <span class="status-badge status-{{ order.status|lower }}">
+                                        <strong>{{ order.get_status_display }}</strong>
+                                    </span>
+                                </td>
+                                <td>
+                                    <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+                                        <!-- Status progression forms -->
+                                        {% if order.status == 'PENDING' %}
+                                            <form method="post" action="{% url 'purchasing:update_order_status' order.id %}" class="inline-action-form">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="new_status" value="PROCESSING">
+                                                <button type="submit" class="btn-action-small btn-primary">Mark Processing</button>
+                                            </form>
+                                        {% elif order.status == 'PROCESSING' %}
+                                            <form method="post" action="{% url 'purchasing:update_order_status' order.id %}" class="inline-action-form">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="new_status" value="READY">
+                                                <button type="submit" class="btn-action-small btn-primary">Mark Ready</button>
+                                            </form>
+                                        {% elif order.status == 'READY' %}
+                                            <form method="post" action="{% url 'purchasing:update_order_status' order.id %}" class="inline-action-form">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="new_status" value="COMPLETED">
+                                                <button type="submit" class="btn-action-small btn-primary">Mark Completed</button>
+                                            </form>
+                                        {% endif %}
+
+                                        <!-- Cancellation form -->
+                                        <form method="post" action="{% url 'purchasing:update_order_status' order.id %}" class="inline-action-form">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="new_status" value="CANCELLED">
+                                            <button type="submit" class="btn-action-small btn-danger"><strong>Cancel Order</strong></button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% else %}
+        <div class="empty-state-card">
+            <p>No active orders found.</p>
+        </div>
+    {% endif %}
+</div>
 {% endblock %}

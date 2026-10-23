@@ -1,12 +1,26 @@
 {% extends 'core/base.html' %}
 
-{% block content %}
-    <h1>{{ title }}</h1>
+{% block title %}{{ title }} — Pastry Shop{% endblock %}
 
-    <form method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Save</button>
-    </form>
-    <a href="javascript:history.back()">Cancel</a>
+{% block content %}
+<div class="admin-form-container">
+    {% if cancel_url %}
+    <div class="page-nav-back">
+        <a href="{{ cancel_url }}" class="back-link">&larr; Back</a>
+    </div>
+    {% endif %}
+
+    <div class="admin-form-card">
+        <h1>{{ title }}</h1>
+
+        <form method="POST" enctype="multipart/form-data" class="styled-admin-form">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="admin-form-actions">
+                <a href="{{ cancel_url|default:'/' }}" class="btn-cancel">Cancel</a>
+                <button type="submit" class="btn-save">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
 {% endblock %}

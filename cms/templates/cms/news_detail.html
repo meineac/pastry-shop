@@ -2,53 +2,55 @@
 {% block title %}{{ news_item.title }} — Pastry Shop{% endblock %}
 
 {% block content %}
-<article itemscope itemtype="https://schema.org/NewsArticle">
+<article class="news-detail-article" itemscope itemtype="https://schema.org/NewsArticle">
 
-    <h1 itemprop="headline">{{ news_item.title }}</h1>
+    <div class="news-detail-header">
+        <h1 itemprop="headline">{{ news_item.title }}</h1>
 
-    {% if request.user.role == 'ADMIN' %}
-        <p>
-            <a href="{% url 'cms:news_edit' pk=news_item.id %}">[Edit]</a>
-            <a href="{% url 'cms:news_delete' pk=news_item.id %}">[Delete]</a>
+        {% if request.user.role == 'ADMIN' %}
+            <div class="admin-actions">
+                <a href="{% url 'cms:news_edit' pk=news_item.id %}">Edit</a>
+                <a href="{% url 'cms:news_delete' pk=news_item.id %}">Delete</a>
+            </div>
+        {% endif %}
+
+        <p class="news-detail-meta">
+            <strong>Published:</strong>
+            <time datetime="{{ news_item.created_at|date:'Y-m-d' }}" itemprop="datePublished">
+                {{ news_item.created_at|date:"d/m/Y" }}
+            </time>
+            {% if news_item.tags.all %}
+                &bull;
+                <span class="news-detail-tags">
+                {% for tag in news_item.tags.all %}
+                    <em>{{ tag.name }}</em>{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+                </span>
+            {% endif %}
         </p>
-    {% endif %}
-
-    <p>
-        <strong>Published:</strong>
-        <time datetime="{{ news_item.created_at|date:'Y-m-d' }}" itemprop="datePublished">
-            {{ news_item.created_at|date:"d/m/Y" }}
-        </time>
-    </p>
-
-    {% if news_item.tags.all %}
-    <p>
-        <strong>Tags:</strong>
-        {% for tag in news_item.tags.all %}
-            <em>{{ tag.name }}</em>{% if not forloop.last %}, {% endif %}
-        {% endfor %}
-    </p>
-    {% endif %}
+    </div>
 
     {% if news_item.image %}
-    <figure>
+    <figure class="news-detail-figure">
         <img src="{{ news_item.image.url }}"
              alt="{{ news_item.title }}"
              width="600"
              srcset="{{ news_item.image_small.url }} 300w,
                      {{ news_item.image_medium.url }} 600w,
                      {{ news_item.image_large.url }} 1200w"
-             itemprop="image">
+             itemprop="image"
+             class="news-detail-img">
         <figcaption>
             <cite>{{ news_item.title }}</cite> — Pastry Shop News
         </figcaption>
     </figure>
     {% endif %}
 
-    <section itemprop="articleBody">
+    <section itemprop="articleBody" class="news-article-columns">
         <p>{{ news_item.full_text }}</p>
     </section>
 
-    <p><a href="{% url 'cms:news_list' %}">&larr; Back to News</a></p>
+    <p class="back-link"><a href="{% url 'cms:news_list' %}">&larr; Back to News</a></p>
 
 </article>
 {% endblock %}

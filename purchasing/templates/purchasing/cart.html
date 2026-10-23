@@ -2,67 +2,89 @@
 {% block title %}Cart — Pastry Shop{% endblock %}
 
 {% block content %}
-<h1>Your Shopping Cart</h1>
+<div class="cart-page-container">
+    <div class="cart-header-row">
+        <h1>Your Shopping Cart</h1>
+    </div>
 
-{% if items %}
-    <ul>
-        {% for item in items %}
-            <li itemscope itemtype="https://schema.org/Product">
-                {% if item.product and item.product.photo %}
-                <figure>
-                    <img src="{{ item.product.photo.url }}"
-                         alt="{{ item.product.name }}"
-                         width="100"
-                         itemprop="image">
-                    <figcaption itemprop="name">{{ item.product.name }}</figcaption>
-                </figure>
-                {% endif %}
+    {% if items %}
+        <ul class="cart-items-list">
+            {% for item in items %}
+                <li class="cart-item-card" itemscope itemtype="https://schema.org/Product">
+                    <div class="cart-item-media">
+                        {% if item.product and item.product.photo %}
+                        <figure class="cart-item-figure">
+                            <img src="{{ item.product.photo.url }}"
+                                 alt="{{ item.product.name }}"
+                                 width="110"
+                                 height="110"
+                                 class="cart-item-img"
+                                 itemprop="image">
+                            <figcaption itemprop="name" class="cart-item-caption">{{ item.product.name }}</figcaption>
+                        </figure>
+                        {% endif %}
+                    </div>
 
-                <h2>
-                    {% if item.product %}
-                        <a href="{% url 'catalog:product_detail' product_id=item.product.id %}" itemprop="url">
-                            {{ item.product.name }}
-                        </a>
-                    {% else %}
-                        <em>Unavailable Item</em>
-                    {% endif %}
-                </h2>
+                    <div class="cart-item-info">
+                        <h2 class="cart-item-title">
+                            {% if item.product %}
+                                <a href="{% url 'catalog:product_detail' product_id=item.product.id %}" itemprop="url">
+                                    {{ item.product.name }}
+                                </a>
+                            {% else %}
+                                <em>Unavailable Item</em>
+                            {% endif %}
+                        </h2>
 
-                {% if item.product %}
-                    <p>Category: {{ item.product.category.name }}</p>
-                    <p itemprop="offers" itemscope itemtype="https://schema.org/Offer">
-                        Price: <strong>$<span itemprop="price">{{ item.product.price }}</span></strong>
-                        / {{ item.product.unit }}
-                    </p>
-                {% endif %}
+                        {% if item.product %}
+                            <p class="cart-item-category">Category: <em>{{ item.product.category.name }}</em></p>
+                            <p class="cart-item-price" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
+                                Price: <strong>$<span itemprop="price">{{ item.product.price }}</span></strong>
+                                {% if item.product.unit_of_measurement %}
+                                    <span class="price-unit">/ {{ item.product.get_unit_of_measurement_display|lower }}</span>
+                                {% endif %}
+                            </p>
+                        {% endif %}
+                    </div>
 
-                <div>
-                    Quantity:
-                    <form action="{% url 'purchasing:decrease_quantity' cart_item_id=item.id %}" method="POST">
-                        {% csrf_token %}
-                        <button type="submit" aria-label="Decrease quantity">&#8722;</button>
-                    </form>
-                    <strong>{{ item.quantity }}</strong>
-                    <form action="{% url 'purchasing:increase_quantity' cart_item_id=item.id %}" method="POST">
-                        {% csrf_token %}
-                        <button type="submit" aria-label="Increase quantity">&#43;</button>
-                    </form>
-                </div>
+                    <div class="cart-item-actions">
+                        <div class="cart-quantity-box">
+                            <span class="qty-label">Quantity:</span>
+                            <div class="qty-controls">
+                                <form action="{% url 'purchasing:decrease_quantity' cart_item_id=item.id %}" method="POST" class="inline-qty-form">
+                                    {% csrf_token %}
+                                    <button type="submit" class="qty-btn btn-qty-dec" aria-label="Decrease quantity">&#8722;</button>
+                                </form>
+                                <strong class="qty-value">{{ item.quantity }}</strong>
+                                <form action="{% url 'purchasing:increase_quantity' cart_item_id=item.id %}" method="POST" class="inline-qty-form">
+                                    {% csrf_token %}
+                                    <button type="submit" class="qty-btn btn-qty-inc" aria-label="Increase quantity">&#43;</button>
+                                </form>
+                            </div>
+                        </div>
 
-                <form action="{% url 'purchasing:remove_from_cart' cart_item_id=item.id %}" method="POST">
-                    {% csrf_token %}
-                    <button type="submit">Remove from Cart</button>
-                </form>
-            </li>
-        {% endfor %}
-    </ul>
+                        <form action="{% url 'purchasing:remove_from_cart' cart_item_id=item.id %}" method="POST" class="remove-cart-form">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-remove-item">Remove</button>
+                        </form>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
 
-    <h2>Total: ${{ total }}</h2>
-    <p><a href="{% url 'purchasing:checkout' %}">[Proceed to Checkout]</a></p>
+        <div class="cart-summary-card">
+            <h2 class="cart-total-heading">Total: <span class="cart-total-price">${{ total }}</span></h2>
+            <div class="cart-action-buttons">
+                <a href="{% url 'catalog:product_list' %}" class="btn-continue-shopping">Browse Catalog</a>
+                <a href="{% url 'purchasing:checkout' %}" class="btn-proceed-checkout">Proceed to Checkout &rarr;</a>
+            </div>
+        </div>
 
-{% else %}
-    <p>Your cart is empty.</p>
-    <p><a href="{% url 'catalog:product_list' %}">Browse Catalog</a></p>
-{% endif %}
-
+    {% else %}
+        <div class="cart-empty-card">
+            <p class="cart-empty-text">Your cart is empty.</p>
+            <p><a href="{% url 'catalog:product_list' %}" class="btn-browse-catalog">Browse Catalog</a></p>
+        </div>
+    {% endif %}
+</div>
 {% endblock %}

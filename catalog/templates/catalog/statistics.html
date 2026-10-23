@@ -1,154 +1,210 @@
 {% extends 'core/base.html' %}
 {% load catalog_extras %}
 
-{% block title %}Statistics{% endblock %}
+{% block title %}Statistics &amp; Analytics — Pastry Shop{% endblock %}
 
 {% block content %}
-<h1>Statistics &amp; Analytics</h1>
+<div class="stats-page-container">
+    <div class="page-title-banner">
+        <h1>Statistics &amp; Analytics</h1>
+        <p class="page-subtitle">Business intelligence, product performance metrics, and sales analysis.</p>
+    </div>
 
-<!-- ================================================================== -->
-<!-- PRODUCT LIST -->
-<!-- ================================================================== -->
-<h2>Products</h2>
-<table>
-    <thead>
-        <tr>
-            <th>Photo</th>
-            <th>Name</th>
-            <th>Reviews (0–5)</th>
-            <th>Total Reviews</th>
-            <th>Sales (completed)</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for item in product_stats %}
-            <tr>
-                <td>
-                    {% if item.product.photo %}
-                        <img src="{{ item.product.photo.url }}" alt="{{ item.product.name }}" width="60" height="60">
-                    {% else %}
-                        —
-                    {% endif %}
-                </td>
-                <td>
-                    <a href="{% url 'catalog:product_detail' item.product.id %}">{{ item.product.name }}</a>
-                </td>
-                <td>
-                    {% for rating in rating_range %}
-                        {{ rating }}★: {{ item.rating_counts|get_item:rating }}
-                        {% if not forloop.last %} | {% endif %}
+    <!-- STATISTICAL METRICS OVERVIEW -->
+    <section class="client-section-card" style="margin-bottom: 2rem;" aria-labelledby="metrics-heading">
+        <h2 id="metrics-heading">Statistical Metrics</h2>
+
+        <div style="margin-bottom: 1.5rem;">
+            <h3 style="font-family: var(--font-serif); font-size: 1.15rem; color: var(--color-primary); margin-bottom: 0.75rem;">Sales Amount (completed orders)</h3>
+            {% if sales_stats.mean is not None %}
+                <div class="stats-metrics-cards">
+                    <div class="metric-box">
+                        <div class="metric-label">Mean Sales</div>
+                        <div class="metric-value">${{ sales_stats.mean }}</div>
+                        <span style="display: none;"><strong>Mean:</strong> {{ sales_stats.mean }}</span>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">Median Sales</div>
+                        <div class="metric-value">${{ sales_stats.median }}</div>
+                        <span style="display: none;"><strong>Median:</strong> {{ sales_stats.median }}</span>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">Mode Sales</div>
+                        <div class="metric-value" style="font-size: 1.35rem;">
+                            {% for m in sales_stats.mode %}${{ m }}{% if not forloop.last %}, {% endif %}{% endfor %}
+                        </div>
+                        <span style="display: none;"><strong>Mode:</strong> {% for m in sales_stats.mode %}{{ m }}{% if not forloop.last %}, {% endif %}{% endfor %}</span>
+                    </div>
+                </div>
+            {% else %}
+                <div class="empty-state-card">
+                    <p>No completed orders to calculate sales statistics.</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <div>
+            <h3 style="font-family: var(--font-serif); font-size: 1.15rem; color: var(--color-primary); margin-bottom: 0.75rem;">Client Age</h3>
+            {% if age_stats.mean is not None %}
+                <div class="stats-metrics-cards">
+                    <div class="metric-box">
+                        <div class="metric-label">Mean Age</div>
+                        <div class="metric-value">{{ age_stats.mean }} yrs</div>
+                        <span style="display: none;"><strong>Mean age:</strong> {{ age_stats.mean }} years</span>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">Median Age</div>
+                        <div class="metric-value">{{ age_stats.median }} yrs</div>
+                        <span style="display: none;"><strong>Median age:</strong> {{ age_stats.median }} years</span>
+                    </div>
+                </div>
+            {% else %}
+                <div class="empty-state-card">
+                    <p>No client data available.</p>
+                </div>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- PRODUCT LIST TABLE -->
+    <section class="client-section-card" style="margin-bottom: 2rem;" aria-labelledby="products-table-heading">
+        <h2 id="products-table-heading">Products</h2>
+        <div class="table-responsive-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th scope="col">Photo</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Reviews (0–5)</th>
+                        <th scope="col">Total Reviews</th>
+                        <th scope="col">Sales (completed)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in product_stats %}
+                        <tr>
+                            <td>
+                                {% if item.product.photo %}
+                                    <img src="{{ item.product.photo.url }}" alt="{{ item.product.name }}" class="order-item-thumbnail" style="width: 50px; height: 50px;">
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'catalog:product_detail' item.product.id %}" style="font-weight: 600;">{{ item.product.name }}</a>
+                            </td>
+                            <td>
+                                {% for rating in rating_range %}
+                                    <span style="white-space: nowrap;">{{ rating }}★: {{ item.rating_counts|get_item:rating }}</span>
+                                    {% if not forloop.last %} | {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td><strong>{{ item.total_reviews }}</strong></td>
+                            <td><strong>{{ item.sales_count }}</strong></td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="5">No products found.</td>
+                        </tr>
                     {% endfor %}
-                </td>
-                <td>{{ item.total_reviews }}</td>
-                <td>{{ item.sales_count }}</td>
-            </tr>
-        {% empty %}
-            <tr>
-                <td colspan="5">No products found.</td>
-            </tr>
-        {% endfor %}
-    </tbody>
-</table>
+                </tbody>
+            </table>
+        </div>
+    </section>
 
-<!-- ================================================================== -->
-<!-- STATISTICAL METRICS -->
-<!-- ================================================================== -->
-<h2>Statistical Metrics</h2>
+    <!-- CATEGORY RANKINGS -->
+    <section class="client-section-card" style="margin-bottom: 2rem;" aria-labelledby="rankings-heading">
+        <h2 id="rankings-heading">Category Rankings</h2>
 
-<h3>Sales Amount (completed orders)</h3>
-{% if sales_stats.mean is not None %}
-    <ul>
-        <li><strong>Mean:</strong> {{ sales_stats.mean }}</li>
-        <li><strong>Median:</strong> {{ sales_stats.median }}</li>
-        <li><strong>Mode:</strong>
-            {% for m in sales_stats.mode %}{{ m }}{% if not forloop.last %}, {% endif %}{% endfor %}
-        </li>
-    </ul>
-{% else %}
-    <p>No completed orders to calculate sales statistics.</p>
-{% endif %}
-
-<h3>Client Age</h3>
-{% if age_stats.mean is not None %}
-    <ul>
-        <li><strong>Mean age:</strong> {{ age_stats.mean }} years</li>
-        <li><strong>Median age:</strong> {{ age_stats.median }} years</li>
-    </ul>
-{% else %}
-    <p>No client data available.</p>
-{% endif %}
-
-<!-- ================================================================== -->
-<!-- CATEGORY RANKINGS -->
-<!-- ================================================================== -->
-<h2>Category Rankings</h2>
-
-<h3>Most Popular Product Categories (by completed order count)</h3>
-{% if category_popularity %}
-    <ol>
-        {% for cat in category_popularity %}
-            <li>{{ cat.name }} — {{ cat.item_count }} item(s) sold</li>
-        {% endfor %}
-    </ol>
-{% else %}
-    <p>No category data available.</p>
-{% endif %}
-
-<h3>Most Profitable Product Categories (by revenue)</h3>
-{% if category_profit %}
-    <ol>
-        {% for cat in category_profit %}
-            <li>
-                {{ cat.name }}
-                {% if cat.total_revenue %}
-                    — Revenue: {{ cat.total_revenue|floatformat:2 }}
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem;">
+            <div class="order-summary-card">
+                <h3 style="font-family: var(--font-serif); font-size: 1.15rem; color: var(--color-primary); margin-top: 0; margin-bottom: 1rem;">
+                    Most Popular Product Categories (by completed order count)
+                </h3>
+                {% if category_popularity %}
+                    <ol style="padding-left: 1.25rem; margin: 0; display: flex; flex-direction: column; gap: 0.5rem;">
+                        {% for cat in category_popularity %}
+                            <li><strong>{{ cat.name }}</strong> &mdash; {{ cat.item_count }} item(s) sold</li>
+                        {% endfor %}
+                    </ol>
                 {% else %}
-                    — Revenue: 0.00
+                    <p style="color: var(--color-text-muted);">No category data available.</p>
                 {% endif %}
-            </li>
-        {% endfor %}
-    </ol>
-{% else %}
-    <p>No revenue data available.</p>
-{% endif %}
+            </div>
 
-<!-- ================================================================== -->
-<!-- GRAPHS -->
-<!-- ================================================================== -->
-<h2>Graphs</h2>
+            <div class="order-summary-card">
+                <h3 style="font-family: var(--font-serif); font-size: 1.15rem; color: var(--color-primary); margin-top: 0; margin-bottom: 1rem;">
+                    Most Profitable Product Categories (by revenue)
+                </h3>
+                {% if category_profit %}
+                    <ol style="padding-left: 1.25rem; margin: 0; display: flex; flex-direction: column; gap: 0.5rem;">
+                        {% for cat in category_profit %}
+                            <li>
+                                <strong>{{ cat.name }}</strong>
+                                {% if cat.total_revenue %}
+                                    &mdash; Revenue: ${{ cat.total_revenue|floatformat:2 }}
+                                {% else %}
+                                    &mdash; Revenue: $0.00
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ol>
+                {% else %}
+                    <p style="color: var(--color-text-muted);">No revenue data available.</p>
+                {% endif %}
+            </div>
+        </div>
+    </section>
 
-<!-- Graph 1: Product by date -->
-<h3>Purchases of a Specific Product by Date</h3>
+    <!-- GRAPHS -->
+    <section class="client-section-card" aria-labelledby="graphs-heading">
+        <h2 id="graphs-heading">Graphs</h2>
 
-<form method="get" action="">
-    <label for="id_product_id">Select product:</label>
-    <select id="id_product_id" name="product_id">
-        {% for p in all_products %}
-            <option value="{{ p.id }}"
-                {% if selected_product and p.id == selected_product.id %}selected{% endif %}>
-                {{ p.name }}
-            </option>
-        {% endfor %}
-    </select>
-    <button type="submit">Show</button>
-</form>
+        <!-- Graph 1: Product by date -->
+        <div style="margin-bottom: 2.5rem;">
+            <h3 style="font-family: var(--font-serif); font-size: 1.25rem; color: var(--color-primary); margin-bottom: 1rem;">Purchases of a Specific Product by Date</h3>
 
-{% if chart_product_b64 %}
-    <img src="data:image/png;base64,{{ chart_product_b64 }}"
-         alt="Purchases of {{ selected_product.name }} by date"
-        >
-{% else %}
-    <p>No product data to display.</p>
-{% endif %}
+            <form method="get" action="" class="filter-form" style="margin-bottom: 1.5rem;">
+                <fieldset>
+                    <legend>Select Product</legend>
+                    <div class="filter-grid" style="grid-template-columns: 1fr auto; max-width: 480px; gap: 1rem; align-items: flex-end;">
+                        <div class="filter-field">
+                            <label for="id_product_id">Choose Product:</label>
+                            <select id="id_product_id" name="product_id" style="height: 42px;">
+                                {% for p in all_products %}
+                                    <option value="{{ p.id }}" {% if selected_product and p.id == selected_product.id %}selected{% endif %}>
+                                        {{ p.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="filter-actions">
+                            <button type="submit" class="btn-filter" style="height: 42px;">Show</button>
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
 
-<!-- Graph 2: Purchases by category -->
-<h3>Purchases by Product Category</h3>
-{% if chart_category_b64 %}
-    <img src="data:image/png;base64,{{ chart_category_b64 }}"
-         alt="Purchases by product category"
-        >
-{% else %}
-    <p>No category data to display.</p>
-{% endif %}
+            <div class="chart-card-figure">
+                {% if chart_product_b64 %}
+                    <img src="data:image/png;base64,{{ chart_product_b64 }}" alt="Purchases of {{ selected_product.name }} by date">
+                {% else %}
+                    <div class="empty-state-card"><p>No product data to display.</p></div>
+                {% endif %}
+            </div>
+        </div>
 
+        <!-- Graph 2: Purchases by category -->
+        <div>
+            <h3 style="font-family: var(--font-serif); font-size: 1.25rem; color: var(--color-primary); margin-bottom: 1rem;">Purchases by Product Category</h3>
+            <div class="chart-card-figure">
+                {% if chart_category_b64 %}
+                    <img src="data:image/png;base64,{{ chart_category_b64 }}" alt="Purchases by product category">
+                {% else %}
+                    <div class="empty-state-card"><p>No category data to display.</p></div>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+</div>
 {% endblock %}

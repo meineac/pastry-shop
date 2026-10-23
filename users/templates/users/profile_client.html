@@ -1,34 +1,87 @@
 {% extends 'core/base.html' %}
 
-{% block title %}Client Profile{% endblock %}
+{% block title %}Client Profile — Pastry Shop{% endblock %}
 
 {% block content %}
-    <h1>Client Profile</h1>
+<div class="user-profile-page">
+    <div class="page-title-banner">
+        <h1>Client Profile</h1>
+        <p class="page-subtitle">Welcome back, {{ request.user.get_full_name|default:request.user.username }}! Manage your pastry shop details and active orders.</p>
+    </div>
 
-    <h2>User Information</h2>
-    {% if profile %}
-        <p>Name: {{ request.user.get_full_name|default:request.user.username }}</p>
-        <p>Username: {{ request.user.username }}</p>
-        <p>Date of Birth: {{ profile.date_of_birth|date:"d/m/Y" }}</p>
-        <p>Phone: {{ profile.phone_number }}</p>
-        <p>Email: {{ request.user.email }}</p>
-    {% else %}
-        <p>No profile information available.</p>
-    {% endif %}
+    <div class="profile-cards-grid">
+        <!-- User Information Card -->
+        <section class="profile-card user-info-card" aria-labelledby="user-info-heading">
+            <div class="profile-avatar-banner">
+                <div class="avatar-circle">{{ request.user.username|first|upper }}</div>
+                <div class="avatar-details">
+                    <h2 id="user-info-heading">User Information</h2>
+                    <span class="user-role-badge customer-badge">Customer Account</span>
+                </div>
+            </div>
 
-    <h2>Current Orders</h2>
-    <ul>
-        {% for order in active_orders %}
-            <li>
-                Order #{{ order.id }} - {{ order.status }}
-                (Created: {{ order.created_at|date:"d/m/Y" }}, Updated: {{ order.updated_at|date:"d/m/Y" }})
-                - Total Price: ${{ order.final_price }}
-                <a href="{% url 'purchasing:order_details' order.id %}">[Details]</a>
-            </li>
-        {% empty %}
-            <li>No active orders.</li>
-        {% endfor %}
-    </ul>
+            {% if profile %}
+                <dl class="profile-meta-dl">
+                    <div class="profile-meta-row">
+                        <dt>Name:</dt>
+                        <dd>{{ request.user.get_full_name|default:request.user.username }}</dd>
+                    </div>
+                    <div class="profile-meta-row">
+                        <dt>Username:</dt>
+                        <dd>{{ request.user.username }}</dd>
+                    </div>
+                    <div class="profile-meta-row">
+                        <dt>Date of Birth:</dt>
+                        <dd><time datetime="{{ profile.date_of_birth|date:'Y-m-d' }}">{{ profile.date_of_birth|date:"d/m/Y" }}</time></dd>
+                    </div>
+                    <div class="profile-meta-row">
+                        <dt>Phone:</dt>
+                        <dd><a href="tel:{{ profile.phone_number }}">{{ profile.phone_number }}</a></dd>
+                    </div>
+                    <div class="profile-meta-row">
+                        <dt>Email:</dt>
+                        <dd><a href="mailto:{{ request.user.email }}">{{ request.user.email }}</a></dd>
+                    </div>
+                </dl>
+            {% else %}
+                <p>No profile information available.</p>
+            {% endif %}
+        </section>
 
-    <a href="{% url 'purchasing:order_history' %}">View Order History</a>
+        <!-- Current Orders Card -->
+        <section class="profile-card user-orders-card" aria-labelledby="current-orders-heading">
+            <h2 id="current-orders-heading">Current Orders</h2>
+
+            <div class="orders-list">
+                {% for order in active_orders %}
+                    <article class="order-summary-card">
+                        <div class="order-summary-header">
+                            <div class="order-id-group">
+                                <span class="order-title">Order #{{ order.id }}</span>
+                                <span class="status-badge status-{{ order.status|lower }}">{{ order.status }}</span>
+                            </div>
+                            <span class="order-price-badge">${{ order.final_price }}</span>
+                        </div>
+                        <div class="order-summary-body">
+                            <span>(Created: <time datetime="{{ order.created_at|date:'Y-m-d' }}">{{ order.created_at|date:"d/m/Y" }}</time>, Updated: <time datetime="{{ order.updated_at|date:'Y-m-d' }}">{{ order.updated_at|date:"d/m/Y" }}</time>)</span>
+                            <span class="meta-separator">&bull;</span>
+                            <span>Total Price: ${{ order.final_price }}</span>
+                        </div>
+                        <div class="order-summary-actions">
+                            <a href="{% url 'purchasing:order_details' order.id %}" class="btn-action-small btn-secondary">View Details</a>
+                        </div>
+                    </article>
+                {% empty %}
+                    <div class="empty-state-card">
+                        <p>No active orders.</p>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="profile-actions-bar">
+                <a href="{% url 'purchasing:order_history' %}" class="btn-action-small btn-primary">View Order History &rarr;</a>
+            </div>
+        </section>
+    </div>
+</div>
 {% endblock %}

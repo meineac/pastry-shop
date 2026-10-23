@@ -2,50 +2,55 @@
 {% block title %}Reviews — Pastry Shop{% endblock %}
 
 {% block content %}
-<h1>Store Reviews</h1>
+<div class="reviews-page">
+<div class="reviews-header">
+    <h1>Store Reviews</h1>
+    {% if not request.user.is_authenticated or request.user.role == 'CUSTOMER' %}
+        <a href="{% url 'cms:review_create' %}" class="btn-create">+ Add Review</a>
+    {% endif %}
+</div>
 
-{% if not request.user.is_authenticated or request.user.role == 'CUSTOMER' %}
-<p>
-    <a href="{% url 'cms:review_create' %}">[Add Review]</a>
-</p>
-{% endif %}
-
-<hr>
-
-<ul>
+<ul class="reviews-card-list">
 {% for review in reviews %}
-    <li itemscope itemtype="https://schema.org/Review">
-        <p>
-            <strong itemprop="author">{{ review.author.username }}</strong>
-            &mdash;
-            <time datetime="{{ review.created_at|date:'Y-m-d' }}" itemprop="datePublished">
-                {{ review.created_at|date:"d/m/Y" }}
-            </time>
-        </p>
-        <p itemprop="reviewRating" itemscope itemtype="https://schema.org/Rating">
-            <strong>Rating:</strong>
-            <span itemprop="ratingValue">{{ review.rating }}</span> / 5
-        </p>
+    <li class="review-full-card" itemscope itemtype="https://schema.org/Review">
+        <div class="review-card-top">
+            <div class="review-author-info">
+                <span class="review-avatar">{{ review.author.username|slice:":1"|upper }}</span>
+                <div>
+                    <strong class="review-author-name" itemprop="author">{{ review.author.username }}</strong>
+                    <time datetime="{{ review.created_at|date:'Y-m-d' }}" itemprop="datePublished" class="review-date">
+                        {{ review.created_at|date:"d/m/Y" }}
+                    </time>
+                </div>
+            </div>
+            <div class="review-rating-box" itemprop="reviewRating" itemscope itemtype="https://schema.org/Rating">
+                <span class="rating-stars">★</span>
+                <strong><span itemprop="ratingValue">{{ review.rating }}</span> / 5</strong>
+            </div>
+        </div>
+
         {% if review.tags.all %}
-        <p>
-            <strong>Tags:</strong>
+        <div class="review-tags-bar">
             {% for tag in review.tags.all %}
-                <em>{{ tag.name }}</em>{% if not forloop.last %}, {% endif %}
+                <span class="review-tag"><em>{{ tag.name }}</em></span>
             {% endfor %}
-        </p>
+        </div>
         {% endif %}
-        <blockquote itemprop="reviewBody">
+
+        <blockquote itemprop="reviewBody" class="review-quote-body">
             <q>{{ review.review_text }}</q>
         </blockquote>
+
         {% if request.user == review.author %}
-        <p>
-            <a href="{% url 'cms:review_edit' pk=review.id %}">[Edit]</a>
-            <a href="{% url 'cms:review_delete' pk=review.id %}">[Delete]</a>
-        </p>
+        <div class="review-actions">
+            <a href="{% url 'cms:review_edit' pk=review.id %}">Edit</a>
+            <a href="{% url 'cms:review_delete' pk=review.id %}">Delete</a>
+        </div>
         {% endif %}
     </li>
 {% empty %}
-    <li>No reviews yet. Be the first to share your experience!</li>
+    <li class="no-reviews">No reviews yet. Be the first to share your experience!</li>
 {% endfor %}
 </ul>
+</div>
 {% endblock %}

@@ -169,6 +169,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = "static/"
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
 
 # Directory where collectstatic writes files (needed for Render/production)
 STATIC_ROOT = BASE_DIR / "staticfiles"

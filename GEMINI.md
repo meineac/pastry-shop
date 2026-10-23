@@ -2,11 +2,14 @@
 
 These rules apply to ALL work on this project. They are derived from the project requirements specification and must be followed at all times.
 
-## Styling Constraint
+## Styling Constraints
 
-- **NO CSS or other styles.** The project uses pure HTML and Python only.
-- Do NOT add `style=` inline attributes, `<style>` blocks, CSS files, or `class=` attributes intended for styling.
-- Use semantic HTML elements for visual meaning (e.g., `<strong>` instead of `style="font-weight:bold"`).
+- **Custom CSS only:** Do not include external styling libraries or frameworks (e.g. Bootstrap, Tailwind, Foundation).
+- **No external CDN frameworks:** Disallow https://www.bootstrapcdn.com and similar styling CDNs.
+- **Pure CSS styling:** All visual styling must reside in custom CSS stylesheets linked via `<link rel="stylesheet">` from `core/base.html` and `core/base_auth.html`.
+- **Zero JavaScript:** All animations, interactive UI, and hover/focus/active states must use CSS-only or HTML5-only mechanisms.
+- **Maintain semantic HTML integrity:** Existing semantic tags (`<header>`, `<nav>`, `<main>`, `<footer>`, `<figure>`, `<article>`, `<details>`, `<table>`, etc.) and Schema.org microdata must be preserved.
+- **Responsive viewports:** Layouts must adapt responsively across Mobile (375px), Tablet (768px), and Desktop (1280px).
 
 ## Base Template Inheritance
 

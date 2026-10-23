@@ -2,11 +2,17 @@
 {% block title %}About Us — Pastry Shop{% endblock %}
 
 {% block content %}
-<h1>About the Company</h1>
+<div class="about-page">
+<div class="about-page-header">
+    <h1>About the Company</h1>
+    {% if request.user.role == 'ADMIN' %}
+        <a href="{% url 'cms:about_edit' %}" class="btn-create">✎ Edit Company Info</a>
+    {% endif %}
+</div>
 
-{% comment %}In-page anchor navigation{% endcomment %}
-<nav aria-label="Page sections">
-    <ul>
+{% comment %}In-page anchor navigation with Unicode markers{% endcomment %}
+<nav aria-label="Page sections" class="page-toc-nav">
+    <ul class="ornate-list">
         <li><a href="#details">Company Details</a></li>
         <li><a href="#info">About Us</a></li>
         <li><a href="#history">History Timeline</a></li>
@@ -17,34 +23,32 @@
     </ul>
 </nav>
 
-{% if request.user.role == 'ADMIN' %}
-    <p><a href="{% url 'cms:about_edit' %}">[Edit Company Info]</a></p>
-{% endif %}
-
 {% if company_info %}
 
-    {% comment %}Company logo{% endcomment %}
+    {% comment %}Company logo with transform effect{% endcomment %}
     {% if company_info.logo %}
-    <figure>
+    <figure class="about-logo-figure">
         <img src="{{ company_info.logo.url }}"
              alt="Pastry Shop company logo"
              width="250"
              srcset="{{ company_info.logo_small.url }} 1x, {{ company_info.logo_medium.url }} 2x"
-             itemprop="logo">
+             itemprop="logo"
+             class="about-logo-img">
         <figcaption><strong>Pastry Shop</strong> — <em>Crafted with passion since <time datetime="2010">2010</time></em></figcaption>
     </figure>
     {% endif %}
 
-    {% comment %}Founder quote{% endcomment %}
-    <blockquote cite="https://pastryshop.example.com/about">
-        <p><q>We believe that great pastry is not just food — it is a moment of joy, a small luxury everyone deserves.</q></p>
+    {% comment %}Founder quote with language-sensitive quotes{% endcomment %}
+    <blockquote cite="https://pastryshop.example.com/about" class="founder-quote">
+        <p lang="en"><q>We believe that great pastry is not just food — it is a moment of joy, a small luxury everyone deserves.</q></p>
+        <p lang="fr"><q>La pâtisserie est un art qui se déguste avec le cœur.</q></p>
         <footer>— <cite>Marie Leblanc, Founder of Pastry Shop</cite></footer>
     </blockquote>
 
     {% comment %}Company details section{% endcomment %}
-    <section id="details" aria-labelledby="details-heading">
+    <section id="details" aria-labelledby="details-heading" class="about-card">
         <h2 id="details-heading">Company Details</h2>
-        <p>{{ company_info.company_details }}</p>
+        <p class="company-desc">{{ company_info.company_details }}</p>
         <p>
             We are proud to hold the
             <abbr title="Hazard Analysis Critical Control Points">HACCP</abbr>
@@ -64,7 +68,7 @@
     </section>
 
     {% comment %}About text{% endcomment %}
-    <section id="info" aria-labelledby="info-heading">
+    <section id="info" aria-labelledby="info-heading" class="about-card">
         <h2 id="info-heading">About Us</h2>
         <p>{{ company_info.text_information }}</p>
 
@@ -78,9 +82,9 @@
     </section>
 
     {% comment %}History timeline{% endcomment %}
-    <section id="history" aria-labelledby="history-heading">
+    <section id="history" aria-labelledby="history-heading" class="about-card timeline-card">
         <h2 id="history-heading">History Timeline</h2>
-        <dl>
+        <dl class="history-timeline">
             {% for line in company_info.history_by_years.splitlines %}
                 {% if line %}
                     {% with parts=line|cut:" "|slice:":4" %}
@@ -95,115 +99,135 @@
     </section>
 
     {% comment %}Milestones data table with merged cells and headers attribute{% endcomment %}
-    <section id="milestones" aria-labelledby="milestones-heading">
+    <section id="milestones" aria-labelledby="milestones-heading" class="about-card">
         <h2 id="milestones-heading">Key Milestones</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th id="th-year">Year</th>
-                    <th id="th-event">Event</th>
-                    <th id="th-category">Category</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td headers="th-year"><time datetime="2010">2010</time></td>
-                    <td headers="th-event">Founded by Marie Leblanc on Baker Street</td>
-                    <td headers="th-category">Foundation</td>
-                </tr>
-                <tr>
-                    <td headers="th-year"><time datetime="2013">2013</time></td>
-                    <td headers="th-event">First regional award — Chocolate Entremet</td>
-                    <td headers="th-category">Recognition</td>
-                </tr>
-                <tr>
-                    <td headers="th-year"><time datetime="2015">2015</time></td>
-                    <td headers="th-event">Opened flagship store at 123 Baker Street</td>
-                    <td headers="th-category">Expansion</td>
-                </tr>
-                <tr>
-                    <td headers="th-year" colspan="2">
-                        <time datetime="2018">2018</time> — City-wide delivery &amp; online ordering launched
-                    </td>
-                    <td headers="th-category">Expansion</td>
-                </tr>
-                <tr>
-                    <td headers="th-year"><time datetime="2020">2020</time></td>
-                    <td headers="th-event">Vegan &amp; plant-based pastry range introduced</td>
-                    <td headers="th-category">Innovation</td>
-                </tr>
-                <tr>
-                    <td headers="th-year"><time datetime="2022">2022</time></td>
-                    <td headers="th-event">Expanded to three city locations</td>
-                    <td headers="th-category">Expansion</td>
-                </tr>
-                <tr>
-                    <td headers="th-year"><time datetime="2025">2025</time></td>
-                    <td headers="th-event" rowspan="2">
-                        Certified by the
-                        <abbr title="International Pastry Standards Council">IPSC</abbr>
-                        — Gold Level
-                    </td>
-                    <td headers="th-category">Certification</td>
-                </tr>
-                <tr>
-                    <td headers="th-year"><em>Ongoing</em></td>
-                    <td headers="th-category">Recognition</td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="table-responsive">
+            <table class="milestones-table">
+                <caption>Major Landmarks in Pastry Shop History</caption>
+                <thead>
+                    <tr>
+                        <th id="th-year">Year</th>
+                        <th id="th-event">Event</th>
+                        <th id="th-category">Category</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td headers="th-year"><time datetime="2010">2010</time></td>
+                        <td headers="th-event">Founded by Marie Leblanc on Baker Street</td>
+                        <td headers="th-category">Foundation</td>
+                    </tr>
+                    <tr>
+                        <td headers="th-year"><time datetime="2013">2013</time></td>
+                        <td headers="th-event">First regional award — Chocolate Entremet</td>
+                        <td headers="th-category">Recognition</td>
+                    </tr>
+                    <tr>
+                        <td headers="th-year"><time datetime="2015">2015</time></td>
+                        <td headers="th-event">Opened flagship store at 123 Baker Street</td>
+                        <td headers="th-category">Expansion</td>
+                    </tr>
+                    <tr>
+                        <td headers="th-year" colspan="2">
+                            <time datetime="2018">2018</time> — City-wide delivery &amp; online ordering launched
+                        </td>
+                        <td headers="th-category">Expansion</td>
+                    </tr>
+                    <tr>
+                        <td headers="th-year"><time datetime="2020">2020</time></td>
+                        <td headers="th-event">Vegan &amp; plant-based pastry range introduced</td>
+                        <td headers="th-category">Innovation</td>
+                    </tr>
+                    <tr>
+                        <td headers="th-year"><time datetime="2022">2022</time></td>
+                        <td headers="th-event">Expanded to three city locations</td>
+                        <td headers="th-category">Expansion</td>
+                    </tr>
+                    <tr>
+                        <td headers="th-year"><time datetime="2025">2025</time></td>
+                        <td headers="th-event" rowspan="2">
+                            Certified by the
+                            <abbr title="International Pastry Standards Council">IPSC</abbr>
+                            — Gold Level
+                        </td>
+                        <td headers="th-category">Certification</td>
+                    </tr>
+                    <tr>
+                        <td headers="th-year"><em>Ongoing</em></td>
+                        <td headers="th-category">Recognition</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </section>
 
     {% comment %}Download link{% endcomment %}
-    <p>
-        <a href="/media/company/menu.pdf" download>
+    <p class="download-container">
+        <a href="/media/company/menu.pdf" download class="btn-download">
             Download our full product menu (PDF)
         </a>
     </p>
 
     {% comment %}Embedded video{% endcomment %}
     {% if company_info.video_url %}
-    <section id="video" aria-labelledby="video-heading">
+    <section id="video" aria-labelledby="video-heading" class="about-card media-card">
         <h2 id="video-heading">Our Story</h2>
-        <iframe
-            src="{{ company_info.video_url }}"
-            width="560"
-            height="315"
-            title="Pastry Shop — Our Story"
-            allowfullscreen
-            loading="lazy">
-        </iframe>
+        <div class="video-container">
+            <iframe
+                src="{{ company_info.video_url }}"
+                width="560"
+                height="315"
+                title="Pastry Shop — Our Story"
+                allowfullscreen
+                loading="lazy">
+            </iframe>
+        </div>
     </section>
     {% endif %}
 
     {% comment %}Native video element — required by HTML markup spec{% endcomment %}
-    <section id="video-showcase" aria-label="Video showcase">
+    <section id="video-showcase" aria-label="Video showcase" class="about-card media-card">
         <h2>Behind the Scenes</h2>
-        <video controls width="560" preload="metadata">
-            <source src="/media/company/bakery_tour.mp4" type="video/mp4">
-            Your browser does not support the video element.
-        </video>
+        <div class="video-container">
+            <video controls width="560" preload="metadata" class="styled-media-player">
+                <source src="/media/company/bakery_tour.mp4" type="video/mp4">
+                Your browser does not support the video element.
+            </video>
+        </div>
         <p><em>Take a look behind the scenes at our bakery kitchen.</em></p>
     </section>
 
     {% comment %}Audio element{% endcomment %}
-    <section aria-label="Audio">
+    <section aria-label="Audio" class="about-card media-card">
         <h2>Listen to Our Story</h2>
-        <audio controls>
-            <source src="/media/company/story.mp3" type="audio/mpeg">
-            Your browser does not support the audio element.
-        </audio>
+        <div class="audio-container">
+            <audio controls class="styled-audio-player">
+                <source src="/media/company/story.mp3" type="audio/mpeg">
+                Your browser does not support the audio element.
+            </audio>
+        </div>
     </section>
 
-    {% comment %}Certificate — plain text only, no styling{% endcomment %}
+    {% comment %}Certificate with border-image and vendor prefixes (R7.2){% endcomment %}
     {% if company_info.certificate_text %}
-    <section id="certificate" aria-labelledby="certificate-heading">
+    <section id="certificate" aria-labelledby="certificate-heading" class="certificate-section">
         <h2 id="certificate-heading">Quality Certificate</h2>
-        <pre>{{ company_info.certificate_text }}</pre>
+        <div class="certificate-ticket-container">
+            <div class="certificate-watermark" aria-hidden="true"></div>
+            <div class="certificate-inner">
+                <div class="certificate-badge">★ OFFICIAL CERTIFICATE OF ACCREDITATION ★</div>
+                <pre class="certificate-text">{{ company_info.certificate_text }}</pre>
+                <div class="certificate-footer">
+                    <span>IPSC STANDARD COMPLIANT</span>
+                    <span>ISSUED: 2026</span>
+                </div>
+            </div>
+        </div>
     </section>
     {% endif %}
 
 {% else %}
     <p>No company information available yet.</p>
 {% endif %}
+</div>
 {% endblock %}

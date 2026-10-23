@@ -1,27 +1,81 @@
 {% extends 'core/base.html' %}
 
-{% block title %}Staff Profile{% endblock %}
+{% block title %}Staff / Admin Profile — Pastry Shop{% endblock %}
 
 {% block content %}
-    <h1>Staff / Admin Profile</h1>
+<div class="user-profile-page">
+    <div class="page-title-banner">
+        <h1>Staff / Admin Profile</h1>
+        <p class="page-subtitle">Internal staff portal and management dashboard.</p>
+    </div>
 
-    <h2>User Information</h2>
-    {% if profile %}
-        <p>Name: {{ request.user.get_full_name|default:request.user.username }}</p>
-        <p>Username: {{ request.user.username }}</p>
-        <p>Role: {{ user_role }}</p>
-        <p>Contact Info: {{ profile.contact_details }}</p>
-        <p>Registration Date: {{ request.user.date_joined|date:"d/m/Y" }}</p>
-    {% else %}
-        <!-- For Superusers without StaffProfile -->
-        <p>Name: {{ request.user.get_full_name }}</p>
-        <p>Username: {{ request.user.username }}</p>
-        <p>Role: {{ user_role }}</p>
-        <p>Registration Date: {{ request.user.date_joined|date:"d/m/Y" }}</p>
-    {% endif %}
+    <div class="profile-cards-grid">
+        <!-- User Information Card -->
+        <section class="profile-card staff-info-card" aria-labelledby="staff-info-heading">
+            <div class="profile-avatar-banner">
+                <div class="avatar-circle staff-avatar">{{ request.user.username|first|upper }}</div>
+                <div class="avatar-details">
+                    <h2 id="staff-info-heading">User Information</h2>
+                    <span class="user-role-badge staff-badge">{{ user_role }}</span>
+                </div>
+            </div>
 
-    {% if request.user.role == 'ADMIN' or request.user.is_superuser %}
-        <h2>Admin Panel Access</h2>
-        <a href="/admin/">Go to Admin Panel</a>
-    {% endif %}
+            {% if profile %}
+                <dl class="profile-meta-dl">
+                    <div class="profile-meta-row">
+                        <dt>Name:</dt>
+                        <dd>{{ request.user.get_full_name|default:request.user.username }}</dd>
+                    </div>
+                    <div class="profile-meta-row">
+                        <dt>Username:</dt>
+                        <dd>{{ request.user.username }}</dd>
+                    </div>
+                    <div class="profile-meta-row">
+                        <dt>Role:</dt>
+                        <dd><strong>{{ user_role }}</strong></dd>
+                    </div>
+                    <div class="profile-meta-row">
+                        <dt>Contact Info:</dt>
+                        <dd>{{ profile.contact_details }}</dd>
+                    </div>
+                    <div class="profile-meta-row">
+                        <dt>Registration Date:</dt>
+                        <dd><time datetime="{{ request.user.date_joined|date:'Y-m-d' }}">{{ request.user.date_joined|date:"d/m/Y" }}</time></dd>
+                    </div>
+                </dl>
+            {% else %}
+                <dl class="profile-meta-dl">
+                    <div class="profile-meta-row">
+                        <dt>Name:</dt>
+                        <dd>{{ request.user.get_full_name }}</dd>
+                    </div>
+                    <div class="profile-meta-row">
+                        <dt>Username:</dt>
+                        <dd>{{ request.user.username }}</dd>
+                    </div>
+                    <div class="profile-meta-row">
+                        <dt>Role:</dt>
+                        <dd><strong>{{ user_role }}</strong></dd>
+                    </div>
+                    <div class="profile-meta-row">
+                        <dt>Registration Date:</dt>
+                        <dd><time datetime="{{ request.user.date_joined|date:'Y-m-d' }}">{{ request.user.date_joined|date:"d/m/Y" }}</time></dd>
+                    </div>
+                </dl>
+            {% endif %}
+        </section>
+
+        {% if request.user.role == 'ADMIN' or request.user.is_superuser %}
+            <!-- Admin Actions Card -->
+            <section class="profile-card admin-quick-actions-card" aria-labelledby="admin-access-heading">
+                <h2 id="admin-access-heading">Admin Panel Access</h2>
+                <p>Direct access to Django administration and personnel management.</p>
+                <div class="profile-actions-bar" style="gap: 1rem; flex-wrap: wrap;">
+                    <a href="/admin/" class="btn-action-small btn-primary">Go to Admin Panel &rarr;</a>
+                    <a href="{% url 'staff_list' %}" class="btn-action-small btn-secondary">Staff Management &rarr;</a>
+                </div>
+            </section>
+        {% endif %}
+    </div>
+</div>
 {% endblock %}

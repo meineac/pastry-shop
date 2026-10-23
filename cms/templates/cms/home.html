@@ -2,13 +2,14 @@
 {% block title %}Home — Pastry Shop{% endblock %}
 
 {% block content %}
-<h1 itemprop="name">Welcome to <mark>Pastry Shop</mark></h1>
-
-<p><em>Handcrafted with love, baked with precision.</em></p>
+<div class="home-hero">
+    <h1 itemprop="name">Welcome to <mark>Pastry Shop</mark></h1>
+    <p class="lead-editorial"><em>Handcrafted with love, baked with precision.</em> Every single confection is born from time-honored European artisanal tradition combined with the finest fresh organic ingredients.</p>
+</div>
 
 {% comment %}Quatrain with fixed breaks (br) and potential breaks (wbr){% endcomment %}
-<section aria-label="Our motto">
-    <blockquote cite="https://pastryshop.example.com">
+<section aria-label="Our motto" class="motto-section">
+    <blockquote cite="https://pastryshop.example.com" class="motto-quote">
         <p>
             A flake of butter, a pinch of salt,<wbr> a twist of dough,<br>
             Golden in the oven, rising warm and slow.<br>
@@ -19,15 +20,42 @@
     </blockquote>
 </section>
 
+{% comment %}Artisanal Bakery Animation Showcase (R6.6){% endcomment %}
+<section class="pastry-animation-showcase" aria-label="Artisanal Bakery Showcase">
+    <div class="animation-stage">
+        <!-- Swirling Pastries -->
+        <span class="animated-pastry pastry-1" aria-hidden="true">🥐</span>
+        <span class="animated-pastry pastry-2" aria-hidden="true">🧁</span>
+        <span class="animated-pastry pastry-3" aria-hidden="true">🥧</span>
+        <span class="animated-pastry pastry-4" aria-hidden="true">🍪</span>
+
+        <!-- Smiling, Color-Changing Cloud -->
+        <div class="animated-cloud" aria-hidden="true">
+            <div class="cloud-face">
+                <span class="cloud-eye eye-left"></span>
+                <span class="cloud-eye eye-right"></span>
+                <span class="cloud-smile"></span>
+            </div>
+        </div>
+
+        <!-- Persistent Company Name -->
+        <div class="animated-brand-banner">
+            <span class="animated-brand-title">Pastry Shop</span>
+            <span class="animated-brand-subtitle">Baked with Joy &amp; Tradition</span>
+        </div>
+    </div>
+</section>
+
 {% comment %}Company logo{% endcomment %}
 {% if company_info and company_info.logo %}
-<section aria-label="Brand">
-    <figure>
+<section aria-label="Brand" class="brand-section">
+    <figure class="brand-logo-figure">
         <img src="{{ company_info.logo.url }}"
              alt="Pastry Shop Logo"
              width="200"
              srcset="{{ company_info.logo_small.url }} 1x, {{ company_info.logo_medium.url }} 2x"
-             itemprop="logo">
+             itemprop="logo"
+             class="brand-logo-img">
         <figcaption><strong>Pastry Shop</strong> — est. <time datetime="2010">2010</time></figcaption>
     </figure>
 </section>
@@ -35,20 +63,20 @@
 
 {% comment %}Promotional banners{% endcomment %}
 {% if banners %}
-<section aria-label="Promotions">
+<section aria-label="Promotions" class="banners-section">
     <h2>Current Promotions</h2>
-    <ul>
+    <ul class="banners-grid">
     {% for banner in banners %}
-        <li>
+        <li class="banner-card">
             {% if banner.link_url %}
-            <a href="{{ banner.link_url }}" rel="noopener">
+            <a href="{{ banner.link_url }}" rel="noopener" class="banner-link">
             {% endif %}
-                <figure>
+                <figure class="banner-figure">
                     <img src="{{ banner.image.url }}"
                          alt="{{ banner.title }}"
                          width="800"
                          sizes="100vw" srcset="{{ banner.image_small.url }} 400w, {{ banner.image_medium.url }} 800w, {{ banner.image_large.url }} 1600w"
-                         >
+                         class="banner-img">
                     {% if banner.title %}<figcaption>{{ banner.title }}</figcaption>{% endif %}
                 </figure>
             {% if banner.link_url %}
@@ -61,65 +89,80 @@
 {% endif %}
 
 {% comment %}Product catalog preview{% endcomment %}
-<section id="catalog-preview" aria-label="Catalog preview">
-    <h2>Our Products</h2>
-    <p>A selection of our most popular items. <a href="{% url 'catalog:product_list' %}">View the full catalog &rarr;</a></p>
-    <ul>
+<section id="catalog-preview" aria-label="Catalog preview" class="catalog-preview-section">
+    <div class="preview-header">
+        <h2>Our Products</h2>
+        <p>A selection of our most popular items. <a href="{% url 'catalog:product_list' %}">View the full catalog &rarr;</a></p>
+    </div>
+    <ul class="preview-grid">
     {% for product in products_preview %}
-        <li itemscope itemtype="https://schema.org/Product">
+        <li class="product-card" itemscope itemtype="https://schema.org/Product">
             {% if product.photo %}
-            <figure>
+            <figure class="product-card-figure">
                 <a href="{% url 'catalog:product_detail' product_id=product.id %}">
                     <img src="{{ product.photo.url }}"
                          alt="{{ product.name }}"
                          width="150"
                          sizes="100vw" srcset="{{ product.photo_small.url }} 150w, {{ product.photo_medium.url }} 300w"
-                         itemprop="image">
+                         itemprop="image"
+                         class="product-card-img">
                 </a>
                 <figcaption itemprop="name">{{ product.name }}</figcaption>
             </figure>
             {% endif %}
-            <p>
-                <a href="{% url 'catalog:product_detail' product_id=product.id %}" itemprop="url">
-                    <strong>{{ product.name }}</strong>
-                </a>
-            </p>
-            <p itemprop="offers" itemscope itemtype="https://schema.org/Offer">
-                Price: <strong><span itemprop="price">${{ product.price }}</span></strong>
-                / {{ product.unit }}
-            </p>
+            <div class="product-card-body">
+                <span class="product-category-tag">{{ product.category.name }}</span>
+                <h3 class="product-card-title">
+                    <a href="{% url 'catalog:product_detail' product_id=product.id %}" itemprop="url">
+                        <strong>{{ product.name }}</strong>
+                    </a>
+                </h3>
+                <p class="product-card-price" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
+                    Price: <strong>$<span itemprop="price">{{ product.price }}</span></strong>
+                    {% if product.unit_of_measurement %}
+                        <span class="price-unit">/ {{ product.get_unit_of_measurement_display|lower }}</span>
+                    {% endif %}
+                </p>
+                <div class="product-card-actions">
+                    <a href="{% url 'catalog:product_detail' product_id=product.id %}" class="btn-add-cart">View Details</a>
+                </div>
+            </div>
         </li>
     {% empty %}
-        <li>No products available yet.</li>
+        <li class="no-products">No products available yet.</li>
     {% endfor %}
     </ul>
-    <p><a href="{% url 'catalog:product_list' %}"><strong>Browse all products &rarr;</strong></a></p>
+    <p class="preview-all-link"><a href="{% url 'catalog:product_list' %}" class="btn-create"><strong>Browse all products &rarr;</strong></a></p>
 </section>
 
 {% comment %}Latest news{% endcomment %}
-<section aria-label="Latest news">
+<section aria-label="Latest news" class="latest-news-section">
     <h2>Latest News</h2>
     {% if latest_news %}
-        <article itemscope itemtype="https://schema.org/NewsArticle">
+        <article class="latest-news-card" itemscope itemtype="https://schema.org/NewsArticle">
+            <span class="news-ribbon-badge">Latest Story</span>
             {% if latest_news.image %}
-            <figure>
+            <figure class="latest-news-figure">
                 <img src="{{ latest_news.image.url }}"
                      alt="{{ latest_news.title }}"
                      width="300"
                      sizes="100vw" srcset="{{ latest_news.image_small.url }} 300w, {{ latest_news.image_medium.url }} 600w"
-                     itemprop="image">
+                     itemprop="image"
+                     class="latest-news-img">
                 <figcaption>{{ latest_news.title }}</figcaption>
             </figure>
             {% endif %}
-            <h3 itemprop="headline">{{ latest_news.title }}</h3>
-            <p>
-                <strong>Published:</strong>
-                <time datetime="{{ latest_news.created_at|date:'Y-m-d' }}" itemprop="datePublished">
-                    {{ latest_news.created_at|date:"d/m/Y" }}
-                </time>
-            </p>
-            <p itemprop="description">{{ latest_news.short_summary }}</p>
-            <p><a href="{% url 'cms:news_detail' pk=latest_news.id %}"><strong>Read More &rarr;</strong></a></p>
+            <div class="latest-news-content">
+                <h3 itemprop="headline" class="latest-news-title">{{ latest_news.title }}</h3>
+                <p class="latest-news-meta">
+                    <strong>Published:</strong>
+                    <time datetime="{{ latest_news.created_at|date:'Y-m-d' }}" itemprop="datePublished">
+                        {{ latest_news.created_at|date:"d/m/Y" }}
+                    </time>
+                </p>
+                <p itemprop="description" class="latest-news-summary">{{ latest_news.short_summary }}</p>
+                <p class="latest-news-action"><a href="{% url 'cms:news_detail' pk=latest_news.id %}" class="btn-read-more"><strong>Read More &rarr;</strong></a></p>
+            </div>
         </article>
     {% else %}
         <p>No news available yet.</p>
@@ -128,24 +171,28 @@
 
 {% comment %}Partner companies{% endcomment %}
 {% if partners %}
-<section aria-label="Our partners">
+<section aria-label="Our partners" class="partners-section">
     <h2>Our Partners</h2>
-    <ul>
+    <ul class="partners-grid">
     {% for partner in partners %}
-        <li itemscope itemtype="https://schema.org/Organization">
-            <a href="{{ partner.website_url }}" rel="noopener noreferrer" target="_blank" itemprop="url">
-                {% if partner.logo %}
-                <figure>
-                    <img src="{{ partner.logo.url }}"
-                         alt="{{ partner.name }} logo"
-                         width="120"
-                         sizes="100vw" srcset="{{ partner.logo_small.url }} 120w"
-                         itemprop="logo">
-                    <figcaption itemprop="name">{{ partner.name }}</figcaption>
-                </figure>
-                {% else %}
-                <strong itemprop="name">{{ partner.name }}</strong>
-                {% endif %}
+        <li class="partner-item" itemscope itemtype="https://schema.org/Organization">
+            <a href="{{ partner.website_url }}" rel="noopener noreferrer" target="_blank" itemprop="url" class="partner-link">
+                <div class="partner-circle">
+                    {% if partner.logo %}
+                    <figure class="partner-figure">
+                        <img src="{{ partner.logo.url }}"
+                             alt="{{ partner.name }} logo"
+                             width="120"
+                             sizes="100vw" srcset="{{ partner.logo_small.url }} 120w"
+                             itemprop="logo"
+                             class="partner-logo-img">
+                        <figcaption class="partner-figcaption">{{ partner.name }}</figcaption>
+                    </figure>
+                    {% else %}
+                    <strong class="partner-text-fallback">{{ partner.name|slice:":2" }}</strong>
+                    {% endif %}
+                </div>
+                <span class="partner-name" itemprop="name">{{ partner.name }}</span>
             </a>
         </li>
     {% endfor %}
@@ -154,63 +201,77 @@
 {% endif %}
 
 {% comment %}Location & weather info{% endcomment %}
-<section aria-label="Location and conditions">
+<section aria-label="Location and conditions" class="conditions-section">
     <h2>Your Location &amp; Current Conditions</h2>
-    <table>
-        <thead>
-            <tr>
-                <th id="col-info">Information</th>
-                <th id="col-value">Value</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <th headers="col-info" scope="row">City</th>
-                <td headers="col-value">{{ city }}, {{ country }}</td>
-            </tr>
-            <tr>
-                <th headers="col-info" scope="row">Timezone (Client)</th>
-                <td headers="col-value">{{ tz_name }} &mdash;
-                    <time datetime="{{ now_local|date:'Y-m-d' }}">{{ now_local|date:"d/m/Y H:i:s" }}</time>
-                </td>
-            </tr>
-            <tr>
-                <th headers="col-info" scope="row">Timezone (Server)</th>
-                <td headers="col-value">UTC &mdash;
-                    <time datetime="{{ now_utc|date:'Y-m-d' }}">{{ now_utc|date:"d/m/Y H:i:s" }}</time>
-                </td>
-            </tr>
-            {% if weather %}
-            <tr>
-                <th headers="col-info" scope="row" colspan="2">Weather</th>
-            </tr>
-            <tr>
-                <th headers="col-info" scope="row">Conditions</th>
-                <td headers="col-value">{{ weather.description }}</td>
-            </tr>
-            <tr>
-                <th headers="col-info" scope="row">Temperature</th>
-                <td headers="col-value">{{ weather.temperature }}&deg;C (feels like {{ weather.feels_like }}&deg;C)</td>
-            </tr>
-            <tr>
-                <th headers="col-info" scope="row">Humidity</th>
-                <td headers="col-value">{{ weather.humidity }}%</td>
-            </tr>
-            <tr>
-                <th headers="col-info" scope="row">Wind Speed</th>
-                <td headers="col-value">{{ weather.wind_speed }} m/s</td>
-            </tr>
-            {% else %}
-            <tr>
-                <td headers="col-info col-value" colspan="2">
-                    <em>Weather information is currently unavailable.</em>
-                </td>
-            </tr>
-            {% endif %}
-        </tbody>
-    </table>
+    <div class="table-responsive">
+        <table class="conditions-table">
+            <caption>Live Meteorological and Geographical Data</caption>
+            <thead>
+                <tr>
+                    <th id="col-info">Information</th>
+                    <th id="col-value">Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th headers="col-info" scope="row">City</th>
+                    <td headers="col-value">{{ city }}, {{ country }}</td>
+                </tr>
+                <tr>
+                    <th headers="col-info" scope="row">Timezone (Client)</th>
+                    <td headers="col-value">{{ tz_name }} &mdash;
+                        <time datetime="{{ now_local|date:'Y-m-d' }}">{{ now_local|date:"d/m/Y H:i:s" }}</time>
+                    </td>
+                </tr>
+                <tr>
+                    <th headers="col-info" scope="row">Timezone (Server)</th>
+                    <td headers="col-value">UTC &mdash;
+                        <time datetime="{{ now_utc|date:'Y-m-d' }}">{{ now_utc|date:"d/m/Y H:i:s" }}</time>
+                    </td>
+                </tr>
+                {% if weather %}
+                <tr>
+                    <th headers="col-info" scope="row" colspan="2" class="table-subheading">Weather</th>
+                </tr>
+                <tr>
+                    <th headers="col-info" scope="row">Conditions</th>
+                    <td headers="col-value">{{ weather.description }}</td>
+                </tr>
+                <tr>
+                    <th headers="col-info" scope="row">Temperature</th>
+                    <td headers="col-value">{{ weather.temperature }}&deg;C (feels like {{ weather.feels_like }}&deg;C)</td>
+                </tr>
+                <tr>
+                    <th headers="col-info" scope="row">Humidity</th>
+                    <td headers="col-value">{{ weather.humidity }}%</td>
+                </tr>
+                <tr>
+                    <th headers="col-info" scope="row">Wind Speed</th>
+                    <td headers="col-value">{{ weather.wind_speed }} m/s</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td headers="col-info col-value" colspan="2">
+                        <em>Weather information is currently unavailable.</em>
+                    </td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
 
     <h3>Calendar</h3>
     <pre>{{ text_calendar }}</pre>
+</section>
+
+{% comment %}Main Page Preloader (R6.5){% endcomment %}
+<section class="home-preloader-section" aria-label="Page preloader">
+    <div class="preloader-container">
+        <svg class="preloader-infinity" viewBox="0 0 100 50" width="80" height="40" role="img" aria-label="Infinity Preloader">
+            <path class="preloader-track" d="M 25,25 C 25,12 38,12 50,25 C 62,38 75,38 75,25 C 75,12 62,12 50,25 C 38,38 25,38 25,25 Z" />
+            <path class="preloader-trace" d="M 25,25 C 25,12 38,12 50,25 C 62,38 75,38 75,25 C 75,12 62,12 50,25 C 38,38 25,38 25,25 Z" />
+        </svg>
+        <span class="preloader-text">Freshly baking new treats...</span>
+    </div>
 </section>
 {% endblock %}

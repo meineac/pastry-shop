@@ -2,57 +2,70 @@
 {% block title %}Contacts — Pastry Shop{% endblock %}
 
 {% block content %}
+<div class="contacts-page">
 <h1>Contact Us</h1>
 
-<address>
-    <strong>Pastry Shop</strong><br>
-    123 Baker Street, London, UK<br>
-    Phone: <a href="tel:+375291234567">+375 (29) 123-45-67</a><br>
-    Email: <a href="mailto:hello@pastryshop.example.com">hello@pastryshop.example.com</a><br>
-    Opening hours: Monday&ndash;Saturday,
-    <time datetime="07:00">07:00</time>&ndash;<time datetime="20:00">20:00</time>
-</address>
+<div class="contacts-layout">
+    <section class="store-info-card" aria-label="Store information">
+        <h2>Flagship Store</h2>
+        <address class="store-address">
+            <strong class="store-name">Pastry Shop</strong><br>
+            123 Baker Street, London, UK<br>
+            Phone: <a href="tel:+375291234567">+375 (29) 123-45-67</a><br>
+            Email: <a href="mailto:hello@pastryshop.example.com">hello@pastryshop.example.com</a><br>
+            <span class="store-hours">Opening hours: Monday&ndash;Saturday,
+            <time datetime="07:00">07:00</time>&ndash;<time datetime="20:00">20:00</time></span>
+        </address>
+    </section>
 
-<section aria-label="Map">
-    <h2>Find Us</h2>
-    <iframe
-        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2482.891704627025!2d-0.15777852353720893!3d51.52369477181686!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x48761accd4d9cc93%3A0x79e7a96a4a2f8e29!2sBaker%20St%2C%20London!5e0!3m2!1sen!2suk!4v1700000000000!5m2!1sen!2suk"
-        width="600"
-        height="400"
-        title="Pastry Shop location — 123 Baker Street, London"
-        loading="lazy"
-        referrerpolicy="no-referrer-when-downgrade"
-        allowfullscreen>
-    </iframe>
-</section>
+    <section aria-label="Map" class="store-map-card">
+        <h2>Find Us</h2>
+        <div class="map-container">
+            <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2482.891704627025!2d-0.15777852353720893!3d51.52369477181686!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x48761accd4d9cc93%3A0x79e7a96a4a2f8e29!2sBaker%20St%2C%20London!5e0!3m2!1sen!2suk!4v1700000000000!5m2!1sen!2suk"
+                width="600"
+                height="400"
+                title="Pastry Shop location — 123 Baker Street, London"
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"
+                allowfullscreen
+                class="map-iframe">
+            </iframe>
+        </div>
+    </section>
+</div>
 
-<section aria-label="Our team">
+<section aria-label="Our team" class="team-section">
     <h2>Our Team</h2>
-    <ul>
+    <ul class="team-flex-container">
     {% for employee in employees %}
-        <li itemscope itemtype="https://schema.org/Person">
+        <li class="employee-card" itemscope itemtype="https://schema.org/Person">
             {% if employee.photo %}
-            <figure>
+            <figure class="employee-figure">
                 <img src="{{ employee.photo.url }}"
                      alt="{{ employee.user.get_full_name|default:employee.user.username }}"
                      width="120"
                      srcset="{{ employee.photo_small.url }} 120w, {{ employee.photo_medium.url }} 240w"
                      sizes="120px"
-                     itemprop="image">
+                     itemprop="image"
+                     class="employee-photo">
                 <figcaption>{{ employee.user.get_full_name|default:employee.user.username }}</figcaption>
             </figure>
             {% endif %}
-            <h3 itemprop="name">{{ employee.user.get_full_name|default:employee.user.username }}</h3>
-            <p><strong>Position:</strong> <span itemprop="jobTitle">{{ employee.position }}</span></p>
-            <address>
-                <strong>Contact:</strong> {{ employee.contact_details }}<br>
-                <strong>Email:</strong>
-                <a href="mailto:{{ employee.user.email }}"><span itemprop="email">{{ employee.user.email }}</span></a>
-            </address>
+            <div class="employee-info">
+                <h3 itemprop="name" class="employee-name">{{ employee.user.get_full_name|default:employee.user.username }}</h3>
+                <p class="employee-position"><strong>Position:</strong> <span itemprop="jobTitle">{{ employee.position }}</span></p>
+                <address class="employee-contact">
+                    <strong>Contact:</strong> {{ employee.contact_details }}<br>
+                    <strong>Email:</strong>
+                    <a href="mailto:{{ employee.user.email }}"><span itemprop="email">{{ employee.user.email }}</span></a>
+                </address>
+            </div>
         </li>
     {% empty %}
-        <li>No team members listed yet.</li>
+        <li class="no-team">No team members listed yet.</li>
     {% endfor %}
     </ul>
 </section>
+</div>
 {% endblock %}

@@ -2,63 +2,80 @@
 {% block title %}Promo Codes — Pastry Shop{% endblock %}
 
 {% block content %}
-<h1>Promo Codes &amp; Coupons</h1>
+<div class="promos-page-container">
+<div class="promos-header-row">
+    <h1>Promo Codes &amp; Coupons</h1>
+    {% if request.user.role == 'ADMIN' %}
+        <a href="{% url 'cms:promo_code_create' %}" class="btn-create">+ Add Promo Code</a>
+    {% endif %}
+</div>
 
-{% if request.user.role == 'ADMIN' %}
-    <p><a href="{% url 'cms:promo_code_create' %}">[Add Promo Code]</a></p>
-{% endif %}
-
-<section id="active-promos" aria-labelledby="active-heading">
-    <h2 id="active-heading">Active Promo Codes</h2>
-    <ul>
+<section id="active-promos" class="promo-section active-promos-section" aria-labelledby="active-heading">
+    <h2 id="active-heading" class="promo-section-title">Active Promo Codes</h2>
+    <ul class="promo-voucher-grid promo-list">
     {% for promo in active_promos %}
-        <li>
-            <h3><code>{{ promo.code }}</code> &mdash; <strong>{{ promo.discount_percentage }}% off</strong></h3>
-            {% if request.user.role == 'ADMIN' %}
-                <p>
-                    <a href="{% url 'cms:promo_code_edit' pk=promo.id %}">[Edit]</a>
-                    <a href="{% url 'cms:promo_code_delete' pk=promo.id %}">[Delete]</a>
+        <li class="promo-voucher-card active-voucher">
+            <div class="voucher-top-bar">
+                <h3 class="voucher-code-header">
+                    <code class="voucher-code-tag">{{ promo.code }}</code>
+                </h3>
+                <div class="voucher-discount-badge">{{ promo.discount_percentage }}% OFF</div>
+            </div>
+            <div class="voucher-content">
+                {% if request.user.role == 'ADMIN' %}
+                    <div class="voucher-admin-actions">
+                        <a href="{% url 'cms:promo_code_edit' pk=promo.id %}">Edit</a>
+                        <a href="{% url 'cms:promo_code_delete' pk=promo.id %}">Delete</a>
+                    </div>
+                {% endif %}
+                <p class="voucher-meta">
+                    <strong>Expires:</strong>
+                    <time datetime="{{ promo.expiration_date|date:'Y-m-d' }}" class="voucher-date">{{ promo.expiration_date|date:"d/m/Y" }}</time>
                 </p>
-            {% endif %}
-            <p>
-                <strong>Expires:</strong>
-                <time datetime="{{ promo.expiration_date|date:'Y-m-d' }}">{{ promo.expiration_date|date:"d/m/Y" }}</time>
-            </p>
-            {% if promo.minimum_purchase_amount > 0 %}
-                <p><strong>Minimum Purchase:</strong> ${{ promo.minimum_purchase_amount }}</p>
-            {% endif %}
-            <p><strong>Conditions:</strong> {{ promo.conditions_of_application }}</p>
+                {% if promo.minimum_purchase_amount > 0 %}
+                    <p class="voucher-min"><strong>Minimum Purchase:</strong> ${{ promo.minimum_purchase_amount }}</p>
+                {% endif %}
+                <p class="voucher-cond"><strong>Conditions:</strong> {{ promo.conditions_of_application }}</p>
+            </div>
         </li>
     {% empty %}
-        <li>No active promo codes at this time.</li>
+        <li class="no-promos">No active promo codes at this time.</li>
     {% endfor %}
     </ul>
 </section>
 
-<section id="archived-promos" aria-labelledby="archived-heading">
-    <h2 id="archived-heading">Archived Promo Codes</h2>
-    <ul>
+<section id="archived-promos" class="promo-section archived-promos-section" aria-labelledby="archived-heading">
+    <h2 id="archived-heading" class="promo-section-title">Archived Promo Codes</h2>
+    <ul class="promo-voucher-grid promo-list">
     {% for promo in archived_promos %}
-        <li>
-            <h3><code>{{ promo.code }}</code> &mdash; <del>{{ promo.discount_percentage }}% off</del> <em>(expired)</em></h3>
-            {% if request.user.role == 'ADMIN' %}
-                <p>
-                    <a href="{% url 'cms:promo_code_edit' pk=promo.id %}">[Edit]</a>
-                    <a href="{% url 'cms:promo_code_delete' pk=promo.id %}">[Delete]</a>
+        <li class="promo-voucher-card archived-voucher">
+            <div class="voucher-top-bar">
+                <h3 class="voucher-code-header">
+                    <code class="voucher-code-tag">{{ promo.code }}</code>
+                </h3>
+                <div class="voucher-expired-badge"><del>{{ promo.discount_percentage }}% off</del> EXPIRED</div>
+            </div>
+            <div class="voucher-content">
+                {% if request.user.role == 'ADMIN' %}
+                    <div class="voucher-admin-actions">
+                        <a href="{% url 'cms:promo_code_edit' pk=promo.id %}">Edit</a>
+                        <a href="{% url 'cms:promo_code_delete' pk=promo.id %}">Delete</a>
+                    </div>
+                {% endif %}
+                <p class="voucher-meta">
+                    <strong>Expired:</strong>
+                    <time datetime="{{ promo.expiration_date|date:'Y-m-d' }}" class="voucher-date">{{ promo.expiration_date|date:"d/m/Y" }}</time>
                 </p>
-            {% endif %}
-            <p>
-                <strong>Expired:</strong>
-                <time datetime="{{ promo.expiration_date|date:'Y-m-d' }}">{{ promo.expiration_date|date:"d/m/Y" }}</time>
-            </p>
-            {% if promo.minimum_purchase_amount > 0 %}
-                <p><strong>Minimum Purchase:</strong> ${{ promo.minimum_purchase_amount }}</p>
-            {% endif %}
-            <p><strong>Conditions:</strong> {{ promo.conditions_of_application }}</p>
+                {% if promo.minimum_purchase_amount > 0 %}
+                    <p class="voucher-min"><strong>Minimum Purchase:</strong> ${{ promo.minimum_purchase_amount }}</p>
+                {% endif %}
+                <p class="voucher-cond"><strong>Conditions:</strong> {{ promo.conditions_of_application }}</p>
+            </div>
         </li>
     {% empty %}
-        <li>No archived promo codes.</li>
+        <li class="no-promos">No archived promo codes.</li>
     {% endfor %}
     </ul>
 </section>
+</div>
 {% endblock %}

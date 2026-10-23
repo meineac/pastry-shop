@@ -1,75 +1,114 @@
 {% extends 'core/base.html' %}
 
-{% block title %}Clients{% endblock %}
+{% block title %}Clients — Staff Portal — Pastry Shop{% endblock %}
 
 {% block content %}
-<h1>Clients</h1>
+<div class="staff-portal-page clients-page">
+    <div class="page-title-banner">
+        <h1>Clients</h1>
+        <p class="page-subtitle">Search, filter, and inspect customer profiles, orders, and purchase history.</p>
+    </div>
 
-{% if messages %}
-    <ul>
-        {% for message in messages %}
-            <li>{{ message }}</li>
-        {% endfor %}
-    </ul>
-{% endif %}
+    {% if messages %}
+        <ul class="messages-list">
+            {% for message in messages %}
+                <li class="message-banner">{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
 
-<h2>Search &amp; Filter</h2>
-<form method="get" action="">
-    <label for="id_q">Search by name:</label>
-    <input type="text" id="id_q" name="q" value="{{ q }}" placeholder="Name or username">
+    <!-- Filter Form (same style as News) -->
+    <form method="get" action="" class="filter-form">
+        <fieldset>
+            <legend>Search &amp; Filter</legend>
+            <div class="filter-grid clients-filter-grid">
+                <div class="filter-field">
+                    <label for="id_q">Search by name:</label>
+                    <input type="text" id="id_q" name="q" value="{{ q }}" placeholder="Name or username">
+                </div>
 
-    <label for="id_product">Purchased product:</label>
-    <select id="id_product" name="product">
-        <option value="">-- All products --</option>
-        {% for p in products %}
-            <option value="{{ p.id }}" {% if product_id == p.id|stringformat:"s" %}selected{% endif %}>
-                {{ p.name }}
-            </option>
-        {% endfor %}
-    </select>
+                <div class="filter-field">
+                    <label for="id_product">Purchased product:</label>
+                    <select id="id_product" name="product">
+                        <option value="">-- All products --</option>
+                        {% for p in products %}
+                            <option value="{{ p.id }}" {% if product_id == p.id|stringformat:"s" %}selected{% endif %}>
+                                {{ p.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
 
-    <label for="id_category">Product category (tag):</label>
-    <select id="id_category" name="category">
-        <option value="">-- All categories --</option>
-        {% for c in categories %}
-            <option value="{{ c.id }}" {% if category_id == c.id|stringformat:"s" %}selected{% endif %}>
-                {{ c.name }}
-            </option>
-        {% endfor %}
-    </select>
+                <div class="filter-field">
+                    <label for="id_category">Product category (tag):</label>
+                    <select id="id_category" name="category">
+                        <option value="">-- All categories --</option>
+                        {% for c in categories %}
+                            <option value="{{ c.id }}" {% if category_id == c.id|stringformat:"s" %}selected{% endif %}>
+                                {{ c.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
 
-    <label for="id_date_from">Last order from:</label>
-    <input type="date" id="id_date_from" name="date_from" value="{{ date_from }}">
+                <div class="filter-field">
+                    <label for="id_date_from">Last order from:</label>
+                    <input type="date" id="id_date_from" name="date_from" value="{{ date_from }}">
+                </div>
 
-    <label for="id_date_to">Last order to:</label>
-    <input type="date" id="id_date_to" name="date_to" value="{{ date_to }}">
+                <div class="filter-field">
+                    <label for="id_date_to">Last order to:</label>
+                    <input type="date" id="id_date_to" name="date_to" value="{{ date_to }}">
+                </div>
 
-    <button type="submit">Apply</button>
-    <a href="{% url 'client_list' %}">Clear</a>
-</form>
+                <div class="filter-actions">
+                    <button type="submit" class="btn-filter">Apply</button>
+                    <a href="{% url 'client_list' %}" class="btn-reset">Clear</a>
+                </div>
+            </div>
+        </fieldset>
+    </form>
 
-<h2>All Clients</h2>
-<ul>
-    {% for client in clients %}
-        <li>
-            <strong>{{ client.user.get_full_name|default:client.user.username }}</strong>
-            &mdash; Completed orders: {{ client.received_orders }}
-            &mdash; Cancelled orders: {{ client.cancelled_orders }}
+    <!-- All Clients Section -->
+    <section class="clients-list-section" aria-labelledby="all-clients-heading">
+        <h2 id="all-clients-heading">All Clients</h2>
 
-            <a href="{% url 'client_card' client.id %}">Open Card</a>
+        <div class="client-cards-grid">
+            {% for client in clients %}
+                <article class="client-item-card">
+                    <div class="client-card-header">
+                        <div class="client-avatar-badge">{{ client.user.username|first|upper }}</div>
+                        <div class="client-identity">
+                            <h3 class="client-name"><strong>{{ client.user.get_full_name|default:client.user.username }}</strong></h3>
+                            <span class="client-username">@{{ client.user.username }}</span>
+                        </div>
+                    </div>
 
-            {% if client.id not in my_client_ids %}
-                <form method="post" action="">
-                    {% csrf_token %}
-                    <input type="hidden" name="client_id" value="{{ client.id }}">
-                    <button type="submit">Add to My Clients</button>
-                </form>
-            {% else %}
-                <em>(In your list)</em>
-            {% endif %}
-        </li>
-    {% empty %}
-        <li>No clients found.</li>
-    {% endfor %}
-</ul>
+                    <div class="client-card-stats">
+                        <span class="stat-pill stat-completed">Completed orders: <strong>{{ client.received_orders }}</strong></span>
+                        <span class="stat-pill stat-cancelled">Cancelled orders: <strong>{{ client.cancelled_orders }}</strong></span>
+                    </div>
+
+                    <div class="client-card-actions">
+                        <a href="{% url 'client_card' client.id %}" class="btn-action-small btn-secondary">Open Card</a>
+
+                        {% if client.id not in my_client_ids %}
+                            <form method="post" action="" class="inline-action-form">
+                                {% csrf_token %}
+                                <input type="hidden" name="client_id" value="{{ client.id }}">
+                                <button type="submit" class="btn-action-small btn-primary">Add to My Clients</button>
+                            </form>
+                        {% else %}
+                            <span class="badge-in-list"><em>(In your list)</em></span>
+                        {% endif %}
+                    </div>
+                </article>
+            {% empty %}
+                <div class="empty-state-card">
+                    <p>No clients found.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+</div>
 {% endblock %}

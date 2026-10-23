@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+  <circle cx="100" cy="100" r="90" fill="none" stroke="#c98a2c" stroke-width="3" stroke-dasharray="6,4" opacity="0.25"/>
+  <circle cx="100" cy="100" r="75" fill="none" stroke="#8b3a2b" stroke-width="2" opacity="0.2"/>
+  <circle cx="100" cy="100" r="60" fill="none" stroke="#c98a2c" stroke-width="1.5" opacity="0.25"/>
+  <polygon points="100,45 112,80 148,80 119,102 130,137 100,116 70,137 81,102 52,80 88,80" fill="#c98a2c" opacity="0.18"/>
+  <text x="100" y="165" font-family="'Playfair Display', Georgia, serif" font-size="12" font-weight="bold" fill="#8b3a2b" text-anchor="middle" letter-spacing="3" opacity="0.3">OFFICIAL SEAL</text>
+</svg>

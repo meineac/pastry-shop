@@ -2,93 +2,123 @@
 {% block title %}Catalog — Pastry Shop{% endblock %}
 
 {% block content %}
-<h1>Product Catalog</h1>
+<div class="catalog-page">
+    <div class="catalog-header">
+        <h1>Product Catalog</h1>
+        {% if request.user.is_authenticated and request.user.role == 'ADMIN' or request.user.is_authenticated and request.user.role == 'STAFF' %}
+            <a href="{% url 'catalog:product_create' %}" class="btn-create">+ Create Product</a>
+        {% endif %}
+    </div>
 
-{% if request.user.is_authenticated and request.user.role == 'ADMIN' or request.user.is_authenticated and request.user.role == 'STAFF' %}
-    <p><a href="{% url 'catalog:product_create' %}">[Create New Product]</a></p>
-{% endif %}
+    <form method="GET" action="{% url 'catalog:product_list' %}" class="filter-form">
+        <fieldset>
+            <legend>Search &amp; Filter</legend>
+            <div class="filter-grid">
+                <div class="filter-field">
+                    <label for="id_q">Search:</label>
+                    <input type="search" id="id_q" name="q" value="{{ query }}" placeholder="Search by name or category" maxlength="200">
+                </div>
 
-<form method="GET" action="{% url 'catalog:product_list' %}">
-    <fieldset>
-        <legend>Search &amp; Filter</legend>
+                <div class="filter-field">
+                    <label for="id_category">Category:</label>
+                    <select id="id_category" name="category">
+                        <option value="">All Categories</option>
+                        {% for cat in categories %}
+                            <option value="{{ cat.id }}" {% if category_id == cat.id|stringformat:"s" %}selected{% endif %}>{{ cat.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
 
-        <label for="id_q">Search:</label>
-        <input type="search" id="id_q" name="q" value="{{ query }}" placeholder="Search by name or category" maxlength="200">
+                <div class="filter-field">
+                    <label for="id_manufacturer">Manufacturer:</label>
+                    <select id="id_manufacturer" name="manufacturer">
+                        <option value="">All Manufacturers</option>
+                        {% for man in manufacturers %}
+                            <option value="{{ man.id }}" {% if manufacturer_id == man.id|stringformat:"s" %}selected{% endif %}>{{ man.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
 
-        <label for="id_category">Category:</label>
-        <select id="id_category" name="category">
-            <option value="">All Categories</option>
-            {% for cat in categories %}
-                <option value="{{ cat.id }}" {% if category_id == cat.id|stringformat:"s" %}selected{% endif %}>{{ cat.name }}</option>
-            {% endfor %}
-        </select>
+                <div class="filter-field">
+                    <label for="id_min_price">Min Price:</label>
+                    <input type="number" id="id_min_price" name="min_price" value="{{ min_price }}" placeholder="Min Price" step="0.01" min="0">
+                </div>
 
-        <label for="id_manufacturer">Manufacturer:</label>
-        <select id="id_manufacturer" name="manufacturer">
-            <option value="">All Manufacturers</option>
-            {% for man in manufacturers %}
-                <option value="{{ man.id }}" {% if manufacturer_id == man.id|stringformat:"s" %}selected{% endif %}>{{ man.name }}</option>
-            {% endfor %}
-        </select>
+                <div class="filter-field">
+                    <label for="id_max_price">Max Price:</label>
+                    <input type="number" id="id_max_price" name="max_price" value="{{ max_price }}" placeholder="Max Price" step="0.01" min="0">
+                </div>
 
-        <label for="id_min_price">Min Price:</label>
-        <input type="number" id="id_min_price" name="min_price" value="{{ min_price }}" placeholder="Min Price" step="0.01" min="0">
+                <div class="filter-actions">
+                    <button type="submit" class="btn-filter">Filter</button>
+                </div>
+            </div>
+        </fieldset>
+    </form>
 
-        <label for="id_max_price">Max Price:</label>
-        <input type="number" id="id_max_price" name="max_price" value="{{ max_price }}" placeholder="Max Price" step="0.01" min="0">
-
-        <button type="submit">Filter</button>
-    </fieldset>
-</form>
-
-<ul>
-    {% for product in products %}
-        <li itemscope itemtype="https://schema.org/Product">
-            {% if product.photo %}
-            <figure>
-                <a href="{% url 'catalog:product_detail' product_id=product.id %}">
-                    <img src="{{ product.photo.url }}"
-                         alt="{{ product.name }}"
-                         width="100"
-                         srcset="{{ product.photo_small.url }} 100w"
-                         sizes="100px"
-                         itemprop="image">
-                </a>
-                <figcaption itemprop="name">{{ product.name }}</figcaption>
-            </figure>
-            {% endif %}
-            <h2>
-                <a href="{% url 'catalog:product_detail' product_id=product.id %}" itemprop="url">{{ product.name }}</a>
-                {% if not product.is_active %}
-                    <em>[Inactive / Hidden]</em>
+    <ul class="product-grid">
+        {% for product in products %}
+            <li class="product-card" itemscope itemtype="https://schema.org/Product">
+                {% if product.photo %}
+                <figure class="product-card-figure">
+                    <a href="{% url 'catalog:product_detail' product_id=product.id %}">
+                        <img src="{{ product.photo.url }}"
+                             alt="{{ product.name }}"
+                             width="100"
+                             srcset="{{ product.photo_small.url }} 100w"
+                             sizes="100px"
+                             itemprop="image"
+                             class="product-card-img">
+                    </a>
+                    <figcaption itemprop="name">{{ product.name }}</figcaption>
+                </figure>
                 {% endif %}
-            </h2>
-            <p>Category: {{ product.category.name }}</p>
-            <p itemprop="offers" itemscope itemtype="https://schema.org/Offer">
-                Price: <strong>$<span itemprop="price">{{ product.price }}</span></strong>
-            </p>
-            <p>Available: {{ product.quantity }} in stock</p>
+                <div class="product-card-body">
+                    <span class="product-category-tag">{{ product.category.name }}</span>
+                    <h2 class="product-card-title">
+                        <a href="{% url 'catalog:product_detail' product_id=product.id %}" itemprop="url">{{ product.name }}</a>
+                        {% if not product.is_active %}
+                            <em class="badge-inactive">Inactive / Hidden</em>
+                        {% endif %}
+                    </h2>
+                    <p class="product-card-desc" itemprop="description">{{ product.ingredients|truncatewords:8 }}</p>
+                    <div class="product-card-meta">
+                        <p class="product-card-price" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
+                            Price: <strong>$<span itemprop="price">{{ product.price }}</span></strong>
+                        </p>
+                        <p class="product-card-stock">
+                            {% if product.quantity > 0 %}
+                                <span class="stock-badge in-stock">Available: {{ product.quantity }} in stock</span>
+                            {% else %}
+                                <strong><mark class="stock-badge out-stock">Out of Stock</mark></strong>
+                            {% endif %}
+                        </p>
+                    </div>
 
-            {% if request.user.is_authenticated and request.user.role == 'ADMIN' or request.user.is_authenticated and request.user.role == 'STAFF' %}
-                <p>
-                    <a href="{% url 'catalog:product_edit' product_id=product.id %}">[Edit]</a>
-                    <a href="{% url 'catalog:product_delete' product_id=product.id %}">[Delete]</a>
-                </p>
-            {% endif %}
+                    {% if request.user.is_authenticated and request.user.role == 'ADMIN' or request.user.is_authenticated and request.user.role == 'STAFF' %}
+                        <div class="product-card-admin">
+                            <a href="{% url 'catalog:product_edit' product_id=product.id %}">Edit</a>
+                            <a href="{% url 'catalog:product_delete' product_id=product.id %}">Delete</a>
+                        </div>
+                    {% endif %}
 
-            {% if not request.user.is_authenticated or request.user.role == 'CUSTOMER' %}
-                {% if product.quantity > 0 %}
-                    <form action="{% url 'purchasing:add_to_cart' product_id=product.id %}" method="POST">
-                        {% csrf_token %}
-                        <button type="submit">Add to Cart</button>
-                    </form>
-                {% else %}
-                    <p><strong><mark>Out of Stock</mark></strong></p>
-                {% endif %}
-            {% endif %}
-        </li>
-    {% empty %}
-        <li>No products found.</li>
-    {% endfor %}
-</ul>
+                    {% if not request.user.is_authenticated or request.user.role == 'CUSTOMER' %}
+                        <div class="product-card-actions">
+                            {% if product.quantity > 0 %}
+                                <form action="{% url 'purchasing:add_to_cart' product_id=product.id %}" method="POST">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn-add-cart">Add to Cart</button>
+                                </form>
+                            {% else %}
+                                <button type="button" class="btn-disabled" disabled>Out of Stock</button>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            </li>
+        {% empty %}
+            <li class="no-products">No products found.</li>
+        {% endfor %}
+    </ul>
+</div>
 {% endblock %}

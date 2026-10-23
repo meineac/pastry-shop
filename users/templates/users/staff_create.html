@@ -1,126 +1,129 @@
 {% extends 'core/base.html' %}
 
-{% block title %}Create Staff Account{% endblock %}
+{% block title %}Create Staff Account — Administration — Pastry Shop{% endblock %}
 
 {% block content %}
-<h1>Create Staff Account</h1>
+<div class="staff-portal-page" style="max-width: 760px; margin: 2rem auto;">
+    <div class="page-nav-back">
+        <a href="{% url 'staff_list' %}" class="back-link">&larr; Back to Staff List</a>
+    </div>
 
-<p><a href="{% url 'staff_list' %}">&larr; Back to Staff List</a></p>
+    <div class="page-title-banner">
+        <h1>Create Staff Account</h1>
+        <p class="page-subtitle">Provision a new bakery staff member and profile credentials.</p>
+    </div>
 
-{% if form.non_field_errors %}
-    <ul>
-        {% for error in form.non_field_errors %}
-            <li>{{ error }}</li>
-        {% endfor %}
-    </ul>
-{% endif %}
+    {% if form.non_field_errors %}
+        <ul class="messages-list">
+            {% for error in form.non_field_errors %}
+                <li class="message-banner" style="background-color: #fef2f2; border-color: #fecaca; color: #991b1b;">{{ error }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
 
-<form method="post" enctype="multipart/form-data" novalidate>
-    {% csrf_token %}
+    <div class="client-section-card">
+        <form method="post" enctype="multipart/form-data" novalidate class="styled-admin-form">
+            {% csrf_token %}
 
-    <fieldset>
-        <legend>Account Details</legend>
+            <fieldset style="border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: 1.5rem; margin-bottom: 2rem;">
+                <legend style="padding: 0 0.5rem; font-family: var(--font-serif); font-size: 1.25rem; color: var(--color-primary); font-weight: 600;">Account Details</legend>
 
-        <p>
-            <label for="{{ form.username.id_for_label }}">Username <span aria-hidden="true">*</span></label>
-            {{ form.username }}
-            {% if form.username.errors %}
-                <strong>{{ form.username.errors|join:", " }}</strong>
-            {% endif %}
-        </p>
+                <p style="margin-bottom: 1rem;">
+                    <label for="{{ form.username.id_for_label }}" style="display: block; font-weight: 600; margin-bottom: 0.35rem;">Username <span aria-hidden="true">*</span></label>
+                    {{ form.username }}
+                    {% if form.username.errors %}
+                        <strong style="color: #b91c1c; display: block; margin-top: 0.25rem;">{{ form.username.errors|join:", " }}</strong>
+                    {% endif %}
+                </p>
 
-        <p>
-            <label for="{{ form.first_name.id_for_label }}">First name</label>
-            {{ form.first_name }}
-            {% if form.first_name.errors %}
-                <strong>{{ form.first_name.errors|join:", " }}</strong>
-            {% endif %}
-        </p>
+                <p style="margin-bottom: 1rem;">
+                    <label for="{{ form.first_name.id_for_label }}" style="display: block; font-weight: 600; margin-bottom: 0.35rem;">First name</label>
+                    {{ form.first_name }}
+                    {% if form.first_name.errors %}
+                        <strong style="color: #b91c1c; display: block; margin-top: 0.25rem;">{{ form.first_name.errors|join:", " }}</strong>
+                    {% endif %}
+                </p>
 
-        <p>
-            <label for="{{ form.last_name.id_for_label }}">Last name</label>
-            {{ form.last_name }}
-            {% if form.last_name.errors %}
-                <strong>{{ form.last_name.errors|join:", " }}</strong>
-            {% endif %}
-        </p>
+                <p style="margin-bottom: 1rem;">
+                    <label for="{{ form.last_name.id_for_label }}" style="display: block; font-weight: 600; margin-bottom: 0.35rem;">Last name</label>
+                    {{ form.last_name }}
+                    {% if form.last_name.errors %}
+                        <strong style="color: #b91c1c; display: block; margin-top: 0.25rem;">{{ form.last_name.errors|join:", " }}</strong>
+                    {% endif %}
+                </p>
 
-        <p>
-            <label for="{{ form.email.id_for_label }}">Email</label>
-            {{ form.email }}
-            {% if form.email.errors %}
-                <strong>{{ form.email.errors|join:", " }}</strong>
-            {% endif %}
-        </p>
+                <p style="margin-bottom: 1rem;">
+                    <label for="{{ form.email.id_for_label }}" style="display: block; font-weight: 600; margin-bottom: 0.35rem;">Email</label>
+                    {{ form.email }}
+                    {% if form.email.errors %}
+                        <strong style="color: #b91c1c; display: block; margin-top: 0.25rem;">{{ form.email.errors|join:", " }}</strong>
+                    {% endif %}
+                </p>
 
-        <p>
-            <label for="{{ form.password.id_for_label }}">Password <span aria-hidden="true">*</span></label>
-            {{ form.password }}
-            {% if form.password.help_text %}
-                <small>{{ form.password.help_text }}</small>
-            {% endif %}
-            {% if form.password.errors %}
-                <strong>{{ form.password.errors|join:", " }}</strong>
-            {% endif %}
-        </p>
+                <p style="margin-bottom: 1rem;">
+                    <label for="{{ form.password.id_for_label }}" style="display: block; font-weight: 600; margin-bottom: 0.35rem;">Password <span aria-hidden="true">*</span></label>
+                    {{ form.password }}
+                    {% if form.password.help_text %}
+                        <small style="color: var(--color-text-muted); display: block; margin-top: 0.25rem;">{{ form.password.help_text }}</small>
+                    {% endif %}
+                    {% if form.password.errors %}
+                        <strong style="color: #b91c1c; display: block; margin-top: 0.25rem;">{{ form.password.errors|join:", " }}</strong>
+                    {% endif %}
+                </p>
 
-        <p>
-            <label for="{{ form.password_confirm.id_for_label }}">Confirm password <span aria-hidden="true">*</span></label>
-            {{ form.password_confirm }}
-            {% if form.password_confirm.errors %}
-                <strong>{{ form.password_confirm.errors|join:", " }}</strong>
-            {% endif %}
-        </p>
-    </fieldset>
+                <p style="margin-bottom: 0;">
+                    <label for="{{ form.password_confirm.id_for_label }}" style="display: block; font-weight: 600; margin-bottom: 0.35rem;">Confirm password <span aria-hidden="true">*</span></label>
+                    {{ form.password_confirm }}
+                    {% if form.password_confirm.errors %}
+                        <strong style="color: #b91c1c; display: block; margin-top: 0.25rem;">{{ form.password_confirm.errors|join:", " }}</strong>
+                    {% endif %}
+                </p>
+            </fieldset>
 
-    <fieldset>
-        <legend>Staff Profile</legend>
+            <fieldset style="border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: 1.5rem; margin-bottom: 2rem;">
+                <legend style="padding: 0 0.5rem; font-family: var(--font-serif); font-size: 1.25rem; color: var(--color-primary); font-weight: 600;">Staff Profile</legend>
 
-        <p>
-            <label for="{{ form.position.id_for_label }}">Position <span aria-hidden="true">*</span></label>
-            {{ form.position }}
-            {% if form.position.errors %}
-                <strong>{{ form.position.errors|join:", " }}</strong>
-            {% endif %}
-        </p>
+                <p style="margin-bottom: 1rem;">
+                    <label for="{{ form.position.id_for_label }}" style="display: block; font-weight: 600; margin-bottom: 0.35rem;">Position <span aria-hidden="true">*</span></label>
+                    {{ form.position }}
+                    {% if form.position.errors %}
+                        <strong style="color: #b91c1c; display: block; margin-top: 0.25rem;">{{ form.position.errors|join:", " }}</strong>
+                    {% endif %}
+                </p>
 
-        <p>
-            <label for="{{ form.date_of_birth.id_for_label }}">Date of birth <span aria-hidden="true">*</span></label>
-            {{ form.date_of_birth }}
-            {% if form.date_of_birth.help_text %}
-                <small>{{ form.date_of_birth.help_text }}</small>
-            {% endif %}
-            {% if form.date_of_birth.errors %}
-                <strong>{{ form.date_of_birth.errors|join:", " }}</strong>
-            {% endif %}
-        </p>
+                <p style="margin-bottom: 1rem;">
+                    <label for="{{ form.date_of_birth.id_for_label }}" style="display: block; font-weight: 600; margin-bottom: 0.35rem;">Date of birth <span aria-hidden="true">*</span></label>
+                    {{ form.date_of_birth }}
+                    {% if form.date_of_birth.help_text %}
+                        <small style="color: var(--color-text-muted); display: block; margin-top: 0.25rem;">{{ form.date_of_birth.help_text }}</small>
+                    {% endif %}
+                    {% if form.date_of_birth.errors %}
+                        <strong style="color: #b91c1c; display: block; margin-top: 0.25rem;">{{ form.date_of_birth.errors|join:", " }}</strong>
+                    {% endif %}
+                </p>
 
-        <p>
-            <label for="{{ form.contact_details.id_for_label }}">Contact details <span aria-hidden="true">*</span></label>
-            {{ form.contact_details }}
-            {% if form.contact_details.help_text %}
-                <small>{{ form.contact_details.help_text }}</small>
-            {% endif %}
-            {% if form.contact_details.errors %}
-                <strong>{{ form.contact_details.errors|join:", " }}</strong>
-            {% endif %}
-        </p>
+                <p style="margin-bottom: 1rem;">
+                    <label for="{{ form.contact_details.id_for_label }}" style="display: block; font-weight: 600; margin-bottom: 0.35rem;">Contact details <span aria-hidden="true">*</span></label>
+                    {{ form.contact_details }}
+                    {% if form.contact_details.errors %}
+                        <strong style="color: #b91c1c; display: block; margin-top: 0.25rem;">{{ form.contact_details.errors|join:", " }}</strong>
+                    {% endif %}
+                </p>
 
-        <p>
-            <label for="{{ form.photo.id_for_label }}">Photo</label>
-            {{ form.photo }}
-            {% if form.photo.help_text %}
-                <small>{{ form.photo.help_text }}</small>
-            {% endif %}
-            {% if form.photo.errors %}
-                <strong>{{ form.photo.errors|join:", " }}</strong>
-            {% endif %}
-        </p>
-    </fieldset>
+                <p style="margin-bottom: 0;">
+                    <label for="{{ form.photo.id_for_label }}" style="display: block; font-weight: 600; margin-bottom: 0.35rem;">Staff Photo</label>
+                    {{ form.photo }}
+                    {% if form.photo.errors %}
+                        <strong style="color: #b91c1c; display: block; margin-top: 0.25rem;">{{ form.photo.errors|join:", " }}</strong>
+                    {% endif %}
+                </p>
+            </fieldset>
 
-    <p>
-        <button type="submit">Create Staff Account</button>
-        <a href="{% url 'staff_list' %}">Cancel</a>
-    </p>
-</form>
+            <div class="admin-form-actions">
+                <a href="{% url 'staff_list' %}" class="btn-cancel">Cancel</a>
+                <button type="submit" class="btn-save">Create Staff Account</button>
+            </div>
+        </form>
+    </div>
+</div>
 {% endblock %}

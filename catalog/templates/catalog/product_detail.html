@@ -2,85 +2,94 @@
 {% block title %}{{ product.name }} — Pastry Shop{% endblock %}
 
 {% block content %}
-<article itemscope itemtype="https://schema.org/Product">
+<article class="product-detail-card" itemscope itemtype="https://schema.org/Product">
 
-<h1 itemprop="name">
-    {{ product.name }}
-    {% if not product.is_active %}
-        <em>[Inactive / Hidden]</em>
-    {% endif %}
-</h1>
-
-{% if request.user.is_authenticated and request.user.role == 'ADMIN' or request.user.is_authenticated and request.user.role == 'STAFF' %}
-    <p>
-        <a href="{% url 'catalog:product_edit' product_id=product.id %}">[Edit Product]</a>
-        <a href="{% url 'catalog:product_delete' product_id=product.id %}">[Delete Product]</a>
-    </p>
-{% endif %}
-
-{% if product.photo %}
-<figure>
-    <img src="{{ product.photo.url }}"
-         alt="{{ product.name }}"
-         width="300"
-         srcset="{{ product.photo_small.url }} 300w,
-                 {{ product.photo_medium.url }} 600w,
-                 {{ product.photo_large.url }} 1200w"
-         sizes="(max-width: 600px) 100vw, 300px"
-         itemprop="image">
-    <figcaption>{{ product.name }} — {{ product.category.name }}</figcaption>
-</figure>
-{% endif %}
-
-<dl>
-    <dt>Category</dt>
-    <dd itemprop="category">{{ product.category.name }}</dd>
-
-    <dt>Manufacturer</dt>
-    <dd itemprop="brand" itemscope itemtype="https://schema.org/Brand">
-        <span itemprop="name">{{ product.manufacturer.name }}</span>
-    </dd>
-
-    <dt>Price</dt>
-    <dd itemprop="offers" itemscope itemtype="https://schema.org/Offer">
-        <strong>$<span itemprop="price">{{ product.price }}</span></strong> / {{ product.unit }}
-    </dd>
-
-    <dt>Availability</dt>
-    <dd>
-        {% if product.quantity > 0 %}
-            <strong>{{ product.quantity }}</strong> {{ product.get_unit_of_measurement_display }} in stock
-        {% else %}
-            <strong><em>Out of Stock</em></strong>
+<div class="product-detail-header">
+    <h1 itemprop="name">
+        {{ product.name }}
+        {% if not product.is_active %}
+            <em class="badge-inactive">Inactive / Hidden</em>
         {% endif %}
-    </dd>
+    </h1>
 
-    <dt>Ingredients</dt>
-    <dd itemprop="description">{{ product.ingredients }}</dd>
-</dl>
-
-{% if not request.user.is_authenticated or request.user.role == 'CUSTOMER' %}
-    {% if product.quantity > 0 %}
-        <form action="{% url 'purchasing:add_to_cart' product_id=product.id %}" method="POST">
-            {% csrf_token %}
-            <button type="submit">Add to Cart</button>
-        </form>
-    {% else %}
-        <p><strong><mark>Out of Stock</mark></strong></p>
+    {% if request.user.is_authenticated and request.user.role == 'ADMIN' or request.user.is_authenticated and request.user.role == 'STAFF' %}
+        <div class="admin-actions">
+            <a href="{% url 'catalog:product_edit' product_id=product.id %}">Edit Product</a>
+            <a href="{% url 'catalog:product_delete' product_id=product.id %}">Delete Product</a>
+        </div>
     {% endif %}
-{% endif %}
+</div>
+
+<div class="product-detail-layout">
+    {% if product.photo %}
+    <figure class="product-detail-figure">
+        <img src="{{ product.photo.url }}"
+             alt="{{ product.name }}"
+             width="300"
+             srcset="{{ product.photo_small.url }} 300w,
+                     {{ product.photo_medium.url }} 600w,
+                     {{ product.photo_large.url }} 1200w"
+             sizes="(max-width: 600px) 100vw, 300px"
+             itemprop="image"
+             class="product-detail-img">
+        <figcaption>{{ product.name }} — {{ product.category.name }}</figcaption>
+    </figure>
+    {% endif %}
+
+    <div class="product-detail-info">
+        <dl class="product-spec-list">
+            <dt>Category</dt>
+            <dd itemprop="category">{{ product.category.name }}</dd>
+
+            <dt>Manufacturer</dt>
+            <dd itemprop="brand" itemscope itemtype="https://schema.org/Brand">
+                <span itemprop="name">{{ product.manufacturer.name }}</span>
+            </dd>
+
+            <dt>Price</dt>
+            <dd itemprop="offers" itemscope itemtype="https://schema.org/Offer">
+                <span class="product-detail-price"><strong>$<span itemprop="price">{{ product.price }}</span></strong>{% if product.unit_of_measurement %} <span class="price-unit">/ {{ product.get_unit_of_measurement_display|lower }}</span>{% endif %}</span>
+            </dd>
+
+            <dt>Availability</dt>
+            <dd>
+                {% if product.quantity > 0 %}
+                    <span class="stock-badge in-stock"><strong>{{ product.quantity }}</strong> {{ product.get_unit_of_measurement_display }} in stock</span>
+                {% else %}
+                    <strong class="stock-badge out-stock"><em>Out of Stock</em></strong>
+                {% endif %}
+            </dd>
+
+            <dt>Ingredients</dt>
+            <dd itemprop="description">{{ product.ingredients }}</dd>
+        </dl>
+
+        {% if not request.user.is_authenticated or request.user.role == 'CUSTOMER' %}
+            <div class="product-detail-cta">
+                {% if product.quantity > 0 %}
+                    <form action="{% url 'purchasing:add_to_cart' product_id=product.id %}" method="POST">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-add-cart btn-large">Add to Cart</button>
+                    </form>
+                {% else %}
+                    <p><strong><mark class="stock-badge out-stock">Out of Stock</mark></strong></p>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</div>
 
 <hr>
 
-<section aria-label="Reviews">
+<section class="product-reviews-section" aria-label="Reviews">
     <h2>Customer Reviews</h2>
-    <ul>
+    <ul class="product-reviews-list">
         {% for review in reviews %}
-            <li itemscope itemtype="https://schema.org/Review">
-                <p>
-                    <strong itemprop="author">{{ review.author.username }}</strong>
+            <li class="review-card" itemscope itemtype="https://schema.org/Review">
+                <p class="review-author-line">
+                    <strong class="review-author" itemprop="author">{{ review.author.username }}</strong>
                     rated
-                    <span itemprop="reviewRating" itemscope itemtype="https://schema.org/Rating">
+                    <span class="review-rating" itemprop="reviewRating" itemscope itemtype="https://schema.org/Rating">
                         <strong><span itemprop="ratingValue">{{ review.rating }}</span>/5</strong>
                     </span>
                     on
@@ -91,12 +100,12 @@
                 <blockquote itemprop="reviewBody"><q>{{ review.review_text }}</q></blockquote>
             </li>
         {% empty %}
-            <li>No reviews yet for this product.</li>
+            <li class="no-reviews">No reviews yet for this product.</li>
         {% endfor %}
     </ul>
 
     {% if messages %}
-    <ul>
+    <ul class="message-banner">
         {% for message in messages %}
             <li>{{ message }}</li>
         {% endfor %}
@@ -104,11 +113,11 @@
     {% endif %}
 
     {% if can_review %}
-        <p><a href="{% url 'cms:review_create' %}?product_id={{ product.id }}">[Leave a Review]</a></p>
+        <p><a href="{% url 'cms:review_create' %}?product_id={{ product.id }}" class="btn-create">+ Leave a Review</a></p>
     {% endif %}
 </section>
 
-<p><a href="{% url 'catalog:product_list' %}">&larr; Back to Catalog</a></p>
+<p class="back-link"><a href="{% url 'catalog:product_list' %}">&larr; Back to Catalog</a></p>
 
 </article>
 {% endblock %}

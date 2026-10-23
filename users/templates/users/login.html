@@ -1,13 +1,29 @@
 {% extends 'core/base_auth.html' %}
 
-{% block title %}Login{% endblock %}
+{% block title %}Login — Pastry Shop{% endblock %}
 
 {% block content %}
-    <h1>Login</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Login</button>
-    </form>
-    <a href="{% url 'register' %}">Don't have an account? Register</a>
+<div class="auth-page-container">
+    <div class="auth-card">
+        <div style="text-align: center; margin-bottom: 1.25rem;">
+            <a href="{% url 'cms:home' %}" style="display: inline-block; text-decoration: none;">
+                <span style="font-family: var(--font-serif); font-size: 2.2rem; color: var(--color-primary); font-weight: 700;">Pastry Shop</span>
+            </a>
+        </div>
+        <h1>Login</h1>
+
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Login</button>
+        </form>
+
+        <div class="auth-card-footer">
+            <a href="{% url 'register' %}" class="back-link">Don't have an account? Register &rarr;</a>
+        </div>
+        <div style="text-align: center; margin-top: 1rem;">
+            <a href="{% url 'cms:home' %}" style="font-size: 0.85rem; color: var(--color-text-muted);">&larr; Return to Storefront</a>
+        </div>
+    </div>
+</div>
 {% endblock %}

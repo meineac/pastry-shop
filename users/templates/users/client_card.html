@@ -1,106 +1,161 @@
 {% extends 'core/base.html' %}
 
-{% block title %}Client Card — {{ client }}{% endblock %}
+{% block title %}Client Card — {{ client }} — Pastry Shop{% endblock %}
 
 {% block content %}
-<h1>Client Card: {{ client.user.get_full_name|default:client.user.username }}</h1>
+<div class="client-card-page">
+    <div class="page-nav-back">
+        <a href="{% url 'client_list' %}" class="back-link">&larr; Back to Clients</a>
+    </div>
 
-<a href="{% url 'client_list' %}">&larr; Back to Clients</a>
+    <div class="page-title-banner">
+        <h1>Client Card: {{ client.user.get_full_name|default:client.user.username }}</h1>
+        <p class="page-subtitle">Detailed customer summary, order tracking, and submitted reviews.</p>
+    </div>
 
-<h2>Personal Information</h2>
-<p><strong>Name:</strong> {{ client.user.get_full_name|default:client.user.username }}</p>
-<p><strong>Age:</strong> {{ age }}</p>
-<p><strong>Registration date:</strong> {{ client.user.date_joined|date:"d/m/Y" }}</p>
-<p><strong>Phone:</strong> {{ client.phone_number }}</p>
-<p><strong>Email:</strong> {{ client.user.email|default:"—" }}</p>
-
-<h2>Orders ({{ orders.count }})</h2>
-{% if orders %}
-    <table>
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Status</th>
-                <th>Delivery</th>
-                <th>Payment</th>
-                <th>Final Price</th>
-                <th>Created</th>
-                <th>Updated</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for order in orders %}
-                <tr>
-                    <td>{{ order.id }}</td>
-                    <td>{{ order.get_status_display }}</td>
-                    <td>{{ order.get_delivery_type_display }}</td>
-                    <td>{{ order.get_payment_type_display }}</td>
-                    <td>{{ order.final_price }}</td>
-                    <td>{{ order.created_at|date:"d/m/Y" }}</td>
-                    <td>{{ order.updated_at|date:"d/m/Y" }}</td>
-                    <td>
-                        <!-- Status progression forms -->
-                        {% if order.status == 'PENDING' %}
-                            <form method="post" action="{% url 'purchasing:update_order_status' order.id %}">
-                                {% csrf_token %}
-                                <input type="hidden" name="new_status" value="PROCESSING">
-                                <input type="hidden" name="next" value="{{ request.path }}">
-                                <button type="submit">Mark Processing</button>
-                            </form>
-                        {% elif order.status == 'PROCESSING' %}
-                            <form method="post" action="{% url 'purchasing:update_order_status' order.id %}">
-                                {% csrf_token %}
-                                <input type="hidden" name="new_status" value="READY">
-                                <input type="hidden" name="next" value="{{ request.path }}">
-                                <button type="submit">Mark Ready</button>
-                            </form>
-                        {% elif order.status == 'READY' %}
-                            <form method="post" action="{% url 'purchasing:update_order_status' order.id %}">
-                                {% csrf_token %}
-                                <input type="hidden" name="new_status" value="COMPLETED">
-                                <input type="hidden" name="next" value="{{ request.path }}">
-                                <button type="submit">Mark Completed</button>
-                            </form>
+    <div class="client-sections-stack">
+        <!-- Personal Information Section -->
+        <section class="client-section-card" aria-labelledby="personal-info-heading">
+            <h2 id="personal-info-heading">Personal Information</h2>
+            <dl class="profile-meta-dl">
+                <div class="profile-meta-row">
+                    <dt><strong>Name:</strong></dt>
+                    <dd>{{ client.user.get_full_name|default:client.user.username }}</dd>
+                </div>
+                <div class="profile-meta-row">
+                    <dt><strong>Age:</strong></dt>
+                    <dd>{{ age }}</dd>
+                </div>
+                <div class="profile-meta-row">
+                    <dt><strong>Registration date:</strong></dt>
+                    <dd><time datetime="{{ client.user.date_joined|date:'Y-m-d' }}">{{ client.user.date_joined|date:"d/m/Y" }}</time></dd>
+                </div>
+                <div class="profile-meta-row">
+                    <dt><strong>Phone:</strong></dt>
+                    <dd><a href="tel:{{ client.phone_number }}">{{ client.phone_number }}</a></dd>
+                </div>
+                <div class="profile-meta-row">
+                    <dt><strong>Email:</strong></dt>
+                    <dd>
+                        {% if client.user.email %}
+                            <a href="mailto:{{ client.user.email }}">{{ client.user.email }}</a>
+                        {% else %}
+                            —
                         {% endif %}
+                    </dd>
+                </div>
+            </dl>
+        </section>
 
-                        <!-- Cancellation form -->
-                        {% if order.status != 'COMPLETED' and order.status != 'CANCELLED' %}
-                        <form method="post" action="{% url 'purchasing:update_order_status' order.id %}">
-                            {% csrf_token %}
-                            <input type="hidden" name="new_status" value="CANCELLED">
-                            <input type="hidden" name="next" value="{{ request.path }}">
-                            <button type="submit"><strong>Cancel Order</strong></button>
-                        </form>
-                        {% endif %}
-                    </td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-{% else %}
-    <p>No orders found.</p>
-{% endif %}
+        <!-- Orders Section -->
+        <section class="client-section-card" aria-labelledby="orders-list-heading">
+            <h2 id="orders-list-heading">Orders ({{ orders.count }})</h2>
+            {% if orders %}
+                <div class="table-responsive-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Delivery</th>
+                                <th scope="col">Payment</th>
+                                <th scope="col">Final Price</th>
+                                <th scope="col">Created</th>
+                                <th scope="col">Updated</th>
+                                <th scope="col">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in orders %}
+                                <tr>
+                                    <td><strong>{{ order.id }}</strong></td>
+                                    <td>
+                                        <span class="status-badge status-{{ order.status|lower }}">{{ order.get_status_display }}</span>
+                                    </td>
+                                    <td>{{ order.get_delivery_type_display }}</td>
+                                    <td>{{ order.get_payment_type_display }}</td>
+                                    <td>${{ order.final_price }}</td>
+                                    <td><time datetime="{{ order.created_at|date:'Y-m-d' }}">{{ order.created_at|date:"d/m/Y" }}</time></td>
+                                    <td><time datetime="{{ order.updated_at|date:'Y-m-d' }}">{{ order.updated_at|date:"d/m/Y" }}</time></td>
+                                    <td>
+                                        <div style="display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap;">
+                                            <!-- Status progression forms -->
+                                            {% if order.status == 'PENDING' %}
+                                                <form method="post" action="{% url 'purchasing:update_order_status' order.id %}" class="inline-action-form">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="new_status" value="PROCESSING">
+                                                    <input type="hidden" name="next" value="{{ request.path }}">
+                                                    <button type="submit" class="btn-action-small btn-primary">Mark Processing</button>
+                                                </form>
+                                            {% elif order.status == 'PROCESSING' %}
+                                                <form method="post" action="{% url 'purchasing:update_order_status' order.id %}" class="inline-action-form">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="new_status" value="READY">
+                                                    <input type="hidden" name="next" value="{{ request.path }}">
+                                                    <button type="submit" class="btn-action-small btn-primary">Mark Ready</button>
+                                                </form>
+                                            {% elif order.status == 'READY' %}
+                                                <form method="post" action="{% url 'purchasing:update_order_status' order.id %}" class="inline-action-form">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="new_status" value="COMPLETED">
+                                                    <input type="hidden" name="next" value="{{ request.path }}">
+                                                    <button type="submit" class="btn-action-small btn-primary">Mark Completed</button>
+                                                </form>
+                                            {% endif %}
 
-<h2>Reviews ({{ reviews.count }})</h2>
-{% if reviews %}
-    <ul>
-        {% for review in reviews %}
-            <li>
-                <strong>Rating: {{ review.rating }}/5</strong>
-                {% if review.product %}
-                    &mdash; Product: <a href="{% url 'catalog:product_detail' review.product.id %}">{{ review.product.name }}</a>
-                {% else %}
-                    &mdash; General store review
-                {% endif %}
-                <br>
-                {{ review.review_text }}
-                <br>
-                <small>{{ review.created_at|date:"d/m/Y" }}</small>
-            </li>
-        {% endfor %}
-    </ul>
-{% else %}
-    <p>No reviews found.</p>
-{% endif %}
+                                            <!-- Cancellation form -->
+                                            {% if order.status != 'COMPLETED' and order.status != 'CANCELLED' %}
+                                                <form method="post" action="{% url 'purchasing:update_order_status' order.id %}" class="inline-action-form">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="new_status" value="CANCELLED">
+                                                    <input type="hidden" name="next" value="{{ request.path }}">
+                                                    <button type="submit" class="btn-action-small btn-danger">Cancel Order</button>
+                                                </form>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="empty-state-card">
+                    <p>No orders found.</p>
+                </div>
+            {% endif %}
+        </section>
+
+        <!-- Reviews Section -->
+        <section class="client-section-card" aria-labelledby="client-reviews-heading">
+            <h2 id="client-reviews-heading">Reviews ({{ reviews.count }})</h2>
+            {% if reviews %}
+                <div class="orders-list">
+                    {% for review in reviews %}
+                        <article class="order-summary-card">
+                            <div class="order-summary-header">
+                                <div>
+                                    <strong>Rating: {{ review.rating }}/5 ★</strong>
+                                    {% if review.product %}
+                                        &mdash; Product: <a href="{% url 'catalog:product_detail' review.product.id %}">{{ review.product.name }}</a>
+                                    {% else %}
+                                        &mdash; General store review
+                                    {% endif %}
+                                </div>
+                                <small><time datetime="{{ review.created_at|date:'Y-m-d' }}">{{ review.created_at|date:"d/m/Y" }}</time></small>
+                            </div>
+                            <div class="order-summary-body" style="color: var(--color-text);">
+                                <p style="margin: 0;">{{ review.review_text }}</p>
+                            </div>
+                        </article>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state-card">
+                    <p>No reviews found.</p>
+                </div>
+            {% endif %}
+        </section>
+    </div>
+</div>
 {% endblock %}

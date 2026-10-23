@@ -1,17 +1,25 @@
 {% extends 'core/base.html' %}
+{% block title %}{{ title }} — Pastry Shop{% endblock %}
 
 {% block content %}
-    <h1>{{ title }}</h1>
+<div class="review-create-page">
+    <div class="review-form-card">
+        <h1>{{ title }}</h1>
+        <p class="review-form-intro">Share your thoughts on our pastries and artisanal service.</p>
 
-    <form method="POST" action="{% if product %}?product_id={{ product.id }}{% endif %}">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Submit Review</button>
-    </form>
-
-    {% if product %}
-        <p><a href="{% url 'catalog:product_detail' product_id=product.id %}">Back to Product Details</a></p>
-    {% else %}
-        <p><a href="{% url 'cms:reviews' %}">Back to Reviews</a></p>
-    {% endif %}
+        <form method="POST" action="{% if product %}?product_id={{ product.id }}{% endif %}" class="review-form">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <p class="form-status-indicator">All fields marked with an asterisk are required.</p>
+            <div class="review-form-actions">
+                <button type="submit" class="btn-submit-review">Submit Review</button>
+                {% if product %}
+                    <a href="{% url 'catalog:product_detail' product_id=product.id %}" class="btn-cancel-review">Back to Product Details</a>
+                {% else %}
+                    <a href="{% url 'cms:reviews' %}" class="btn-cancel-review">Back to Reviews</a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+</div>
 {% endblock %}

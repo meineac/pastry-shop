@@ -1,14 +1,22 @@
 {% extends 'core/base.html' %}
-{% block title %}Delete Product | Pastry Shop{% endblock %}
+{% block title %}Delete Product — Pastry Shop{% endblock %}
 
 {% block content %}
-<h2>Delete Product</h2>
-<p>Are you sure you want to delete "{{ product.name }}"?</p>
+<div class="admin-form-container">
+    <div class="page-nav-back">
+        <a href="{% url 'catalog:product_detail' product_id=product.id %}" class="back-link">&larr; Back to Product</a>
+    </div>
 
-<form method="POST">
-    {% csrf_token %}
-    <button type="submit">Yes, Delete</button>
-</form>
+    <div class="admin-form-card" style="text-align: center;">
+        <h2 style="color: #b91c1c;">Delete Product</h2>
+        <p style="font-size: 1.1rem; margin: 1.5rem 0;">Are you sure you want to delete "<strong>{{ product.name }}</strong>"?</p>
+        <p style="color: var(--color-text-muted); font-size: 0.9rem; margin-bottom: 2rem;">This action cannot be undone and will remove the item from active customer storefront listings.</p>
 
-<p><a href="{% url 'catalog:product_detail' product_id=product.id %}">Cancel</a></p>
+        <form method="POST" style="display: flex; justify-content: center; gap: 1rem;">
+            {% csrf_token %}
+            <a href="{% url 'catalog:product_detail' product_id=product.id %}" class="btn-cancel">Cancel</a>
+            <button type="submit" class="btn-action-small btn-danger" style="height: 44px; padding: 0 1.75rem;">Yes, Delete</button>
+        </form>
+    </div>
+</div>
 {% endblock %}

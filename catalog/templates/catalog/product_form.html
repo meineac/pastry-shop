@@ -1,14 +1,31 @@
 {% extends 'core/base.html' %}
-{% block title %}{{ title }} | Pastry Shop{% endblock %}
+{% block title %}{{ title }} — Pastry Shop{% endblock %}
 
 {% block content %}
-<h2>{{ title }}</h2>
+<div class="admin-form-container">
+    <div class="page-nav-back">
+        {% if product %}
+            <a href="{% url 'catalog:product_detail' product_id=product.id %}" class="back-link">&larr; Back to Product</a>
+        {% else %}
+            <a href="{% url 'catalog:product_list' %}" class="back-link">&larr; Back to Catalog</a>
+        {% endif %}
+    </div>
 
-<form method="POST" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Save Product</button>
-</form>
+    <div class="admin-form-card">
+        <h2>{{ title }}</h2>
 
-<p><a href="{% url 'catalog:product_list' %}">Back to Catalog</a></p>
+        <form method="POST" enctype="multipart/form-data" class="styled-admin-form">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="admin-form-actions">
+                {% if product %}
+                    <a href="{% url 'catalog:product_detail' product_id=product.id %}" class="btn-cancel">Cancel</a>
+                {% else %}
+                    <a href="{% url 'catalog:product_list' %}" class="btn-cancel">Cancel</a>
+                {% endif %}
+                <button type="submit" class="btn-save">Save Product</button>
+            </div>
+        </form>
+    </div>
+</div>
 {% endblock %}

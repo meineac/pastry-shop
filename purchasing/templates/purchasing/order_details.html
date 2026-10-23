@@ -1,26 +1,51 @@
 {% extends 'core/base.html' %}
 
-{% block title %}Order Details{% endblock %}
+{% block title %}Order #{{ order.id }} Details — Pastry Shop{% endblock %}
 
 {% block content %}
-    <h1>Order #{{ order.id }} Details</h1>
-    <a href="{% url 'profile' %}">Back to Profile</a>
-    <p>Status: {{ order.status }}</p>
+<div class="orders-page-container">
+    <div class="page-nav-back">
+        <a href="{% url 'profile' %}" class="back-link">&larr; Back to Profile</a>
+    </div>
 
-    <ul>
-        {% for item in items %}
-            <li>
-                {{ item.product.name }} - {{ item.quantity }} x {{ item.product.price }}
-                {% if item.product.photo %}
-                    <img src="{{ item.product.photo.url }}" alt="{{ item.product.name }}" width="100">
-                {% endif %}
-                <!-- Leave a review button if order is COMPLETED and product not yet reviewed -->
-                {% if order.status == 'COMPLETED' and not item.already_reviewed %}
-                    <a href="{% url 'cms:review_create' %}?product_id={{ item.product.id }}">[Leave a Review]</a>
-                {% endif %}
-            </li>
-        {% empty %}
-            <li>No items found in this order.</li>
-        {% endfor %}
-    </ul>
+    <div class="order-details-header">
+        <div class="order-title-group">
+            <h1>Order #{{ order.id }} Details</h1>
+            <div class="order-status-line">
+                Status: <span class="status-badge status-{{ order.status|lower }}">{{ order.status }}</span>
+            </div>
+        </div>
+        <div class="order-header-meta">
+            <span>Total: <strong>${{ order.final_price }}</strong></span>
+        </div>
+    </div>
+
+    <div class="order-items-card">
+        <h2>Items in this Order</h2>
+        <div class="order-items-list">
+            {% for item in items %}
+                <article class="order-item-row">
+                    {% if item.product.photo %}
+                        <img src="{{ item.product.photo.url }}" alt="{{ item.product.name }}" class="order-item-thumbnail">
+                    {% else %}
+                        <div class="order-item-thumbnail placeholder-thumbnail" aria-hidden="true">🥐</div>
+                    {% endif %}
+                    <div class="order-item-info">
+                        <h3 class="order-item-name">{{ item.product.name }}</h3>
+                        <p class="order-item-qty-price">{{ item.quantity }} &times; ${{ item.product.price }}</p>
+                    </div>
+                    <div class="order-item-action">
+                        {% if order.status == 'COMPLETED' and not item.already_reviewed %}
+                            <a href="{% url 'cms:review_create' %}?product_id={{ item.product.id }}" class="btn-action-small btn-primary">Leave Review</a>
+                        {% endif %}
+                    </div>
+                </article>
+            {% empty %}
+                <div class="empty-state-card">
+                    <p>No items found in this order.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
 {% endblock %}

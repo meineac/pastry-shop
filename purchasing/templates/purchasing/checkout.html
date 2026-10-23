@@ -2,115 +2,174 @@
 {% block title %}Checkout — Pastry Shop{% endblock %}
 
 {% block content %}
-<h1>Checkout</h1>
+<div class="checkout-page-container">
+    <h1>Checkout</h1>
 
-{% if promo_error %}
-    <p><strong>{{ promo_error }}</strong></p>
-{% endif %}
-{% if promo_success %}
-    <p><em>{{ promo_success }}</em></p>
-{% endif %}
+    {% if promo_error %}
+        <div class="checkout-alert alert-error">
+            <p><strong>{{ promo_error }}</strong></p>
+        </div>
+    {% endif %}
+    {% if promo_success %}
+        <div class="checkout-alert alert-success">
+            <p><em>{{ promo_success }}</em></p>
+        </div>
+    {% endif %}
 
-<form method="POST">
-    {% csrf_token %}
+    <div class="checkout-layout">
+        <div class="checkout-summary-column">
+            <fieldset class="checkout-fieldset order-summary-fieldset">
+                <legend>Order Summary</legend>
+                <ul class="checkout-items-list">
+                    {% for item in items %}
+                        <li class="checkout-item-row">
+                            <span class="checkout-item-qty">{{ item.quantity }} &times;</span>
+                            <span class="checkout-item-name">
+                                {% if item.product %}
+                                    {{ item.product.name }}
+                                {% else %}
+                                    <em>Unavailable Item</em>
+                                {% endif %}
+                            </span>
+                            <span class="checkout-item-price">
+                                {% if item.product %}
+                                    (${{ item.product.price }} each)
+                                {% endif %}
+                            </span>
+                        </li>
+                    {% endfor %}
+                </ul>
 
-    <fieldset>
-        <legend>Order Summary</legend>
-        <ul>
-            {% for item in items %}
-                <li>
-                    {{ item.quantity }} &times;
-                    {% if item.product %}
-                        {{ item.product.name }} (${{ item.product.price }} each)
-                    {% else %}
-                        <em>Unavailable Item</em>
+                <hr class="summary-divider">
+
+                <div class="summary-totals-group">
+                    <p class="summary-line">Subtotal: <strong>${{ subtotal }}</strong></p>
+
+                    {% if promo_code %}
+                        <p class="summary-line promo-line">Promo Code: <code class="applied-code">{{ promo_code.code }}</code> applied (-${{ discount }})</p>
                     {% endif %}
-                </li>
-            {% endfor %}
-        </ul>
-        <p>Subtotal: <strong>${{ subtotal }}</strong></p>
 
-        {% if promo_code %}
-            <p>Promo Code: <code>{{ promo_code.code }}</code> applied (-${{ discount }})</p>
-        {% endif %}
-
-        <p>Delivery Fee: ${{ delivery_price }}</p>
-        <p>Total Price: ${{ total }}</p>
-    </fieldset>
-
-    <fieldset>
-        <legend>Promo Code</legend>
-        <label for="id_promo_code">Enter promo code:</label>
-        <input type="text"
-               id="id_promo_code"
-               name="promo_code"
-               value="{% if promo_code %}{{ promo_code.code }}{% endif %}"
-               placeholder="e.g. SUMMER20"
-               maxlength="50">
-        <button type="submit" formaction="{% url 'purchasing:checkout' %}" name="update_checkout" value="1">
-            Apply / Update Promo
-        </button>
-    </fieldset>
-
-    <fieldset>
-        <legend>Delivery Option</legend>
-        <label>
-            <input type="radio" name="delivery_type" value="PICKUP" required
-                   {% if delivery_type == 'PICKUP' %}checked{% endif %}>
-            Store Pickup
-        </label>
-        <label>
-            <input type="radio" name="delivery_type" value="COURIER"
-                   {% if delivery_type == 'COURIER' %}checked{% endif %}>
-            Courier Delivery (Fixed Price: $5.00)
-        </label>
-
-        <div>
-            <h2>Select Pickup Store</h2>
-            <select name="pickup_point" aria-label="Select pickup store">
-                <option value="" disabled {% if not pickup_point_id %}selected{% endif %}>-- Select a store --</option>
-                {% for point in pickup_points %}
-                    <option value="{{ point.id }}" {% if pickup_point_id == point.id %}selected{% endif %}>
-                        {{ point.address }} (Pickup fee: ${{ point.price }})
-                    </option>
-                {% endfor %}
-            </select>
+                    <p class="summary-line">Delivery Fee: ${{ delivery_price }}</p>
+                    <p class="summary-total-line">Total Price: ${{ total }}</p>
+                </div>
+            </fieldset>
         </div>
 
-        <div>
-            <h2>Courier Delivery Address</h2>
-            <label for="id_delivery_address">Delivery address:</label>
-            <input type="text"
-                   id="id_delivery_address"
-                   name="delivery_address"
-                   value="{{ delivery_address }}"
-                   placeholder="Enter full delivery address"
-                   maxlength="500">
+        <div class="checkout-form-column">
+            <form method="POST" class="checkout-form">
+                {% csrf_token %}
+
+                <fieldset class="checkout-fieldset">
+                    <legend>Promo Code</legend>
+                    <div class="promo-input-group">
+                        <label for="id_promo_code" class="form-label">Enter promo code:</label>
+                        <div class="input-with-button">
+                            <input type="text"
+                                   id="id_promo_code"
+                                   name="promo_code"
+                                   value="{% if promo_code %}{{ promo_code.code }}{% endif %}"
+                                   placeholder="e.g. SUMMER20"
+                                   maxlength="50"
+                                   class="form-input">
+                            <button type="submit" formaction="{% url 'purchasing:checkout' %}" name="update_checkout" value="1" class="btn-apply-promo">
+                                Apply / Update Promo
+                            </button>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset class="checkout-fieldset">
+                    <legend>Delivery Option</legend>
+                    <div class="radio-options-group">
+                        <label class="radio-label">
+                            <input type="radio" name="delivery_type" value="PICKUP" required
+                                   {% if delivery_type == 'PICKUP' %}checked{% endif %}>
+                            <span><strong>Store Pickup</strong> (Collect at your chosen store)</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="delivery_type" value="COURIER"
+                                   {% if delivery_type == 'COURIER' %}checked{% endif %}>
+                            <span><strong>Courier Delivery</strong> (Fixed Price: $5.00)</span>
+                        </label>
+                    </div>
+
+                    <div class="delivery-subpanel pickup-subpanel">
+                        <h2>Select Pickup Store</h2>
+                        <select name="pickup_point" id="id_pickup_point" class="form-select" aria-label="Select pickup store">
+                            <option value="" disabled {% if not pickup_point_id %}selected{% endif %}>-- Select a store --</option>
+                            {% for point in pickup_points %}
+                                <option value="{{ point.id }}" {% if pickup_point_id == point.id %}selected{% endif %}>
+                                    {{ point.address }} (Pickup fee: ${{ point.price }})
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="delivery-subpanel courier-subpanel">
+                        <h2>Courier Delivery Address</h2>
+                        <label for="id_delivery_address" class="form-label">Delivery address:</label>
+                        <input type="text"
+                               id="id_delivery_address"
+                               name="delivery_address"
+                               value="{{ delivery_address }}"
+                               placeholder="Enter full delivery address"
+                               pattern="[A-Za-z0-9\s,.-]{5,}"
+                               minlength="5"
+                               maxlength="500"
+                               class="form-input">
+                    </div>
+                </fieldset>
+
+                <fieldset class="checkout-fieldset">
+                    <legend>Order Notes &amp; Packaging</legend>
+                    <div class="form-group-block">
+                        <label for="id_gift_boxes" class="form-label">Artisanal Gift Packaging Boxes ($1.00 each):</label>
+                        <input type="number"
+                               id="id_gift_boxes"
+                               name="gift_boxes"
+                               min="0"
+                               max="10"
+                               value="0"
+                               class="form-input form-input-number">
+                    </div>
+                    <div class="form-group-block">
+                        <label for="id_order_notes" class="form-label">Special requests or dietary notes (optional):</label>
+                        <textarea id="id_order_notes"
+                                  name="order_notes"
+                                  rows="3"
+                                  minlength="3"
+                                  maxlength="300"
+                                  placeholder="e.g. Please ring the doorbell twice, or fragile pastry handling instructions."
+                                  class="form-textarea"></textarea>
+                    </div>
+                </fieldset>
+
+                <fieldset class="checkout-fieldset">
+                    <legend>Payment Method</legend>
+                    <div class="radio-options-group">
+                        <label class="radio-label">
+                            <input type="radio" name="payment_type" value="CASH" required
+                                   {% if payment_type == 'CASH' %}checked{% endif %}>
+                            <span><strong>Cash</strong> (Pay upon receipt or pickup)</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="payment_type" value="CARD"
+                                   {% if payment_type == 'CARD' %}checked{% endif %}>
+                            <span><strong>Credit / Debit Card</strong> (Online payment simulation)</span>
+                        </label>
+                    </div>
+                </fieldset>
+
+                <div class="checkout-buttons-row">
+                    <button type="submit" formaction="{% url 'purchasing:checkout' %}" class="btn-update-total">
+                        Update Total
+                    </button>
+                    <button type="submit" formaction="{% url 'purchasing:place_order' %}" class="btn-place-order">
+                        Place Order &rarr;
+                    </button>
+                </div>
+            </form>
         </div>
-    </fieldset>
-
-    <fieldset>
-        <legend>Payment Method</legend>
-        <label>
-            <input type="radio" name="payment_type" value="CASH" required
-                   {% if payment_type == 'CASH' %}checked{% endif %}>
-            Cash
-        </label>
-        <label>
-            <input type="radio" name="payment_type" value="CARD"
-                   {% if payment_type == 'CARD' %}checked{% endif %}>
-            Card
-        </label>
-    </fieldset>
-
-    <p>
-        <button type="submit" formaction="{% url 'purchasing:checkout' %}">
-            Update Total
-        </button>
-        <button type="submit" formaction="{% url 'purchasing:place_order' %}">
-            Place Order
-        </button>
-    </p>
-</form>
-
+    </div>
+</div>
 {% endblock %}
