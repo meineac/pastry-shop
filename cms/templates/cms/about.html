@@ -47,8 +47,10 @@
 
     {% comment %}Company details section{% endcomment %}
     <section id="details" aria-labelledby="details-heading" class="about-card">
-        <h2 id="details-heading">Company Details</h2>
-        <p class="company-desc">{{ company_info.company_details }}</p>
+        <h2 id="details-heading">Company Details &amp; Requisites</h2>
+        <p class="company-desc company-requisites" itemprop="identifier">
+            <strong>Business Requisites:</strong> {{ company_info.company_details }}
+        </p>
         <p>
             We are proud to hold the
             <abbr title="Hazard Analysis Critical Control Points">HACCP</abbr>
