@@ -12,8 +12,8 @@
 
     <!-- Navigation jump anchors for LR3 tasks -->
     <nav class="js-lab-nav" aria-label="JS Lab navigation">
-        <a href="#task-4" class="lab-nav-link active">4. &lt;textarea&gt; Generator (Var. 24)</a>
-        <a href="#task-7" class="lab-nav-link disabled" title="To be implemented">7. Age Calculator</a>
+        <a href="#task-4" class="lab-nav-link">4. &lt;textarea&gt; Generator (Var. 24)</a>
+        <a href="#task-7" class="lab-nav-link active">7. Age Calculator</a>
         <a href="#task-8" class="lab-nav-link disabled" title="To be implemented">8. OOP Subscribers (Var. 24)</a>
         <a href="#task-9" class="lab-nav-link disabled" title="To be implemented">9. Web APIs</a>
         <a href="#task-10" class="lab-nav-link disabled" title="To be implemented">10. Chart.js Graphs (Var. 24)</a>
@@ -73,10 +73,72 @@
         <!-- Container for dynamically generated textarea cards -->
         <div id="textareaItemsContainer" class="generated-items-grid" aria-live="polite"></div>
     </section>
+
+    <!-- ====================================================================
+         TASK 7: Age & Weekday Calculator / Minor Parental Consent
+         ==================================================================== -->
+    <section id="task-7" class="lab-section card-box" aria-labelledby="task-7-title">
+        <div class="lab-section-header">
+            <span class="badge-variant">General Task</span>
+            <h2 id="task-7-title">7. Age &amp; Birth Day Calculator</h2>
+        </div>
+
+        <div class="task-description-box">
+            <p>
+                <strong>Task Requirement:</strong> Request user date of birth, calculate exact age in full years,
+                display the day of the week of the birth date for adults (&ge;18 years old), and trigger an alert
+                requesting parental permission to use the website if the user is a minor (&lt;18 years old).
+            </p>
+        </div>
+
+        <!-- Age Calculator Form -->
+        <form id="ageCalculatorForm" class="age-calculator-form" novalidate>
+            <div class="form-row-age">
+                <div class="form-group-age">
+                    <label for="birthDateInput" class="age-input-label">
+                        Enter or select your Date of Birth:
+                    </label>
+                    <input type="date"
+                           id="birthDateInput"
+                           name="birth_date"
+                           class="form-control age-date-control"
+                           required
+                           aria-describedby="ageHelpText">
+                </div>
+
+                <div class="form-actions-age">
+                    <button type="submit" id="calculateAgeBtn" class="btn btn-primary btn-calc-age">
+                        Calculate Age
+                    </button>
+                    <button type="button" id="resetAgeBtn" class="btn btn-reset-age">
+                        Reset
+                    </button>
+                </div>
+            </div>
+
+            <div class="age-quick-presets">
+                <span class="preset-label">Quick test presets:</span>
+                <button type="button" class="age-preset-btn" data-years-ago="25" title="Set date of birth to 25 years ago">
+                    Test Adult (25 y.o.)
+                </button>
+                <button type="button" class="age-preset-btn" data-years-ago="14" title="Set date of birth to 14 years ago">
+                    Test Minor (14 y.o.)
+                </button>
+            </div>
+
+            <small id="ageHelpText" class="text-muted age-help-text">
+                Select your birth date. Adults (&ge;18) will see their age and birth weekday; minors (&lt;18) will receive a parental consent alert.
+            </small>
+        </form>
+
+        <!-- Container for calculated results -->
+        <div id="ageResultContainer" class="age-result-container" style="display: none;" aria-live="polite"></div>
+    </section>
 </div>
 {% endblock content %}
 
 {% block extra_js %}
 <script src="{% static 'js/form_generator.js' %}" defer></script>
+<script src="{% static 'js/age_calculator.js' %}" defer></script>
 {% endblock %}
 
