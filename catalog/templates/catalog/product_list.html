@@ -1,4 +1,5 @@
 {% extends 'core/base.html' %}
+{% load static %}
 {% block title %}Catalog — Pastry Shop{% endblock %}
 
 {% block content %}
@@ -56,69 +57,97 @@
         </fieldset>
     </form>
 
+    <!-- Catalog Interactive Toolbar (LR3 Item 5 & 6) -->
+    <div class="catalog-toolbar" id="catalog-toolbar">
+        <div class="catalog-page-size-container">
+            <label for="catalog-page-size"><strong>Show:</strong></label>
+            <select id="catalog-page-size" class="catalog-page-size-select" aria-label="Select number of items per page">
+                <option value="3" selected>3 per page (Default)</option>
+                <option value="6">6 per page</option>
+                <option value="9">9 per page</option>
+                <option value="12">12 per page</option>
+                <option value="all">All items</option>
+            </select>
+        </div>
+        <div class="catalog-summary" id="catalog-summary" aria-live="polite">
+            <!-- Populated by JS -->
+        </div>
+    </div>
+
     <ul class="product-grid">
         {% for product in products %}
-            <li class="product-card" itemscope itemtype="https://schema.org/Product">
-                {% if product.photo %}
-                <figure class="product-card-figure">
-                    <a href="{% url 'catalog:product_detail' product_id=product.id %}">
-                        <img src="{{ product.photo.url }}"
-                             alt="{{ product.name }}"
-                             width="100"
-                             srcset="{{ product.photo_small.url }} 100w"
-                             sizes="100px"
-                             itemprop="image"
-                             class="product-card-img">
-                    </a>
-                    <figcaption itemprop="name">{{ product.name }}</figcaption>
-                </figure>
-                {% endif %}
-                <div class="product-card-body">
-                    <span class="product-category-tag">{{ product.category.name }}</span>
-                    <h2 class="product-card-title">
-                        <a href="{% url 'catalog:product_detail' product_id=product.id %}" itemprop="url">{{ product.name }}</a>
-                        {% if not product.is_active %}
-                            <em class="badge-inactive">Inactive / Hidden</em>
+            <li class="card-wrapper" itemscope itemtype="https://schema.org/Product">
+                <div class="card product-card">
+                    {% if product.photo %}
+                    <figure class="product-card-figure">
+                        <a href="{% url 'catalog:product_detail' product_id=product.id %}">
+                            <img src="{{ product.photo.url }}"
+                                 alt="{{ product.name }}"
+                                 width="100"
+                                 srcset="{{ product.photo_small.url }} 100w"
+                                 sizes="100px"
+                                 itemprop="image"
+                                 class="product-card-img">
+                        </a>
+                        <figcaption itemprop="name">{{ product.name }}</figcaption>
+                    </figure>
+                    {% endif %}
+                    <div class="product-card-body">
+                        <span class="product-category-tag">{{ product.category.name }}</span>
+                        <h2 class="product-card-title">
+                            <a href="{% url 'catalog:product_detail' product_id=product.id %}" itemprop="url">{{ product.name }}</a>
+                            {% if not product.is_active %}
+                                <em class="badge-inactive">Inactive / Hidden</em>
+                            {% endif %}
+                        </h2>
+                        <p class="product-card-desc" itemprop="description">{{ product.ingredients|truncatewords:8 }}</p>
+                        <div class="product-card-meta">
+                            <p class="product-card-price" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
+                                Price: <strong>$<span itemprop="price">{{ product.price }}</span></strong>
+                            </p>
+                            <p class="product-card-stock">
+                                {% if product.quantity > 0 %}
+                                    <span class="stock-badge in-stock">Available: {{ product.quantity }} in stock</span>
+                                {% else %}
+                                    <strong><mark class="stock-badge out-stock">Out of Stock</mark></strong>
+                                {% endif %}
+                            </p>
+                        </div>
+
+                        {% if request.user.is_authenticated and request.user.role == 'ADMIN' or request.user.is_authenticated and request.user.role == 'STAFF' %}
+                            <div class="product-card-admin">
+                                <a href="{% url 'catalog:product_edit' product_id=product.id %}">Edit</a>
+                                <a href="{% url 'catalog:product_delete' product_id=product.id %}">Delete</a>
+                            </div>
                         {% endif %}
-                    </h2>
-                    <p class="product-card-desc" itemprop="description">{{ product.ingredients|truncatewords:8 }}</p>
-                    <div class="product-card-meta">
-                        <p class="product-card-price" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
-                            Price: <strong>$<span itemprop="price">{{ product.price }}</span></strong>
-                        </p>
-                        <p class="product-card-stock">
-                            {% if product.quantity > 0 %}
-                                <span class="stock-badge in-stock">Available: {{ product.quantity }} in stock</span>
-                            {% else %}
-                                <strong><mark class="stock-badge out-stock">Out of Stock</mark></strong>
-                            {% endif %}
-                        </p>
+
+                        {% if not request.user.is_authenticated or request.user.role == 'CUSTOMER' %}
+                            <div class="product-card-actions">
+                                {% if product.quantity > 0 %}
+                                    <form action="{% url 'purchasing:add_to_cart' product_id=product.id %}" method="POST">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn-add-cart">Add to Cart</button>
+                                    </form>
+                                {% else %}
+                                    <button type="button" class="btn-disabled" disabled>Out of Stock</button>
+                                {% endif %}
+                            </div>
+                        {% endif %}
                     </div>
-
-                    {% if request.user.is_authenticated and request.user.role == 'ADMIN' or request.user.is_authenticated and request.user.role == 'STAFF' %}
-                        <div class="product-card-admin">
-                            <a href="{% url 'catalog:product_edit' product_id=product.id %}">Edit</a>
-                            <a href="{% url 'catalog:product_delete' product_id=product.id %}">Delete</a>
-                        </div>
-                    {% endif %}
-
-                    {% if not request.user.is_authenticated or request.user.role == 'CUSTOMER' %}
-                        <div class="product-card-actions">
-                            {% if product.quantity > 0 %}
-                                <form action="{% url 'purchasing:add_to_cart' product_id=product.id %}" method="POST">
-                                    {% csrf_token %}
-                                    <button type="submit" class="btn-add-cart">Add to Cart</button>
-                                </form>
-                            {% else %}
-                                <button type="button" class="btn-disabled" disabled>Out of Stock</button>
-                            {% endif %}
-                        </div>
-                    {% endif %}
                 </div>
             </li>
         {% empty %}
             <li class="no-products">No products found.</li>
         {% endfor %}
     </ul>
+
+    <!-- Catalog Pagination Navigation (LR3 Item 5) -->
+    <div class="catalog-pagination-container" id="catalog-pagination">
+        <!-- Populated dynamically by catalog_interactive.js -->
+    </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/catalog_interactive.js' %}"></script>
 {% endblock %}

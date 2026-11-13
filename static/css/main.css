@@ -6769,5 +6769,202 @@ td:empty::after {
   color: #f9d784 !important;
 }
 
+/* ==========================================================================
+   LR3 Item 5: Catalog Client-Side Pagination & Toolbar Styles
+   ========================================================================== */
+.catalog-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin: 1.5rem 0 2rem 0;
+  padding: 0.85rem 1.25rem;
+  background-color: var(--color-bg-alt);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+}
+
+.catalog-page-size-container {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-size: 0.92rem;
+  color: var(--color-text);
+}
+
+.catalog-page-size-select {
+  padding: 0.38rem 0.85rem;
+  border: 1px solid var(--color-border-dark);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-card-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.catalog-page-size-select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(139, 58, 43, 0.2);
+}
+
+.catalog-summary {
+  font-size: 0.88rem;
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
+.catalog-pagination-container {
+  margin: 2.5rem 0 1.5rem 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.pagination-ellipsis {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.45rem 0.65rem;
+  color: var(--color-text-muted);
+  font-weight: 700;
+  user-select: none;
+}
+
+/* ==========================================================================
+   LR3 Item 6: 3D Volume / Tilt / Parallax Card Effect (CodePen zYJqxax)
+   ========================================================================== */
+.card-wrapper {
+  position: relative;
+  perspective: 500em;
+  transform-style: preserve-3d;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-wrapper .card {
+  --posx: 50%;
+  --posy: 50%;
+  --rotateX: 0deg;
+  --rotateY: 0deg;
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  transform-style: preserve-3d;
+  transform: 
+    perspective(100em)
+    translateZ(0em)
+    rotateY(var(--rotateX, 0deg)) 
+    rotateX(var(--rotateY, 0deg));
+  will-change: transform;
+  overflow: visible;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.card-wrapper .card:hover,
+.card-wrapper:hover .card {
+  transform: 
+    perspective(100em)
+    translateZ(0em)
+    rotateY(var(--rotateX, 0deg)) 
+    rotateX(var(--rotateY, 0deg)) !important;
+  box-shadow: 0 18px 40px rgba(44, 34, 30, 0.22);
+  border-color: var(--color-secondary);
+}
+
+@keyframes reset-card {
+  to {
+    background-position: 50% 50%;
+    transform: 
+      perspective(100em)
+      translateZ(0em)
+      rotateY(0deg) 
+      rotateX(0deg);
+  }
+}
+
+/* 3D Parallax layers for inner elements */
+.card-wrapper .card,
+.card-wrapper .card * {
+  transform-style: preserve-3d;
+}
+
+.card-wrapper .card .product-card-figure {
+  transform: translateZ(25px);
+  border-top-left-radius: var(--radius-md);
+  border-top-right-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.card-wrapper .card .product-card-title {
+  transform: translateZ(32px);
+}
+
+.card-wrapper .card .product-card-desc {
+  transform: translateZ(20px);
+}
+
+.card-wrapper .card .product-category-tag {
+  transform: translateZ(22px);
+}
+
+.card-wrapper .card .product-card-meta {
+  transform: translateZ(25px);
+}
+
+.card-wrapper .card .product-card-actions,
+.card-wrapper .card .product-card-admin {
+  transform: translateZ(30px);
+}
+
+/* Soft 3D ambient glow behind the card on tilt */
+.card-wrapper .card:after {
+  content: '';
+  position: absolute;
+  inset: 1.5rem;
+  background-color: var(--color-secondary);
+  opacity: 0;
+  transform: translateZ(-5em);
+  border-radius: inherit;
+  filter: blur(2.5rem);
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: -1;
+}
+
+.card-wrapper:hover .card:after {
+  opacity: 0.35;
+}
+
+/* Dark mode overrides for Items 5 & 6 */
+[data-theme="dark"] .catalog-toolbar {
+  background-color: #261e1b;
+  border-color: #3d2f28;
+}
+
+[data-theme="dark"] .catalog-page-size-select {
+  background-color: #221a17;
+  border-color: #554137;
+  color: #f5ede3;
+}
+
+[data-theme="dark"] .catalog-summary {
+  color: #c7b8ad;
+}
+
+[data-theme="dark"] .card-wrapper:hover .card {
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.65);
+}
+
+[data-theme="dark"] .card-wrapper .card:after {
+  background-color: rgba(201, 138, 44, 0.45);
+}
+
+
 
 
