@@ -8590,5 +8590,65 @@ td:empty::after {
   color: #ffd885;
 }
 
+/* ==========================================================================
+   23. JS Lab Task 10: Chart.js Graphs (Taylor Series vs Math.log)
+   ========================================================================== */
+.chart-params-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.chart-params-grid label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: block;
+  margin-bottom: 0.35rem;
+  color: var(--color-text);
+}
+
+.chart-actions-row {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.chart-canvas-wrapper {
+  padding: 1.25rem;
+  background-color: var(--color-card-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.val-series {
+  color: var(--color-primary);
+  font-weight: 600;
+  font-family: var(--font-mono);
+}
+
+.val-math {
+  color: #27ae60;
+  font-weight: 600;
+  font-family: var(--font-mono);
+}
+
+/* Dark Theme Overrides for Task 10 */
+[data-theme="dark"] .chart-canvas-wrapper {
+  background-color: #221a17;
+  border-color: #3d2e27;
+}
+
+[data-theme="dark"] .val-series {
+  color: #e6a090;
+}
+
+[data-theme="dark"] .val-math {
+  color: #2ecc71;
+}
+
+
 
 
