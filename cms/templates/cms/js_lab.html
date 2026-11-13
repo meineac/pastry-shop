@@ -15,7 +15,7 @@
         <a href="#task-4" class="lab-nav-link">4. &lt;textarea&gt; Generator (Var. 24)</a>
         <a href="#task-7" class="lab-nav-link">7. Age Calculator</a>
         <a href="#task-8" class="lab-nav-link">8. OOP Subscribers (Var. 24)</a>
-        <a href="#task-9" class="lab-nav-link disabled" title="To be implemented">9. Web APIs</a>
+        <a href="#task-9" class="lab-nav-link">9. Web APIs</a>
         <a href="#task-10" class="lab-nav-link disabled" title="To be implemented">10. Chart.js Graphs (Var. 24)</a>
         <a href="#task-11" class="lab-nav-link disabled" title="To be implemented">11. Animations (Var. 24)</a>
     </nav>
@@ -360,6 +360,154 @@
             </div>
         </div>
     </section>
+
+    <!-- ====================================================================
+         TASK 9: Modern Web APIs (Speech Synthesis, Geolocation, Battery)
+         ==================================================================== -->
+    <section id="task-9" class="lab-section card-box" aria-labelledby="task-9-title">
+        <div class="lab-section-header">
+            <span class="badge-variant">General Task</span>
+            <h2 id="task-9-title">9. Browser Web APIs Demonstration</h2>
+        </div>
+
+        <div class="task-description-box">
+            <p>
+                <strong>Task Requirement:</strong> Demonstrate usage of modern browser Web APIs
+                (Geolocation, Speech Synthesis, Battery status, etc.).
+            </p>
+        </div>
+
+        <div class="web-apis-grid">
+            <!-- 1. Web Speech API Card -->
+            <div class="api-card card-box-inner" aria-labelledby="api-speech-title">
+                <div class="api-card-header">
+                    <span class="api-icon" aria-hidden="true">🗣️</span>
+                    <div>
+                        <h3 id="api-speech-title" class="api-title">1. Web Speech API (SpeechSynthesis)</h3>
+                        <span class="api-sub">Text-to-Speech synthesis with voice and rate controls</span>
+                    </div>
+                    <span id="speechStatusBadge" class="status-pill status-idle">Idle</span>
+                </div>
+
+                <div class="api-card-body">
+                    <div id="speechUnsupportedNotice" class="result-notice notice-danger" hidden>
+                        Speech Synthesis API is not supported in this browser.
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0.85rem;">
+                        <label for="speechTextInput" style="font-weight: 600; font-size: 0.88rem; display: block; margin-bottom: 0.35rem;">Text to Speak:</label>
+                        <textarea id="speechTextInput" class="form-control" rows="3" style="width: 100%; resize: vertical;" placeholder="Enter message to speak...">Welcome to Pastry Shop! Our freshly baked croissants and artisan pastries are ready for you.</textarea>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0.85rem;">
+                        <label for="speechVoiceSelect" style="font-weight: 600; font-size: 0.88rem; display: block; margin-bottom: 0.35rem;">Voice / Language:</label>
+                        <select id="speechVoiceSelect" class="form-control" style="width: 100%;">
+                            <option value="">Loading available voices...</option>
+                        </select>
+                    </div>
+
+                    <div class="speech-sliders-row" style="display: flex; gap: 1rem; margin-bottom: 1.15rem; flex-wrap: wrap;">
+                        <div class="form-group" style="flex: 1; min-width: 120px;">
+                            <label for="speechRateInput" style="font-size: 0.85rem; font-weight: 600; display: flex; justify-content: space-between;">
+                                <span>Speed:</span> <span id="speechRateVal">1.0x</span>
+                            </label>
+                            <input type="range" id="speechRateInput" min="0.5" max="2" step="0.1" value="1.0" style="width: 100%;">
+                        </div>
+                        <div class="form-group" style="flex: 1; min-width: 120px;">
+                            <label for="speechPitchInput" style="font-size: 0.85rem; font-weight: 600; display: flex; justify-content: space-between;">
+                                <span>Pitch:</span> <span id="speechPitchVal">1.0</span>
+                            </label>
+                            <input type="range" id="speechPitchInput" min="0.5" max="1.5" step="0.1" value="1.0" style="width: 100%;">
+                        </div>
+                    </div>
+
+                    <div class="speech-action-buttons" style="display: flex; gap: 0.6rem;">
+                        <button type="button" id="speechSpeakBtn" class="btn btn-primary" style="flex: 1;">
+                            🔊 Speak
+                        </button>
+                        <button type="button" id="speechStopBtn" class="btn btn-reset-data" style="padding: 0.55rem 1rem;">
+                            ⏹️ Stop
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. Geolocation API Card -->
+            <div class="api-card card-box-inner" aria-labelledby="api-geo-title">
+                <div class="api-card-header">
+                    <span class="api-icon" aria-hidden="true">📍</span>
+                    <div>
+                        <h3 id="api-geo-title" class="api-title">2. Geolocation API (Store Distance)</h3>
+                        <span class="api-sub">Calculate distance to Flagship Store (123 Baker St, London)</span>
+                    </div>
+                </div>
+
+                <div class="api-card-body">
+                    <div class="store-reference-box" style="padding: 0.75rem 1rem; background-color: var(--color-card-bg); border: 1px solid var(--color-border); border-radius: var(--radius-sm); margin-bottom: 1rem; font-size: 0.88rem;">
+                        <strong>Target Bakery Destination:</strong><br>
+                        123 Baker Street, London, UK<br>
+                        <small class="text-muted">Coordinates: 51.5237° N, -0.1578° W</small>
+                    </div>
+
+                    <div id="geoErrorBox" class="result-notice notice-danger" hidden style="margin-bottom: 1rem;"></div>
+
+                    <button type="button" id="geoLocateBtn" class="btn btn-primary" style="width: 100%; margin-bottom: 1rem;">
+                        📍 Locate Me &amp; Calculate Distance
+                    </button>
+
+                    <!-- Geolocation Results Card -->
+                    <div id="geoResultCard" class="geo-result-box" hidden>
+                        <div class="geo-stat-row">
+                            <span class="stat-label">Your Latitude:</span>
+                            <strong id="geoLatVal" class="stat-val"></strong>
+                        </div>
+                        <div class="geo-stat-row">
+                            <span class="stat-label">Your Longitude:</span>
+                            <strong id="geoLonVal" class="stat-val"></strong>
+                        </div>
+                        <div class="geo-stat-row">
+                            <span class="stat-label">Accuracy:</span>
+                            <span id="geoAccuracyVal" class="stat-val"></span>
+                        </div>
+                        <div class="geo-stat-row distance-highlight-row">
+                            <span class="stat-label">Distance to Bakery:</span>
+                            <strong id="geoDistanceVal" class="highlight-distance"></strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. Battery Status API Card -->
+            <div class="api-card card-box-inner" aria-labelledby="api-battery-title">
+                <div class="api-card-header">
+                    <span class="api-icon" aria-hidden="true">🔋</span>
+                    <div>
+                        <h3 id="api-battery-title" class="api-title">3. Battery Status API</h3>
+                        <span class="api-sub">Inspect battery percentage and charging state</span>
+                    </div>
+                </div>
+
+                <div class="api-card-body">
+                    <div id="batteryUnsupportedNotice" class="result-notice notice-danger" hidden>
+                        Battery Status API is not available in this browser environment.
+                    </div>
+
+                    <div id="batteryCardBox">
+                        <div class="battery-meter-container" style="margin-bottom: 0.85rem;">
+                            <div class="battery-meter-body" style="height: 24px; border: 2px solid var(--color-border-dark); border-radius: var(--radius-sm); padding: 2px; background-color: var(--color-bg);">
+                                <div id="batteryFillBar" style="height: 100%; width: 50%; background-color: #27ae60; border-radius: 2px; transition: width 0.3s ease;"></div>
+                            </div>
+                        </div>
+
+                        <div class="battery-stats-flex" style="display: flex; justify-content: space-between; font-size: 0.95rem;">
+                            <span>Charge Level: <strong id="batteryPctVal">--%</strong></span>
+                            <span id="batteryChargingStatus" class="status-pill status-idle">Inspecting...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 </div>
 {% endblock content %}
 
@@ -367,5 +515,6 @@
 <script src="{% static 'js/form_generator.js' %}" defer></script>
 <script src="{% static 'js/age_calculator.js' %}" defer></script>
 <script src="{% static 'js/cellular_oop.js' %}" defer></script>
+<script src="{% static 'js/web_apis.js' %}" defer></script>
 {% endblock %}
 
