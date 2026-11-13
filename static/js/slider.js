@@ -104,7 +104,7 @@ class Slider {
                     const btn = document.createElement('button');
                     btn.type = 'button';
                     btn.className = 'slider-bullet';
-                    btn.setAttribute('aria-label', `Перейти к слайду ${idx + 1}`);
+                    btn.setAttribute('aria-label', `Go to slide ${idx + 1}`);
                     btn.addEventListener('click', (e) => {
                         e.stopPropagation();
                         this.goTo(idx);
@@ -377,9 +377,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const newDelay = parseFloat(delayInput.value);
             if (newDelay && newDelay > 0) {
                 slider.setDelay(newDelay);
-                updateStatus(`Интервал ротации успешно изменен на ${newDelay} сек. Автопрокрутка перезапущена.`);
+                updateStatus(`Rotation delay updated to ${newDelay}s. Auto-rotation restarted.`);
             } else {
-                updateStatus('Пожалуйста, укажите положительное число секунд.');
+                updateStatus('Please specify a positive number of seconds.');
             }
         });
 
@@ -388,7 +388,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const newDelay = parseFloat(delayInput.value);
             if (newDelay && newDelay > 0) {
                 slider.setDelay(newDelay);
-                updateStatus(`Интервал ротации обновлен: ${newDelay} сек.`);
+                updateStatus(`Rotation delay updated: ${newDelay}s.`);
             }
         });
     }
@@ -396,35 +396,35 @@ document.addEventListener('DOMContentLoaded', () => {
     if (paramLoop) {
         paramLoop.addEventListener('change', (e) => {
             slider.setLoop(e.target.checked);
-            updateStatus(`Зацикливание (loop): ${e.target.checked ? 'Включено' : 'Выключено'}.`);
+            updateStatus(`Loop: ${e.target.checked ? 'Enabled' : 'Disabled'}.`);
         });
     }
 
     if (paramNavs) {
         paramNavs.addEventListener('change', (e) => {
             slider.setNavs(e.target.checked);
-            updateStatus(`Стрелки (navs): ${e.target.checked ? 'Включены' : 'Выключены'}.`);
+            updateStatus(`Navigation arrows: ${e.target.checked ? 'Enabled' : 'Disabled'}.`);
         });
     }
 
     if (paramPags) {
         paramPags.addEventListener('change', (e) => {
             slider.setPags(e.target.checked);
-            updateStatus(`Пагинация (pags): ${e.target.checked ? 'Включена' : 'Выключена'}.`);
+            updateStatus(`Bullet pagination: ${e.target.checked ? 'Enabled' : 'Disabled'}.`);
         });
     }
 
     if (paramAuto) {
         paramAuto.addEventListener('change', (e) => {
             slider.setAuto(e.target.checked);
-            updateStatus(`Автопрокрутка (auto): ${e.target.checked ? 'Включена' : 'Выключена'}.`);
+            updateStatus(`Auto-rotation: ${e.target.checked ? 'Enabled' : 'Disabled'}.`);
         });
     }
 
     if (paramHover) {
         paramHover.addEventListener('change', (e) => {
             slider.setStopMouseHover(e.target.checked);
-            updateStatus(`Пауза при наведении (stopMouseHover): ${e.target.checked ? 'Включена' : 'Выключена'}.`);
+            updateStatus(`Pause on hover: ${e.target.checked ? 'Enabled' : 'Disabled'}.`);
         });
     }
 });

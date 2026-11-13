@@ -114,52 +114,52 @@
             {% endif %}
         </div>
 
-        <button type="button" class="slider-arrow slider-prev" aria-label="Предыдущий слайд">&#10094;</button>
-        <button type="button" class="slider-arrow slider-next" aria-label="Следующий слайд">&#10095;</button>
+        <button type="button" class="slider-arrow slider-prev" aria-label="Previous slide">&#10094;</button>
+        <button type="button" class="slider-arrow slider-next" aria-label="Next slide">&#10095;</button>
 
-        <div class="slider-pagination" aria-label="Навигация по слайдам"></div>
+        <div class="slider-pagination" aria-label="Slide pagination"></div>
     </div>
 
-    <!-- Панель управления параметрами слайдера (только для администратора) -->
+    <!-- Slider Administration Panel -->
     {% if request.user.is_authenticated and request.user.role == 'ADMIN' or request.user.is_superuser %}
-    <div class="slider-admin-card" aria-label="Управление слайдером">
+    <div class="slider-admin-card" aria-label="Slider administration controls">
         <details class="slider-settings-details" open>
-            <summary class="slider-settings-summary">⚙️ Управление слайдером (Панель администратора: {{ request.user.username }})</summary>
+            <summary class="slider-settings-summary">⚙️ Slider Settings (Administrator Panel: {{ request.user.username }})</summary>
             <form id="sliderAdminForm" class="slider-admin-form">
                 <div class="slider-form-row">
-                    <label for="sliderDelayInput"><strong>Время ротации слайдов (сек):</strong></label>
+                    <label for="sliderDelayInput"><strong>Slide rotation delay (sec):</strong></label>
                     <input type="number" id="sliderDelayInput" name="delay" min="1" max="60" value="5" step="1" class="form-control-sm">
-                    <button type="submit" class="btn-slider-apply">Применить задержку</button>
+                    <button type="submit" class="btn-slider-apply">Apply Delay</button>
                 </div>
                 <div class="slider-params-grid">
                     <label class="slider-checkbox-label">
                         <input type="checkbox" id="sliderParamLoop" checked>
-                        <span>Зацикливание (loop)</span>
+                        <span>Loop continuously (loop)</span>
                     </label>
                     <label class="slider-checkbox-label">
                         <input type="checkbox" id="sliderParamNavs" checked>
-                        <span>Стрелки вперед/назад (navs)</span>
+                        <span>Navigation arrows (navs)</span>
                     </label>
                     <label class="slider-checkbox-label">
                         <input type="checkbox" id="sliderParamPags" checked>
-                        <span>Пагинация / буллеты (pags)</span>
+                        <span>Bullet pagination (pags)</span>
                     </label>
                     <label class="slider-checkbox-label">
                         <input type="checkbox" id="sliderParamAuto" checked>
-                        <span>Автопрокрутка (auto)</span>
+                        <span>Auto-rotation (auto)</span>
                     </label>
                     <label class="slider-checkbox-label">
                         <input type="checkbox" id="sliderParamHover" checked>
-                        <span>Пауза при наведении (stopMouseHover)</span>
+                        <span>Pause on hover (stopMouseHover)</span>
                     </label>
                 </div>
-                <div class="slider-admin-status" id="sliderAdminStatus" aria-live="polite">Текущий интервал: 5 сек. Автопрокрутка активна.</div>
+                <div class="slider-admin-status" id="sliderAdminStatus" aria-live="polite">Current delay: 5 sec. Auto-rotation is active.</div>
             </form>
         </details>
     </div>
     {% else %}
-    <aside class="slider-admin-notice" aria-label="Информация для администратора">
-        <p>🔒 <em>Настройка задержки и параметров слайдера доступна только администратору. <a href="{% url 'login' %}">Войдите как администратор</a> для изменения параметров ротации.</em></p>
+    <aside class="slider-admin-notice" aria-label="Administrator information">
+        <p>🔒 <em>Slider rotation delay and options can be modified by administrators. <a href="{% url 'login' %}">Log in as admin</a> to customize.</em></p>
     </aside>
     {% endif %}
 </section>

@@ -12,6 +12,17 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
     <title>{% block title %}Pastry Shop{% endblock %}</title>
+    <script>
+        (function() {
+            var theme = localStorage.getItem('pastry_theme');
+            if (theme === 'dark' || (!theme && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'light');
+            }
+        })();
+    </script>
+    <script src="{% static 'js/theme.js' %}" defer></script>
 </head>
 <body>
     <header>
@@ -45,6 +56,10 @@
                 <a href="{% url 'login' %}" accesskey="l">Login</a>
                 <a href="{% url 'register' %}" accesskey="e">Register</a>
             {% endif %}
+            <button type="button" id="themeToggleBtn" class="theme-toggle-btn" aria-label="Toggle visual theme" title="Toggle theme (dark/light)">
+                <span class="theme-toggle-icon" aria-hidden="true">🌙</span>
+                <span class="theme-toggle-text">Dark Theme</span>
+            </button>
         </nav>
     </header>
 

@@ -42,6 +42,87 @@
 }
 
 /* --------------------------------------------------------------------------
+   0.1 Dark Theme Tokens (LR3 Item 2 — Harmonic Coffee & Dark Chocolate)
+   -------------------------------------------------------------------------- */
+[data-theme="dark"] {
+  --color-bg: #1c1512;           /* Deep dark espresso/roast */
+  --color-bg-alt: #271e19;       /* Warm dark chocolate */
+  --color-card-bg: #231a16;      /* Dark cocoa pastry card */
+  --color-text: #f5ede4;         /* Creamy warm white/vanilla */
+  --color-text-muted: #baa79c;   /* Soft mocha text */
+  --color-primary: #e07a5f;      /* Warm baked terracotta / berry */
+  --color-primary-hover: #f08c73;
+  --color-primary-active: #c9654c;
+  --color-secondary: #e6b15c;    /* Warm golden honey/pastry */
+  --color-secondary-hover: #f2bf6e;
+  --color-accent: #8fb359;       /* Light pistachio green */
+  --color-border: #3d2f28;       /* Subtle dark chocolate border */
+  --color-border-dark: #5c473c;  /* Distinctive chocolate border */
+  --color-link: #f08a70;
+  --color-link-visited: #c492b4;
+  --color-selection-bg: #734e32;
+  --color-selection-text: #ffffff;
+  --color-focus: #e6b15c;
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.45);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.55);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.65);
+}
+
+[data-theme="dark"] body {
+  background-color: var(--color-bg);
+  background-image: radial-gradient(rgba(230, 177, 92, 0.08) 1px, transparent 1px);
+  color: var(--color-text);
+}
+
+/* Theme Toggle Button (LR3 Item 2) */
+.theme-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.8rem;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-border-dark);
+  background-color: var(--color-bg-alt);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-left: auto;
+  transition: all 0.25s ease;
+  user-select: none;
+}
+
+.theme-toggle-btn:hover {
+  background-color: var(--color-secondary);
+  color: #ffffff;
+  border-color: var(--color-secondary);
+  transform: translateY(-1px);
+}
+
+.theme-toggle-btn:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.theme-toggle-icon {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+[data-theme="dark"] .theme-toggle-btn {
+  background-color: var(--color-bg-alt);
+  border-color: var(--color-border-dark);
+  color: var(--color-text);
+}
+
+[data-theme="dark"] .theme-toggle-btn:hover {
+  background-color: var(--color-secondary);
+  color: #1c1512;
+}
+
+/* --------------------------------------------------------------------------
    1. Typography & Global Reset
    -------------------------------------------------------------------------- */
 *, *::before, *::after {
@@ -5701,6 +5782,368 @@ td:empty::after {
   border-color: var(--color-text-muted);
   background-color: var(--color-bg-alt);
   color: var(--color-text) !important;
+}
+
+/* ==========================================================================
+   Comprehensive Dark Theme Overrides (LR3 Item 2)
+   Cascades over all components to ensure perfect contrast and consistency.
+   ========================================================================== */
+
+/* 1. Global & Color Scheme */
+[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+[data-theme="dark"] body {
+  background-color: #1c1512 !important;
+  background-image: radial-gradient(rgba(230, 177, 92, 0.08) 1px, transparent 1px) !important;
+  color: #f5ede4 !important;
+}
+
+/* 2. Header & Main Navigation */
+[data-theme="dark"] body > header,
+[data-theme="dark"] header > nav {
+  background-color: #231a16 !important;
+  border-bottom: 1px solid #3d2f28 !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5) !important;
+}
+
+[data-theme="dark"] header nav a {
+  color: #f5ede4 !important;
+}
+
+[data-theme="dark"] header nav a:hover {
+  background-color: #2f221c !important;
+  color: #e6b15c !important;
+}
+
+/* 3. Cards & Content Sections */
+[data-theme="dark"] .product-card,
+[data-theme="dark"] .banner-card,
+[data-theme="dark"] .store-info-card,
+[data-theme="dark"] .store-map-card,
+[data-theme="dark"] .employee-card,
+[data-theme="dark"] .news-card,
+[data-theme="dark"] .vacancy-card,
+[data-theme="dark"] .qna-card,
+[data-theme="dark"] .review-card,
+[data-theme="dark"] .cart-item,
+[data-theme="dark"] .cart-item-card,
+[data-theme="dark"] .cart-summary-card,
+[data-theme="dark"] .cart-empty-card,
+[data-theme="dark"] .checkout-section,
+[data-theme="dark"] .order-card,
+[data-theme="dark"] .slider-container,
+[data-theme="dark"] .slider-admin-card,
+[data-theme="dark"] .privacy-document-card,
+[data-theme="dark"] .policy-section-card,
+[data-theme="dark"] .profile-card,
+[data-theme="dark"] .order-summary-card,
+[data-theme="dark"] .order-history-card,
+[data-theme="dark"] .order-details-header,
+[data-theme="dark"] .client-item-card,
+[data-theme="dark"] .staff-member-card {
+  background-color: #231a16 !important;
+  border-color: #3d2f28 !important;
+  color: #f5ede4 !important;
+}
+
+[data-theme="dark"] .profile-meta-row {
+  border-bottom-color: #3d2f28 !important;
+}
+
+[data-theme="dark"] .profile-meta-row dt {
+  color: #baa79c !important;
+}
+
+[data-theme="dark"] .profile-meta-row dd {
+  color: #f5ede4 !important;
+}
+
+[data-theme="dark"] .empty-state-card {
+  background-color: #281e19 !important;
+  border-color: #4a382f !important;
+  color: #baa79c !important;
+}
+
+[data-theme="dark"] .qty-controls {
+  background-color: #2a201b !important;
+  border-color: #5c473c !important;
+}
+
+[data-theme="dark"] .qty-controls .qty-btn {
+  color: #f5ede4 !important;
+  background-color: transparent !important;
+}
+
+[data-theme="dark"] .qty-controls .qty-value {
+  color: #f5ede4 !important;
+}
+
+[data-theme="dark"] .btn-continue-shopping {
+  background-color: #2a201b !important;
+  color: #f5ede4 !important;
+  border-color: #5c473c !important;
+}
+
+[data-theme="dark"] .btn-continue-shopping:hover {
+  background-color: #35261f !important;
+  border-color: #e6b15c !important;
+  color: #e6b15c !important;
+}
+
+[data-theme="dark"] .btn-action-small.btn-secondary {
+  background-color: #2a201b !important;
+  color: #e6b15c !important;
+  border: 1px solid #5c473c !important;
+}
+
+[data-theme="dark"] .btn-action-small.btn-secondary:hover {
+  background-color: #35261f !important;
+  border-color: #e6b15c !important;
+}
+
+[data-theme="dark"] .customer-badge {
+  background-color: #33220e !important;
+  color: #f59e0b !important;
+  border-color: #78350f !important;
+}
+
+[data-theme="dark"] .staff-badge {
+  background-color: #0f233a !important;
+  color: #60a5fa !important;
+  border-color: #1e3a8a !important;
+}
+
+[data-theme="dark"] .admin-badge {
+  background-color: #3b1227 !important;
+  color: #f472b6 !important;
+  border-color: #831843 !important;
+}
+
+[data-theme="dark"] .review-card:nth-child(even) {
+  background-color: #281e19 !important;
+}
+
+/* 4. Form Controls, Inputs & Selects (Fixes Catalog Filter, Inputs & Selects) */
+[data-theme="dark"] input[type="text"],
+[data-theme="dark"] input[type="email"],
+[data-theme="dark"] input[type="password"],
+[data-theme="dark"] input[type="search"],
+[data-theme="dark"] input[type="url"],
+[data-theme="dark"] input[type="number"],
+[data-theme="dark"] input[type="date"],
+[data-theme="dark"] input[type="tel"],
+[data-theme="dark"] input[type="file"],
+[data-theme="dark"] select,
+[data-theme="dark"] textarea,
+[data-theme="dark"] input:enabled,
+[data-theme="dark"] select:enabled,
+[data-theme="dark"] textarea:enabled,
+[data-theme="dark"] .filter-field input,
+[data-theme="dark"] .filter-field select,
+[data-theme="dark"] .filter-field input:focus,
+[data-theme="dark"] .filter-field select:focus,
+[data-theme="dark"] .review-form input:enabled,
+[data-theme="dark"] .review-form select:enabled,
+[data-theme="dark"] .review-form textarea:enabled,
+[data-theme="dark"] .checkout-form input:enabled,
+[data-theme="dark"] .checkout-form select:enabled,
+[data-theme="dark"] .checkout-form textarea:enabled {
+  background-color: #2a201b !important;
+  color: #f5ede4 !important;
+  border-color: #5c473c !important;
+}
+
+[data-theme="dark"] input::placeholder,
+[data-theme="dark"] textarea::placeholder {
+  color: #baa79c !important;
+  opacity: 0.8 !important;
+}
+
+[data-theme="dark"] select option {
+  background-color: #231a16 !important;
+  color: #f5ede4 !important;
+}
+
+/* 5. Auth Cards (Login & Register - Fixes Broken White/Brown Cards) */
+[data-theme="dark"] .auth-card {
+  background-color: #231a16 !important;
+  border-color: #3d2f28 !important;
+  color: #f5ede4 !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6) !important;
+}
+
+[data-theme="dark"] .auth-card form label,
+[data-theme="dark"] fieldset label {
+  color: #f5ede4 !important;
+}
+
+[data-theme="dark"] .auth-card form input[type="text"],
+[data-theme="dark"] .auth-card form input[type="password"],
+[data-theme="dark"] .auth-card form input[type="email"],
+[data-theme="dark"] .auth-card form input[type="date"],
+[data-theme="dark"] .auth-card form input[type="tel"] {
+  background-color: #2a201b !important;
+  color: #f5ede4 !important;
+  border-color: #5c473c !important;
+}
+
+[data-theme="dark"] fieldset {
+  background-color: transparent !important;
+  border-color: #3d2f28 !important;
+}
+
+[data-theme="dark"] legend {
+  color: #e07a5f !important;
+}
+
+[data-theme="dark"] .auth-card-footer {
+  color: #baa79c !important;
+  border-top-color: #3d2f28 !important;
+}
+
+/* 6. Tables & Meteorological/Conditions Data (Fixes White on White in Weather Table) */
+[data-theme="dark"] table,
+[data-theme="dark"] .conditions-table,
+[data-theme="dark"] .milestones-table {
+  background-color: #231a16 !important;
+  border-color: #3d2f28 !important;
+  color: #f5ede4 !important;
+}
+
+[data-theme="dark"] table th,
+[data-theme="dark"] table td,
+[data-theme="dark"] .conditions-table th,
+[data-theme="dark"] .conditions-table td,
+[data-theme="dark"] .milestones-table th,
+[data-theme="dark"] .milestones-table td {
+  border-color: #3d2f28 !important;
+  color: #f5ede4 !important;
+}
+
+[data-theme="dark"] table thead th,
+[data-theme="dark"] .conditions-table thead th,
+[data-theme="dark"] .milestones-table thead th {
+  background-color: #2c201a !important;
+  color: #e6b15c !important;
+}
+
+[data-theme="dark"] tbody tr,
+[data-theme="dark"] tbody tr:nth-child(even),
+[data-theme="dark"] tbody tr:nth-child(odd),
+[data-theme="dark"] .conditions-table tbody tr:nth-child(even),
+[data-theme="dark"] .milestones-table tbody tr:nth-child(even) {
+  background-color: #231a16 !important;
+}
+
+[data-theme="dark"] tbody tr:hover,
+[data-theme="dark"] .conditions-table tbody tr:hover {
+  background-color: #2b211c !important;
+}
+
+[data-theme="dark"] .conditions-table tbody th[scope="row"],
+[data-theme="dark"] .milestones-table tbody td:first-child {
+  background-color: rgba(230, 177, 92, 0.08) !important;
+  color: #e07a5f !important;
+}
+
+[data-theme="dark"] .table-subheading {
+  background-color: #2e221c !important;
+  color: #e6b15c !important;
+}
+
+[data-theme="dark"] .conditions-section pre,
+[data-theme="dark"] .calendar-card {
+  background-color: #231a16 !important;
+  border-color: #3d2f28 !important;
+  color: #f5ede4 !important;
+}
+
+/* 7. Store Hours & Contacts (Fixes White Box in Flagship Store) */
+[data-theme="dark"] .store-hours {
+  background-color: #2b201a !important;
+  color: #f5ede4 !important;
+  border-left-color: #e6b15c !important;
+}
+
+/* 8. Privacy Policy Jump Nav (Fixes White Box in Privacy Policy) */
+[data-theme="dark"] .privacy-jump-nav {
+  background-color: #271e19 !important;
+  border-color: #3d2f28 !important;
+}
+
+[data-theme="dark"] .jump-nav-title {
+  color: #e07a5f !important;
+}
+
+[data-theme="dark"] .jump-nav-link {
+  background-color: #231a16 !important;
+  border-color: #4a382f !important;
+  color: #f5ede4 !important;
+}
+
+[data-theme="dark"] .jump-nav-link:hover {
+  background-color: #e07a5f !important;
+  border-color: #e07a5f !important;
+  color: #ffffff !important;
+}
+
+/* 9. Promo Codes & Coupons (Fixes White Voucher Tickets & Light Text) */
+[data-theme="dark"] .active-voucher {
+  background: linear-gradient(135deg, #2b201a 0%, #241b17 60%, #1f1713 100%) !important;
+  border-color: #e6b15c !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5) !important;
+}
+
+[data-theme="dark"] .active-voucher:hover {
+  border-color: #e07a5f !important;
+  box-shadow: 0 8px 24px rgba(230, 177, 92, 0.2) !important;
+}
+
+[data-theme="dark"] .voucher-code-tag {
+  background-color: #35261f !important;
+  color: #e6b15c !important;
+  border-color: #553e32 !important;
+}
+
+[data-theme="dark"] .voucher-meta,
+[data-theme="dark"] .voucher-min,
+[data-theme="dark"] .voucher-cond {
+  color: #baa79c !important;
+}
+
+[data-theme="dark"] .archived-voucher {
+  background-color: #1e1714 !important;
+  border-color: #3d2f28 !important;
+  opacity: 0.7 !important;
+}
+
+[data-theme="dark"] .archived-voucher .voucher-code-tag {
+  background-color: #281e19 !important;
+  color: #8c7c72 !important;
+}
+
+/* 10. Admin Buttons & Footer */
+[data-theme="dark"] .admin-form-actions .btn-cancel,
+[data-theme="dark"] .admin-form-actions .btn-secondary {
+  background-color: #2a201b !important;
+  color: #f5ede4 !important;
+  border-color: #5c473c !important;
+}
+
+[data-theme="dark"] footer {
+  background-color: #17110f !important;
+  border-top-color: #3d2f28 !important;
+  color: #baa79c !important;
+}
+
+[data-theme="dark"] footer > nav ul li a {
+  color: #f5ede4 !important;
+}
+
+[data-theme="dark"] footer > nav ul li a:hover {
+  color: #e6b15c !important;
 }
 
 
