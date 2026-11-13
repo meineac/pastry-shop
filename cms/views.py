@@ -502,3 +502,12 @@ def contacts_api_add_view(request):
 # --- PRIVACY POLICY ---
 def privacy_policy_view(request):
     return render(request, 'cms/privacy_policy.html')
+
+
+# --- JS LAB (LR3) ---
+def js_lab_view(request):
+    """
+    Renders the dedicated JS Lab page for LR3 JavaScript study tasks.
+    """
+    return render(request, 'cms/js_lab.html')
+

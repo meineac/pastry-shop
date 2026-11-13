@@ -19,6 +19,7 @@ urlpatterns = [
     re_path(r'^reviews/(?P<pk>\d+)/edit/$', views.review_edit_view, name='review_edit'),
     re_path(r'^reviews/(?P<pk>\d+)/delete/$', views.review_delete_view, name='review_delete'),
     re_path(r'^promo-codes/$', views.promo_codes_list_view, name='promo_codes'),
+    re_path(r'^js-lab/$', views.js_lab_view, name='js_lab'),
 ]
 
 # Admin CRUD urls

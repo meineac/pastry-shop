@@ -1,0 +1,82 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}JS Lab — Pastry Shop{% endblock %}
+
+{% block content %}
+<div class="js-lab-container">
+    <header class="js-lab-header">
+        <h1>Laboratory Work 3 — JavaScript</h1>
+        <p class="js-lab-subtitle">Interactive web capabilities &amp; practical assignments (Variant 24)</p>
+    </header>
+
+    <!-- Navigation jump anchors for LR3 tasks -->
+    <nav class="js-lab-nav" aria-label="JS Lab navigation">
+        <a href="#task-4" class="lab-nav-link active">4. &lt;textarea&gt; Generator (Var. 24)</a>
+        <a href="#task-7" class="lab-nav-link disabled" title="To be implemented">7. Age Calculator</a>
+        <a href="#task-8" class="lab-nav-link disabled" title="To be implemented">8. OOP Subscribers (Var. 24)</a>
+        <a href="#task-9" class="lab-nav-link disabled" title="To be implemented">9. Web APIs</a>
+        <a href="#task-10" class="lab-nav-link disabled" title="To be implemented">10. Chart.js Graphs (Var. 24)</a>
+        <a href="#task-11" class="lab-nav-link disabled" title="To be implemented">11. Animations (Var. 24)</a>
+    </nav>
+
+    <!-- ====================================================================
+         TASK 4 (VARIANT 24): Dynamic Form Element Generator (<textarea>)
+         ==================================================================== -->
+    <section id="task-4" class="lab-section card-box" aria-labelledby="task-4-title">
+        <div class="lab-section-header">
+            <span class="badge-variant">Variant 24</span>
+            <h2 id="task-4-title">4. Dynamic Form Element Generator: &lt;textarea&gt;</h2>
+        </div>
+
+        <div class="task-description-box">
+            <p>
+                <strong>Task Requirement:</strong> Checking the toggle dynamically generates a form element
+                (<strong>&lt;textarea&gt;</strong>) with interactive attribute configuration
+                (<code>name</code>, <code>rows</code>, <code>cols</code>, <code>placeholder</code>,
+                <code>maxlength</code>, <code>wrap</code>, <code>readonly</code>), which are generated simultaneously
+                with the element. Supports creating multiple elements, deleting individual elements,
+                and persisting all generated elements across page reloads in <code>localStorage</code>.
+            </p>
+        </div>
+
+        <!-- Main trigger controls -->
+        <div class="generator-main-controls">
+            <div class="trigger-checkbox-wrapper">
+                <label class="custom-toggle-label" for="generatorTriggerCheckbox">
+                    <input type="checkbox" id="generatorTriggerCheckbox" class="custom-toggle-input">
+                    <span class="custom-toggle-switch"></span>
+                    <span class="custom-toggle-text">
+                        <strong>Enable &lt;textarea&gt; element generation</strong>
+                        <small class="text-muted">Turn on the toggle switch to create a new textarea element</small>
+                    </span>
+                </label>
+            </div>
+
+            <div class="generator-actions" id="generatorActionsBar" style="display: none;">
+                <button type="button" id="addMoreTextareaBtn" class="btn btn-primary" title="Add another textarea element">
+                    <span aria-hidden="true">+</span> Add another &lt;textarea&gt;
+                </button>
+                <button type="button" id="clearAllTextareasBtn" class="btn btn-outline-danger" title="Remove all generated elements">
+                    Clear all (<span id="textareasCountBadge">0</span>)
+                </button>
+            </div>
+        </div>
+
+        <!-- Empty state placeholder when no textareas are active -->
+        <div id="generatorEmptyState" class="empty-state-box">
+            <div class="empty-state-icon" aria-hidden="true">📝</div>
+            <h3>No generated elements yet</h3>
+            <p>Turn on the toggle switch above to generate a <code>&lt;textarea&gt;</code> element and interactively configure its attributes.</p>
+        </div>
+
+        <!-- Container for dynamically generated textarea cards -->
+        <div id="textareaItemsContainer" class="generated-items-grid" aria-live="polite"></div>
+    </section>
+</div>
+{% endblock content %}
+
+{% block extra_js %}
+<script src="{% static 'js/form_generator.js' %}" defer></script>
+{% endblock %}
+

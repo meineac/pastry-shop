@@ -37,6 +37,7 @@
             <a href="{% url 'cms:reviews' %}" accesskey="r">Reviews</a>
             <a href="{% url 'cms:promo_codes' %}" accesskey="o">Promo Codes</a>
             <a href="{% url 'catalog:product_list' %}" accesskey="g">Catalog</a>
+            <a href="{% url 'cms:js_lab' %}" accesskey="j" class="nav-js-lab">JS Lab</a>
             {% if request.user.is_authenticated %}
                 <a href="{% url 'profile' %}" accesskey="u">Profile</a>
                 {% if request.user.role == 'CUSTOMER' %}
@@ -80,6 +81,7 @@
                 <li><a href="{% url 'catalog:product_list' %}" accesskey="7">Catalog</a></li>
                 <li><a href="{% url 'cms:reviews' %}" accesskey="8">Reviews</a></li>
                 <li><a href="{% url 'cms:promo_codes' %}" accesskey="9">Promo Codes</a></li>
+                <li><a href="{% url 'cms:js_lab' %}">JS Lab</a></li>
             </ul>
         </nav>
         <address itemprop="address" itemscope itemtype="https://schema.org/PostalAddress">
