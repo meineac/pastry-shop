@@ -4,21 +4,17 @@
  *
  * Requirements:
  * 1. Request user's date of birth.
- * 2. Calculate the exact age in full completed years.
+ * 2. Calculate exact age in full completed years.
  * 3. Display the day of the week of the entered birth date for adults (age >= 18).
- * 4. Trigger a browser alert requesting parental permission to use the website if the user is a minor (age < 18).
- * 5. Everything in English, simple, clean, and robust.
+ * 4. Trigger an alert requesting parental permission if the user is a minor (age < 18).
+ *
+ * Implementation:
+ * Clean, safe DOM manipulation using textContent and pre-structured HTML templates.
+ * Zero raw HTML string injection.
  */
 
 (function() {
     'use strict';
-
-    // DOM Elements
-    let form = null;
-    let birthDateInput = null;
-    let resultContainer = null;
-    let resetBtn = null;
-    let presetButtons = null;
 
     const WEEKDAYS = [
         'Sunday',
@@ -30,11 +26,37 @@
         'Saturday'
     ];
 
+    // DOM Elements
+    let form = null;
+    let birthDateInput = null;
+    let resetBtn = null;
+    let presetButtons = null;
+
+    // Results container and cards
+    let resultContainer = null;
+    let adultResultCard = null;
+    let minorResultCard = null;
+    let errorResultCard = null;
+
+    // Adult card fields
+    let adultAgeVal = null;
+    let adultDayVal = null;
+    let adultDateVal = null;
+    let adultMsgDay = null;
+    let adultTimestamp = null;
+
+    // Minor card fields
+    let minorAgeVal = null;
+    let minorDayVal = null;
+    let minorDateVal = null;
+    let minorTimestamp = null;
+
+    // Error card fields
+    let errorResultTitle = null;
+    let errorResultMessage = null;
+
     /**
      * Calculate age in full completed years
-     * @param {Date} birthDate
-     * @param {Date} currentDate
-     * @returns {number}
      */
     function calculateAge(birthDate, currentDate) {
         let age = currentDate.getFullYear() - birthDate.getFullYear();
@@ -57,50 +79,57 @@
     }
 
     /**
-     * Escape special HTML characters
+     * Hide all result cards
      */
-    function escapeHtml(str) {
-        if (!str) return '';
-        return String(str)
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#039;');
+    function hideAllResults() {
+        if (!resultContainer) return;
+        resultContainer.hidden = true;
+        adultResultCard.hidden = true;
+        minorResultCard.hidden = true;
+        errorResultCard.hidden = true;
     }
 
     /**
-     * Process birth date calculation and display results
+     * Show Error Card
+     */
+    function showError(title, message) {
+        hideAllResults();
+        errorResultTitle.textContent = title;
+        errorResultMessage.textContent = message;
+        errorResultCard.hidden = false;
+        resultContainer.hidden = false;
+    }
+
+    /**
+     * Process birth date calculation and update UI
      */
     function processDate(dateString) {
         if (!dateString) {
-            renderMessage('error', 'Date Required', 'Please select or enter your date of birth.');
+            showError('Date Required', 'Please select or enter your date of birth.');
             return;
         }
 
-        // Parse date values explicitly to avoid timezone off-by-one errors
         const parts = dateString.split('-');
         if (parts.length !== 3) {
-            renderMessage('error', 'Invalid Format', 'Please enter a valid date in YYYY-MM-DD format.');
+            showError('Invalid Format', 'Please enter a valid date in YYYY-MM-DD format.');
             return;
         }
 
         const year = parseInt(parts[0], 10);
-        const month = parseInt(parts[1], 10) - 1; // 0-indexed month
+        const month = parseInt(parts[1], 10) - 1;
         const day = parseInt(parts[2], 10);
 
         const birthDate = new Date(year, month, day);
         const now = new Date();
         const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-        // Validate date
         if (isNaN(birthDate.getTime())) {
-            renderMessage('error', 'Invalid Date', 'Could not parse the selected date.');
+            showError('Invalid Date', 'Could not parse the selected date.');
             return;
         }
 
         if (birthDate > today) {
-            renderMessage('error', 'Future Date Detected', 'Birth date cannot be in the future. Please select a valid past date.');
+            showError('Future Date Detected', 'Birth date cannot be in the future. Please select a valid past date.');
             return;
         }
 
@@ -109,137 +138,70 @@
         const formattedBirthDate = formatDate(birthDate);
         const isAdult = age >= 18;
 
-        if (isAdult) {
-            // Requirement: "сообщение о дне недели введенной даты для совершеннолетних"
-            renderAdultResult(age, dayOfWeek, formattedBirthDate);
-        } else {
-            // Requirement: "алерт о необходимости разрешения родителей на использование сайта, если несовершеннолетний"
-            renderMinorResult(age, dayOfWeek, formattedBirthDate);
+        hideAllResults();
 
-            // Trigger the browser alert required by the assignment
+        if (isAdult) {
+            // Populate adult card fields
+            adultAgeVal.textContent = age;
+            adultDayVal.textContent = dayOfWeek;
+            adultDateVal.textContent = formattedBirthDate;
+            adultMsgDay.textContent = dayOfWeek;
+            adultTimestamp.textContent = 'Verified on ' + formatDate(now);
+
+            adultResultCard.hidden = false;
+            resultContainer.hidden = false;
+        } else {
+            // Populate minor card fields
+            minorAgeVal.textContent = age;
+            minorDayVal.textContent = dayOfWeek;
+            minorDateVal.textContent = formattedBirthDate;
+            minorTimestamp.textContent = 'Checked on ' + formatDate(now);
+
+            minorResultCard.hidden = false;
+            resultContainer.hidden = false;
+
+            // Trigger browser alert as required by specification
             setTimeout(function() {
                 alert(
                     'Parental Permission Required!\n\n' +
                     'You are ' + age + ' years old (minor).\n' +
-                    'You need permission from your parents or legal guardians to use this website and browse confectionery products.'
+                    'You need permission from your parents or legal guardians to use this website.'
                 );
             }, 50);
         }
-    }
-
-    /**
-     * Render result card for Adult (age >= 18)
-     */
-    function renderAdultResult(age, dayOfWeek, formattedDate) {
-        if (!resultContainer) return;
-
-        resultContainer.style.display = 'block';
-        resultContainer.innerHTML = `
-            <div class="age-result-card result-adult" role="region" aria-label="Adult verification result">
-                <div class="result-header">
-                    <span class="result-badge badge-adult">Adult (&ge; 18)</span>
-                    <span class="result-timestamp">Verified on ${formatDate(new Date())}</span>
-                </div>
-                <div class="result-body">
-                    <h3 class="result-title">Welcome to Pastry Shop!</h3>
-                    <div class="result-stat-grid">
-                        <div class="stat-item">
-                            <span class="stat-label">Calculated Age</span>
-                            <span class="stat-value"><strong>${age}</strong> full years</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">Day of the Week</span>
-                            <span class="stat-value highlight-day"><strong>${escapeHtml(dayOfWeek)}</strong></span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">Birth Date</span>
-                            <span class="stat-value">${escapeHtml(formattedDate)}</span>
-                        </div>
-                    </div>
-                    <div class="result-notice notice-success">
-                        <p>
-                            🎉 <strong>Day of Week Message:</strong> You were born on a <strong>${escapeHtml(dayOfWeek)}</strong>!
-                            As a verified adult (18+), you have full access to our online bakery catalog, ordering, and customer features.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        `;
 
         resultContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 
     /**
-     * Render result card for Minor (age < 18)
-     */
-    function renderMinorResult(age, dayOfWeek, formattedDate) {
-        if (!resultContainer) return;
-
-        resultContainer.style.display = 'block';
-        resultContainer.innerHTML = `
-            <div class="age-result-card result-minor" role="region" aria-label="Minor verification result">
-                <div class="result-header">
-                    <span class="result-badge badge-minor">Minor (&lt; 18)</span>
-                    <span class="result-timestamp">Checked on ${formatDate(new Date())}</span>
-                </div>
-                <div class="result-body">
-                    <h3 class="result-title text-danger">Parental Permission Required</h3>
-                    <div class="result-stat-grid">
-                        <div class="stat-item">
-                            <span class="stat-label">Calculated Age</span>
-                            <span class="stat-value"><strong>${age}</strong> years old</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">Day of Birth</span>
-                            <span class="stat-value"><strong>${escapeHtml(dayOfWeek)}</strong></span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">Birth Date</span>
-                            <span class="stat-value">${escapeHtml(formattedDate)}</span>
-                        </div>
-                    </div>
-                    <div class="result-notice notice-danger">
-                        <p>
-                            ⚠️ <strong>Attention:</strong> Because you are under 18 years of age, you are required to have
-                            explicit permission from a parent or legal guardian to use this website.
-                            A browser alert has also been displayed.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        `;
-
-        resultContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
-
-    /**
-     * Render general validation/error message
-     */
-    function renderMessage(type, title, text) {
-        if (!resultContainer) return;
-
-        resultContainer.style.display = 'block';
-        resultContainer.innerHTML = `
-            <div class="age-result-card result-${type}">
-                <h4 style="margin: 0 0 0.35rem 0; color: var(--color-primary);">${escapeHtml(title)}</h4>
-                <p style="margin: 0; color: var(--color-text);">${escapeHtml(text)}</p>
-            </div>
-        `;
-    }
-
-    /**
-     * Initialize the component
+     * Initialize DOM references and event listeners
      */
     function init() {
         form = document.getElementById('ageCalculatorForm');
         birthDateInput = document.getElementById('birthDateInput');
-        resultContainer = document.getElementById('ageResultContainer');
         resetBtn = document.getElementById('resetAgeBtn');
         presetButtons = document.querySelectorAll('.age-preset-btn');
 
-        if (!form || !birthDateInput) {
-            return;
-        }
+        resultContainer = document.getElementById('ageResultContainer');
+        adultResultCard = document.getElementById('adultResultCard');
+        minorResultCard = document.getElementById('minorResultCard');
+        errorResultCard = document.getElementById('errorResultCard');
+
+        adultAgeVal = document.getElementById('adultAgeVal');
+        adultDayVal = document.getElementById('adultDayVal');
+        adultDateVal = document.getElementById('adultDateVal');
+        adultMsgDay = document.getElementById('adultMsgDay');
+        adultTimestamp = document.getElementById('adultTimestamp');
+
+        minorAgeVal = document.getElementById('minorAgeVal');
+        minorDayVal = document.getElementById('minorDayVal');
+        minorDateVal = document.getElementById('minorDateVal');
+        minorTimestamp = document.getElementById('minorTimestamp');
+
+        errorResultTitle = document.getElementById('errorResultTitle');
+        errorResultMessage = document.getElementById('errorResultMessage');
+
+        if (!form || !birthDateInput) return;
 
         // Restrict input max to today
         const now = new Date();
@@ -248,26 +210,23 @@
         const dd = String(now.getDate()).padStart(2, '0');
         birthDateInput.max = `${yyyy}-${mm}-${dd}`;
 
-        // Handle form submission
+        // Form submission
         form.addEventListener('submit', function(e) {
             e.preventDefault();
             processDate(birthDateInput.value);
         });
 
-        // Handle Reset
+        // Form reset
         if (resetBtn) {
             resetBtn.addEventListener('click', function() {
                 birthDateInput.value = '';
-                if (resultContainer) {
-                    resultContainer.style.display = 'none';
-                    resultContainer.innerHTML = '';
-                }
+                hideAllResults();
                 birthDateInput.focus();
             });
         }
 
-        // Handle quick test preset buttons
-        if (presetButtons && presetButtons.length > 0) {
+        // Test presets
+        if (presetButtons) {
             presetButtons.forEach(function(btn) {
                 btn.addEventListener('click', function() {
                     const yearsAgo = parseInt(this.getAttribute('data-years-ago'), 10);
@@ -286,7 +245,6 @@
         }
     }
 
-    // Attach to DOMContentLoaded or run immediately if ready
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', init);
     } else {

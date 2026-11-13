@@ -13,8 +13,8 @@
     <!-- Navigation jump anchors for LR3 tasks -->
     <nav class="js-lab-nav" aria-label="JS Lab navigation">
         <a href="#task-4" class="lab-nav-link">4. &lt;textarea&gt; Generator (Var. 24)</a>
-        <a href="#task-7" class="lab-nav-link active">7. Age Calculator</a>
-        <a href="#task-8" class="lab-nav-link disabled" title="To be implemented">8. OOP Subscribers (Var. 24)</a>
+        <a href="#task-7" class="lab-nav-link">7. Age Calculator</a>
+        <a href="#task-8" class="lab-nav-link">8. OOP Subscribers (Var. 24)</a>
         <a href="#task-9" class="lab-nav-link disabled" title="To be implemented">9. Web APIs</a>
         <a href="#task-10" class="lab-nav-link disabled" title="To be implemented">10. Chart.js Graphs (Var. 24)</a>
         <a href="#task-11" class="lab-nav-link disabled" title="To be implemented">11. Animations (Var. 24)</a>
@@ -131,8 +131,234 @@
             </small>
         </form>
 
-        <!-- Container for calculated results -->
-        <div id="ageResultContainer" class="age-result-container" style="display: none;" aria-live="polite"></div>
+        <!-- Container for calculated results (pre-structured for clean DOM manipulation) -->
+        <div id="ageResultContainer" class="age-result-container" hidden aria-live="polite">
+            <!-- Adult Result Card -->
+            <div id="adultResultCard" class="age-result-card result-adult" hidden>
+                <div class="result-header">
+                    <span class="result-badge badge-adult">Adult (&ge; 18)</span>
+                    <span class="result-timestamp" id="adultTimestamp"></span>
+                </div>
+                <div class="result-body">
+                    <h3 class="result-title">Welcome to Pastry Shop!</h3>
+                    <div class="result-stat-grid">
+                        <div class="stat-item">
+                            <span class="stat-label">Calculated Age</span>
+                            <span class="stat-value"><strong id="adultAgeVal"></strong> full years</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Day of the Week</span>
+                            <span class="stat-value highlight-day"><strong id="adultDayVal"></strong></span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Birth Date</span>
+                            <span class="stat-value" id="adultDateVal"></span>
+                        </div>
+                    </div>
+                    <div class="result-notice notice-success">
+                        <p>
+                            🎉 <strong>Day of Week Message:</strong> You were born on a <strong id="adultMsgDay"></strong>!
+                            As a verified adult (18+), you have full access to our online bakery catalog, ordering, and customer features.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Minor Result Card -->
+            <div id="minorResultCard" class="age-result-card result-minor" hidden>
+                <div class="result-header">
+                    <span class="result-badge badge-minor">Minor (&lt; 18)</span>
+                    <span class="result-timestamp" id="minorTimestamp"></span>
+                </div>
+                <div class="result-body">
+                    <h3 class="result-title text-danger">Parental Permission Required</h3>
+                    <div class="result-stat-grid">
+                        <div class="stat-item">
+                            <span class="stat-label">Calculated Age</span>
+                            <span class="stat-value"><strong id="minorAgeVal"></strong> years old</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Day of Birth</span>
+                            <span class="stat-value"><strong id="minorDayVal"></strong></span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Birth Date</span>
+                            <span class="stat-value" id="minorDateVal"></span>
+                        </div>
+                    </div>
+                    <div class="result-notice notice-danger">
+                        <p>
+                            ⚠️ <strong>Attention:</strong> Because you are under 18 years of age, you are required to have
+                            explicit permission from a parent or legal guardian to use this website.
+                            A browser alert has also been displayed.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Error Result Card -->
+            <div id="errorResultCard" class="age-result-card result-error" hidden>
+                <h4 id="errorResultTitle" style="margin: 0 0 0.35rem 0; color: var(--color-primary);"></h4>
+                <p id="errorResultMessage" style="margin: 0; color: var(--color-text);"></p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ====================================================================
+         TASK 8 (VARIANT 24): OOP Inheritance (Subscribers: Calls & Duration)
+         ==================================================================== -->
+    <section id="task-8" class="lab-section card-box" aria-labelledby="task-8-title">
+        <div class="lab-section-header">
+            <span class="badge-variant">Variant 24</span>
+            <h2 id="task-8-title">8. Cellular Network Subscribers (OOP Inheritance)</h2>
+        </div>
+
+        <div class="task-description-box">
+            <p>
+                <strong>Task Requirement (Variant 24):</strong> Implement an algorithm to analyze an array of
+                cellular subscriber objects (<code>operator</code>, <code>phone</code>, <code>callsCount</code> in-network,
+                <code>totalDuration</code> in minutes) to find all subscribers with the
+                <strong>highest number of calls inside the network at the lowest average duration</strong>.
+            </p>
+            <p style="margin-top: 0.5rem;">
+                <strong>Architectural Requirement:</strong> Developed using a Base Class (<code>Abonent</code>: operator, phone)
+                and a Derived Class (<code>CellularAbonent</code>: adds calls count and total duration), each containing 5 methods
+                including getters/setters, form addition, array table rendering, and algorithm result display.
+                Dual implementation: <strong>1) Functional Prototypal Inheritance</strong> and <strong>2) ES6 class/extends</strong>.
+            </p>
+        </div>
+
+        <!-- Paradigm Switcher -->
+        <div class="oop-paradigm-selector card-box-inner">
+            <span class="selector-title">Select OOP Implementation Paradigm:</span>
+            <div class="paradigm-options">
+                <label class="paradigm-radio-label">
+                    <input type="radio" name="oop_paradigm" value="es6" checked>
+                    <span class="paradigm-radio-custom"></span>
+                    <span class="paradigm-text">
+                        <strong>ES6 Class Syntax</strong> (<code>class</code> &amp; <code>extends</code>)
+                    </span>
+                </label>
+                <label class="paradigm-radio-label">
+                    <input type="radio" name="oop_paradigm" value="proto">
+                    <span class="paradigm-radio-custom"></span>
+                    <span class="paradigm-text">
+                        <strong>Prototypal Inheritance</strong> (<code>function</code> &amp; <code>Object.create</code>)
+                    </span>
+                </label>
+            </div>
+            <div class="current-paradigm-indicator">
+                Active Architecture: <span id="currentOopModeBadge" class="mode-badge">ES6 Syntax (class/extends)</span>
+            </div>
+        </div>
+
+        <!-- Form for adding a subscriber -->
+        <form id="addSubscriberForm" class="subscriber-add-form" novalidate>
+            <h3 class="form-title">Add New Subscriber Object</h3>
+            <div class="subscriber-form-grid">
+                <div class="form-group">
+                    <label for="subOperatorSelect">Operator:</label>
+                    <select id="subOperatorSelect" name="operator" class="form-control" required>
+                        <option value="A1">A1</option>
+                        <option value="MTS">MTS</option>
+                        <option value="life:)">life:)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="subPhoneInput">Phone Number:</label>
+                    <input type="tel"
+                           id="subPhoneInput"
+                           name="phone"
+                           class="form-control"
+                           placeholder="+375 (29) 111-22-33"
+                           required>
+                </div>
+
+                <div class="form-group">
+                    <label for="subCallsInput">In-Network Calls:</label>
+                    <input type="number"
+                           id="subCallsInput"
+                           name="callsCount"
+                           class="form-control"
+                           min="1"
+                           value="150"
+                           required>
+                </div>
+
+                <div class="form-group">
+                    <label for="subDurationInput">Total Duration (min):</label>
+                    <input type="number"
+                           id="subDurationInput"
+                           name="totalDuration"
+                           class="form-control"
+                           min="1"
+                           step="0.5"
+                           value="300"
+                           required>
+                </div>
+
+                <div class="form-group form-group-action">
+                    <button type="submit" id="addSubscriberBtn" class="btn btn-primary btn-add-sub">
+                        + Add Subscriber
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        <!-- Subscribers Table Controls & Action Bar -->
+        <div class="subscribers-table-header">
+            <h3>Subscribers In-Memory Array (<span id="subscribersCountDisplay">6</span>)</h3>
+            <div class="table-actions">
+                <button type="button" id="findBestSubscribersBtn" class="btn btn-primary btn-calc-algorithm">
+                    ⚡ Find Best Subscribers (Run Algorithm)
+                </button>
+                <button type="button" id="resetSubscribersBtn" class="btn btn-reset-data">
+                    Reset to Default Data
+                </button>
+            </div>
+        </div>
+
+        <!-- Structured Table for Subscribers (populated via standard DOM API) -->
+        <div class="subscribers-table-wrapper">
+            <div class="table-responsive">
+                <table class="lab-data-table subscribers-table" id="subscribersTable">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Operator</th>
+                            <th scope="col">Phone Number</th>
+                            <th scope="col">Calls In-Network</th>
+                            <th scope="col">Total Duration</th>
+                            <th scope="col">Avg Duration</th>
+                            <th scope="col">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="subscribersTableBody"></tbody>
+                </table>
+            </div>
+            <div id="subscribersEmptyMessage" class="table-empty" hidden>
+                No subscribers available. Add one using the form above.
+            </div>
+        </div>
+
+        <!-- Container for algorithm results -->
+        <div id="oopResultContainer" class="oop-result-container" hidden aria-live="polite">
+            <div class="oop-result-card" role="region" aria-label="Subscriber analysis results">
+                <div class="result-header">
+                    <span class="result-badge badge-adult">Algorithm Result (Variant 24)</span>
+                    <span class="result-timestamp">Architecture: <strong id="winnerArchitectureBadge"></strong></span>
+                </div>
+                <div class="result-body">
+                    <h3 class="result-title">Best Subscriber(s) Found</h3>
+                    <p class="algorithm-criteria">
+                        Criteria: <strong>Highest number of in-network calls</strong> (<span id="winnerCriteriaCalls"></span>)
+                        with the <strong>lowest average duration</strong> (<span id="winnerCriteriaAvg"></span> min/call).
+                    </p>
+                    <div id="winnersGridContainer" class="winners-grid"></div>
+                </div>
+            </div>
+        </div>
     </section>
 </div>
 {% endblock content %}
@@ -140,5 +366,6 @@
 {% block extra_js %}
 <script src="{% static 'js/form_generator.js' %}" defer></script>
 <script src="{% static 'js/age_calculator.js' %}" defer></script>
+<script src="{% static 'js/cellular_oop.js' %}" defer></script>
 {% endblock %}
 

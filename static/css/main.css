@@ -7994,3 +7994,468 @@ td:empty::after {
   border-color: rgba(231, 76, 60, 0.3);
 }
 
+/* ==========================================================================
+   21. JS Lab Task 8: Cellular Network Subscribers OOP & Algorithm (Variant 24)
+   ========================================================================== */
+.card-box-inner {
+  background-color: var(--color-bg-alt);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.selector-title {
+  display: block;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--color-text);
+  margin-bottom: 0.75rem;
+}
+
+.paradigm-options {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.85rem;
+}
+
+.paradigm-radio-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.paradigm-radio-label input[type="radio"] {
+  cursor: pointer;
+  accent-color: var(--color-primary);
+  width: 18px;
+  height: 18px;
+}
+
+.paradigm-text {
+  font-size: 0.95rem;
+  color: var(--color-text);
+}
+
+.paradigm-text code {
+  font-family: var(--font-mono);
+  background-color: rgba(139, 58, 43, 0.1);
+  padding: 0.1rem 0.3rem;
+  border-radius: var(--radius-sm);
+}
+
+.current-paradigm-indicator {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  border-top: 1px dashed var(--color-border-dark);
+  padding-top: 0.6rem;
+}
+
+.mode-badge {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  background-color: var(--color-primary);
+  color: #ffffff;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: 0.8rem;
+  margin-left: 0.35rem;
+}
+
+/* Subscriber Add Form */
+.subscriber-add-form {
+  background-color: var(--color-card-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.75rem;
+}
+
+.form-title {
+  font-family: var(--font-serif);
+  font-size: 1.15rem;
+  margin: 0 0 1rem 0;
+  color: var(--color-primary);
+}
+
+.subscriber-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)) 160px;
+  gap: 1rem;
+  align-items: flex-end;
+}
+
+.subscriber-form-grid .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.subscriber-form-grid label {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.subscriber-form-grid .form-control {
+  padding: 0.55rem 0.75rem;
+  border: 1px solid var(--color-border-dark);
+  border-radius: var(--radius-sm);
+  font-size: 0.95rem;
+  background-color: var(--color-card-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+}
+
+.subscriber-form-grid .form-control:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(139, 58, 43, 0.2);
+}
+
+.btn-add-sub {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  font-size: 0.92rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Subscribers Table Section */
+.subscribers-table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.subscribers-table-header h3 {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  margin: 0;
+  color: var(--color-text);
+}
+
+.table-actions {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.btn-calc-algorithm {
+  background-color: #27ae60;
+  border-color: #27ae60;
+  color: #ffffff;
+  font-weight: 600;
+  padding: 0.55rem 1.15rem;
+  font-size: 0.92rem;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: all 0.2s ease;
+}
+
+.btn-calc-algorithm:hover {
+  background-color: #219653;
+  border-color: #219653;
+}
+
+.btn-reset-data {
+  background-color: transparent;
+  border: 1px solid var(--color-border-dark);
+  color: var(--color-text);
+  padding: 0.55rem 0.9rem;
+  font-size: 0.88rem;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: all 0.2s ease;
+}
+
+.btn-reset-data:hover {
+  background-color: var(--color-bg-alt);
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.subscribers-table-wrapper {
+  margin-bottom: 1.75rem;
+}
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-sm);
+}
+
+.subscribers-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: var(--color-card-bg);
+  font-size: 0.92rem;
+  text-align: left;
+}
+
+.subscribers-table th {
+  background-color: var(--color-bg-alt);
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  color: var(--color-text);
+  border-bottom: 2px solid var(--color-border);
+  white-space: nowrap;
+}
+
+.subscribers-table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text);
+  vertical-align: middle;
+}
+
+.subscribers-table tbody tr:hover {
+  background-color: rgba(201, 138, 44, 0.06);
+}
+
+.table-empty {
+  padding: 2rem;
+  text-align: center;
+  color: var(--color-text-muted);
+  background-color: var(--color-bg-alt);
+  border-radius: var(--radius-sm);
+  border: 1px dashed var(--color-border);
+}
+
+/* Badges & Pills */
+.operator-badge {
+  display: inline-block;
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.operator-a1 {
+  background-color: #c0392b;
+  color: #ffffff;
+}
+
+.operator-mts {
+  background-color: #d63031;
+  color: #ffffff;
+}
+
+.operator-life\:\) {
+  background-color: #0984e3;
+  color: #ffffff;
+}
+
+.calls-count-pill {
+  display: inline-block;
+  padding: 0.15rem 0.55rem;
+  background-color: rgba(139, 58, 43, 0.12);
+  color: var(--color-primary);
+  font-weight: 700;
+  border-radius: var(--radius-full);
+}
+
+.btn-delete-subscriber {
+  background: transparent;
+  border: 1px solid transparent;
+  color: #c0392b;
+  font-size: 1.25rem;
+  line-height: 1;
+  padding: 0.2rem 0.5rem;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: all 0.2s ease;
+}
+
+.btn-delete-subscriber:hover {
+  background-color: rgba(192, 57, 43, 0.1);
+  border-color: #c0392b;
+}
+
+/* Algorithm Winner Result Card */
+.oop-result-card {
+  padding: 1.5rem 1.75rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  border-left: 6px solid #27ae60;
+  background-color: rgba(39, 174, 96, 0.04);
+  box-shadow: var(--shadow-sm);
+  animation: fadeInAge 0.3s ease-out;
+}
+
+.algorithm-criteria {
+  font-size: 0.95rem;
+  color: var(--color-text);
+  margin-bottom: 1.25rem;
+  padding: 0.65rem 0.9rem;
+  background-color: var(--color-card-bg);
+  border-left: 3px solid var(--color-secondary);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+.winners-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.25rem;
+}
+
+.winner-card {
+  padding: 1.25rem;
+  background-color: var(--color-card-bg);
+  border: 2px solid #27ae60;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-sm);
+}
+
+.winner-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.85rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.winner-phone {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--color-text);
+}
+
+.winner-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+}
+
+.winner-stat {
+  display: flex;
+  flex-direction: column;
+  padding: 0.4rem;
+  background-color: var(--color-bg-alt);
+  border-radius: var(--radius-sm);
+  text-align: center;
+}
+
+.stat-lbl {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-bottom: 0.2rem;
+}
+
+.stat-num {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.stat-num.highlight-avg {
+  color: #27ae60;
+  font-weight: 700;
+}
+
+/* Dark Theme Overrides for Task 8 */
+[data-theme="dark"] .card-box-inner {
+  background-color: #221a17;
+  border-color: #3d2e27;
+}
+
+[data-theme="dark"] .subscriber-add-form {
+  background-color: #261e1b;
+  border-color: #3d2e27;
+}
+
+[data-theme="dark"] .subscriber-form-grid .form-control {
+  background-color: #1a1412;
+  border-color: #554137;
+  color: #f5ede3;
+}
+
+[data-theme="dark"] .subscriber-form-grid .form-control:focus {
+  border-color: #e6a090;
+  box-shadow: 0 0 0 2px rgba(230, 160, 144, 0.25);
+}
+
+[data-theme="dark"] .subscribers-table {
+  background-color: #221a17;
+}
+
+[data-theme="dark"] .subscribers-table th {
+  background-color: #1a1412;
+  border-bottom-color: #3d2e27;
+}
+
+[data-theme="dark"] .subscribers-table td {
+  border-bottom-color: #3d2e27;
+}
+
+[data-theme="dark"] .subscribers-table tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+[data-theme="dark"] .table-responsive {
+  border-color: #3d2e27;
+}
+
+[data-theme="dark"] .table-empty {
+  background-color: #1a1412;
+  border-color: #3d2e27;
+}
+
+[data-theme="dark"] .btn-reset-data {
+  border-color: #554137;
+  color: #f5ede3;
+}
+
+[data-theme="dark"] .btn-reset-data:hover {
+  background-color: #332621;
+  border-color: #e6a090;
+  color: #e6a090;
+}
+
+[data-theme="dark"] .oop-result-card {
+  background-color: #221a17;
+  border-color: #3d2e27;
+  border-left-color: #2ecc71;
+}
+
+[data-theme="dark"] .algorithm-criteria {
+  background-color: #1a1412;
+  border-left-color: var(--color-secondary);
+}
+
+[data-theme="dark"] .winner-card {
+  background-color: #1a1412;
+  border-color: #2ecc71;
+}
+
+[data-theme="dark"] .winner-header {
+  border-bottom-color: #3d2e27;
+}
+
+[data-theme="dark"] .winner-stat {
+  background-color: #261e1b;
+}
+
+[data-theme="dark"] .stat-num.highlight-avg {
+  color: #2ecc71;
+}
+
+[data-theme="dark"] .calls-count-pill {
+  background-color: rgba(201, 138, 44, 0.2);
+  color: #ffd885;
+}
+
+
