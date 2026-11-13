@@ -1,4 +1,10 @@
+import re
+import time
+from datetime import datetime
 from django.shortcuts import render, redirect, get_object_or_404
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from django.db import transaction
 from django.urls import reverse
 from django.db.models import Q
 from django.contrib import messages
@@ -6,7 +12,7 @@ from django.utils import timezone as dj_tz
 
 from .models import News, CompanyInfo, Vacancy, QaA, Review, NewsTag, VacancyTag, QaATag, ReviewTag, Partner, PromotionalBanner
 from .forms import ReviewForm, CompanyInfoForm, NewsForm, VacancyForm, QaAForm, PromoCodeForm
-from users.models import StaffProfile
+from users.models import User, StaffProfile
 from purchasing.models import PromoCode, Order, OrderItem, Product
 from catalog.models import Product as CatalogProduct
 from users.decorators import role_required
@@ -360,8 +366,137 @@ def promo_code_delete_view(request, pk):
 
 # --- CONTACTS ---
 def contacts_list_view(request):
-    employees = StaffProfile.objects.all()
+    """
+    Renders the contacts page. For regular visitors, it shows store info, map,
+    and the employee cards. For authenticated admin users, it also enables
+    the interactive contacts directory table.
+    """
+    employees = StaffProfile.objects.select_related('user').all().order_by('id')
     return render(request, 'cms/contacts.html', {'employees': employees})
+
+
+def contacts_api_view(request):
+    """
+    JSON API endpoint returning all staff records from the database.
+    Used by the client-side interactive table to load records asynchronously.
+    """
+    employees = StaffProfile.objects.select_related('user').all().order_by('id')
+    staff_data = []
+    for emp in employees:
+        photo_url = emp.photo.url if emp.photo else ''
+        staff_data.append({
+            'id': emp.id,
+            'full_name': emp.user.get_full_name() or emp.user.username,
+            'first_name': emp.user.first_name,
+            'last_name': emp.user.last_name or emp.user.username,
+            'email': emp.user.email,
+            'position': emp.position,
+            'phone': emp.contact_details,
+            'date_of_birth': emp.date_of_birth.strftime('%Y-%m-%d') if emp.date_of_birth else '',
+            'url': emp.url,
+            'photo_url': photo_url,
+        })
+    return JsonResponse({'status': 'ok', 'staff': staff_data})
+
+
+@role_required(['ADMIN'])
+@require_POST
+def contacts_api_add_view(request):
+    """
+    Admin-only JSON API endpoint for creating a new employee in the database.
+    Accepts multipart/form-data for photo file upload and all required model fields.
+    Validates URL and phone number according to LR3 criteria.
+    """
+    first_name = request.POST.get('first_name', '').strip()
+    last_name = request.POST.get('last_name', '').strip()
+    email = request.POST.get('email', '').strip()
+    position = request.POST.get('position', '').strip()
+    phone = request.POST.get('phone', '').strip()
+    dob_str = request.POST.get('date_of_birth', '').strip()
+    url = request.POST.get('url', '').strip()
+    photo_file = request.FILES.get('photo')
+
+    # Ensure all required text fields are provided
+    if not (first_name and last_name and email and position and phone and dob_str and url):
+        return JsonResponse({
+            'status': 'error',
+            'message': 'All required fields (first name, last name, email, position, phone, date of birth, URL) must be filled.'
+        }, status=400)
+
+    # Criteria validation: URL must start with http:// or https:// and end with .php or .html
+    url_pattern = re.compile(r'^https?://.+\.(php|html)$', re.IGNORECASE)
+    if not url_pattern.match(url):
+        return JsonResponse({
+            'status': 'error',
+            'message': 'URL must start with http:// or https:// and end with .php or .html (e.g. http://site.ru/index.php).'
+        }, status=400)
+
+    # Criteria validation: Phone must start with +375 or 8, operator code with or without parens, rest with hyphens/spaces
+    phone_pattern = re.compile(r'^(?:\+375|8)\s*\(?\d{2}\)?[\s-]?\d{3}[\s-]?\d{2}[\s-]?\d{2}$')
+    if not phone_pattern.match(phone):
+        return JsonResponse({
+            'status': 'error',
+            'message': 'Phone must start with +375 or 8, followed by a valid 2-digit operator code and 7 digits (e.g. +375 (29) 111-22-33 or 80291112233).'
+        }, status=400)
+
+    # Validate date of birth
+    try:
+        dob = datetime.strptime(dob_str, '%Y-%m-%d').date()
+    except ValueError:
+        return JsonResponse({
+            'status': 'error',
+            'message': 'Invalid date of birth format. Expected YYYY-MM-DD.'
+        }, status=400)
+
+    # Generate a unique username for the staff user
+    base_username = re.sub(r'[^a-zA-Z0-9]', '', f"{first_name.lower()}_{last_name.lower()}")
+    if not base_username:
+        base_username = f"staff_{int(time.time())}"
+    username = base_username
+    counter = 1
+    while User.objects.filter(username=username).exists():
+        username = f"{base_username}{counter}"
+        counter += 1
+
+    with transaction.atomic():
+        user = User(
+            username=username,
+            first_name=first_name,
+            last_name=last_name,
+            email=email,
+            role=User.Role.STAFF,
+        )
+        user.set_password('staffpass123')
+        user.save()
+
+        profile = StaffProfile(
+            user=user,
+            position=position,
+            contact_details=phone,
+            date_of_birth=dob,
+            url=url,
+        )
+        if photo_file:
+            profile.photo = photo_file
+        profile.save()
+
+    photo_url = profile.photo.url if profile.photo else ''
+    return JsonResponse({
+        'status': 'ok',
+        'message': 'Employee created successfully.',
+        'employee': {
+            'id': profile.id,
+            'full_name': user.get_full_name() or user.username,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'email': user.email,
+            'position': profile.position,
+            'phone': profile.contact_details,
+            'date_of_birth': profile.date_of_birth.strftime('%Y-%m-%d'),
+            'url': profile.url,
+            'photo_url': photo_url,
+        }
+    })
 
 
 # --- PRIVACY POLICY ---

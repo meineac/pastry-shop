@@ -94,6 +94,7 @@ class StaffProfile(TimestampedModel):
                                   options={'quality': 85})
     contact_details = models.TextField()
     date_of_birth = models.DateField(validators=[validate_age_18_plus])
+    url = models.URLField(max_length=255, blank=True, default='', help_text="Personal page or website URL")
     my_clients = models.ManyToManyField(
         'CustomerProfile',
         blank=True,

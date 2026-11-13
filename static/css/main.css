@@ -6146,4 +6146,628 @@ td:empty::after {
   color: #e6b15c !important;
 }
 
+/* ==========================================================================
+   17. Admin Interactive Contacts Directory (LR3 Task 3)
+   ========================================================================== */
+.admin-contacts-section {
+  margin-top: 2.5rem;
+  padding: 2rem;
+  background-color: var(--color-card-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+
+.contacts-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.contacts-header-row h2 {
+  margin: 0;
+  font-family: var(--font-serif);
+  color: var(--color-primary);
+  font-size: 1.6rem;
+}
+
+.admin-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.btn-bonus {
+  background-color: var(--color-secondary);
+  color: #ffffff;
+  border: none;
+  padding: 0.6rem 1.25rem;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.btn-bonus:hover {
+  background-color: var(--color-secondary-hover);
+  transform: translateY(-1px);
+}
+
+.btn-reset {
+  background-color: transparent;
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border-dark);
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-reset:hover {
+  background-color: var(--color-bg-alt);
+  color: var(--color-text);
+}
+
+/* Toolbar */
+.contacts-toolbar {
+  margin-bottom: 1.5rem;
+}
+
+.contacts-toolbar .search-box {
+  display: flex;
+  gap: 0.5rem;
+  max-width: 600px;
+}
+
+.contacts-toolbar .search-input {
+  flex: 1;
+  padding: 0.6rem 0.9rem;
+  border: 1px solid var(--color-border-dark);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-size: 0.95rem;
+}
+
+.contacts-toolbar .search-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(139, 58, 43, 0.15);
+}
+
+/* Dropdown Add Employee Form */
+.add-employee-card {
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 1.75rem;
+  margin-bottom: 2rem;
+  animation: slideDownFade 0.3s ease-out forwards;
+}
+
+@keyframes slideDownFade {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.add-employee-card h3 {
+  margin-top: 0;
+  margin-bottom: 0.35rem;
+  font-family: var(--font-serif);
+  color: var(--color-primary);
+}
+
+.form-instructions {
+  font-size: 0.88rem;
+  color: var(--color-text-muted);
+  margin-bottom: 1.25rem;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.25rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.form-group.full-width {
+  grid-column: 1 / -1;
+}
+
+.form-group label {
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: var(--color-text);
+}
+
+.form-group input {
+  padding: 0.55rem 0.75rem;
+  border: 1px solid var(--color-border-dark);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-card-bg);
+  color: var(--color-text);
+  font-size: 0.95rem;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.field-hint {
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+}
+
+/* Validation Feedback & Requirements: Red Border and Pink Background */
+.input-invalid {
+  border: 2px solid #e74c3c !important;
+  background-color: #fde8e8 !important;
+  color: #2c221e !important;
+}
+
+.input-valid {
+  border: 2px solid #27ae60 !important;
+  background-color: #f0fdf4 !important;
+}
+
+.validation-feedback {
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.88rem;
+}
+
+.validation-feedback .error-msg {
+  color: #c0392b;
+  margin: 0.25rem 0;
+  font-weight: 500;
+}
+
+.validation-feedback .success-msg {
+  color: #27ae60;
+  margin: 0;
+  font-weight: 600;
+}
+
+.form-actions {
+  margin-top: 1.25rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.form-actions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Interactive Table */
+.table-responsive {
+  overflow-x: auto;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  margin-bottom: 1.5rem;
+}
+
+.contacts-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.92rem;
+  background-color: var(--color-card-bg);
+}
+
+.contacts-table th,
+.contacts-table td {
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid var(--color-border);
+  vertical-align: middle;
+}
+
+.contacts-table thead th {
+  background-color: var(--color-bg-alt);
+  color: var(--color-text);
+  font-weight: 600;
+  font-family: var(--font-sans);
+  border-bottom: 2px solid var(--color-border-dark);
+}
+
+.contacts-table th.sortable {
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.15s ease;
+}
+
+.contacts-table th.sortable:hover {
+  background-color: rgba(139, 58, 43, 0.08);
+}
+
+.contacts-table th.sort-asc,
+.contacts-table th.sort-desc {
+  color: var(--color-primary);
+  background-color: rgba(139, 58, 43, 0.12);
+}
+
+.sort-icon {
+  font-size: 0.8rem;
+  color: var(--color-primary);
+}
+
+.contacts-table tr.staff-row {
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.contacts-table tr.staff-row:hover {
+  background-color: rgba(201, 138, 44, 0.08);
+}
+
+.contacts-table tr.active-row {
+  background-color: rgba(139, 58, 43, 0.1) !important;
+  font-weight: 500;
+}
+
+.col-checkbox {
+  width: 44px;
+  text-align: center;
+}
+
+.col-checkbox input[type="checkbox"] {
+  cursor: pointer;
+  width: 17px;
+  height: 17px;
+}
+
+.col-photo {
+  width: 60px;
+  text-align: center;
+}
+
+.staff-table-thumb {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid var(--color-border);
+  display: block;
+  margin: 0 auto;
+}
+
+.emp-web-link {
+  color: var(--color-primary);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  display: inline-block;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.emp-web-link:hover {
+  color: var(--color-primary-hover);
+  transform: translateX(2px);
+}
+
+.no-data {
+  padding: 2.5rem 1rem;
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+/* Pagination Controls */
+.contacts-pagination {
+  margin-top: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.pagination-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.btn-page {
+  padding: 0.45rem 0.85rem;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-card-bg);
+  color: var(--color-text);
+  border-radius: var(--radius-sm);
+  font-size: 0.88rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-page:hover:not(:disabled) {
+  background-color: var(--color-bg-alt);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.btn-page.active {
+  background-color: var(--color-primary);
+  color: #ffffff;
+  border-color: var(--color-primary);
+  font-weight: 600;
+}
+
+.btn-page:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.pagination-info {
+  margin-left: 0.75rem;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+/* Selected Employee Details Block */
+.selected-details-card {
+  margin-top: 2rem;
+  padding: 1.75rem;
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-left: 4px solid var(--color-primary);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  animation: slideDownFade 0.25s ease-out forwards;
+}
+
+.employee-details-content {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.details-photo-box {
+  flex-shrink: 0;
+}
+
+.details-photo-large {
+  width: 140px;
+  height: 140px;
+  border-radius: var(--radius-md);
+  object-fit: cover;
+  border: 2px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+}
+
+.details-info-box {
+  flex: 1;
+  min-width: 250px;
+}
+
+.details-name {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  font-family: var(--font-serif);
+  color: var(--color-primary);
+  font-size: 1.5rem;
+}
+
+.details-info-box p {
+  margin: 0.4rem 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.details-info-box a {
+  color: var(--color-primary);
+  word-break: break-all;
+}
+
+/* Bonus Announcement Card */
+.bonus-announcement-card {
+  margin-top: 2rem;
+  background: linear-gradient(135deg, rgba(201, 138, 44, 0.12), rgba(139, 58, 43, 0.08));
+  border: 2px solid var(--color-secondary);
+  border-radius: var(--radius-lg);
+  padding: 1.75rem 2rem;
+  box-shadow: var(--shadow-md);
+  animation: slideDownFade 0.35s ease-out forwards;
+}
+
+.bonus-card-inner {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+}
+
+.bonus-icon {
+  font-size: 2.75rem;
+  line-height: 1;
+}
+
+.bonus-text-content h4 {
+  margin: 0 0 0.35rem 0;
+  font-family: var(--font-serif);
+  font-size: 1.35rem;
+  color: var(--color-primary);
+}
+
+.bonus-date {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  margin-bottom: 0.75rem;
+}
+
+.bonus-body {
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: 0.85rem;
+}
+
+.bonus-recipients {
+  font-size: 1.15rem;
+  color: var(--color-primary);
+  background-color: rgba(201, 138, 44, 0.15);
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-sm);
+  display: inline-block;
+  margin-bottom: 0.75rem;
+}
+
+.bonus-signature {
+  font-size: 0.85rem;
+  font-style: italic;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+/* Floating Toast Notification */
+.floating-notification {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  background-color: var(--color-text);
+  color: #ffffff;
+  padding: 0.85rem 1.4rem;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  font-size: 0.95rem;
+  font-weight: 500;
+  z-index: 9999;
+  opacity: 0;
+  transform: translateY(15px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: none;
+}
+
+.floating-notification.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.floating-notification.notif-success {
+  background-color: #27ae60;
+}
+
+.floating-notification.notif-error {
+  background-color: #c0392b;
+}
+
+/* Dark Theme Overrides for Contacts Directory */
+[data-theme="dark"] .admin-contacts-section {
+  background-color: #221a17 !important;
+  border-color: #3d2f28 !important;
+}
+
+[data-theme="dark"] .contacts-header-row {
+  border-bottom-color: #3d2f28 !important;
+}
+
+[data-theme="dark"] .contacts-toolbar .search-input {
+  background-color: #1a1412 !important;
+  border-color: #554137 !important;
+  color: #f5ede3 !important;
+}
+
+[data-theme="dark"] .add-employee-card {
+  background-color: #1a1412 !important;
+  border-color: #3d2f28 !important;
+}
+
+[data-theme="dark"] .form-group input {
+  background-color: #261e1b !important;
+  border-color: #554137 !important;
+  color: #f5ede3 !important;
+}
+
+[data-theme="dark"] .input-invalid {
+  border-color: #e74c3c !important;
+  background-color: #441b18 !important;
+  color: #fde8e8 !important;
+}
+
+[data-theme="dark"] .input-valid {
+  border-color: #27ae60 !important;
+  background-color: #163821 !important;
+}
+
+[data-theme="dark"] .contacts-table {
+  background-color: #221a17 !important;
+}
+
+[data-theme="dark"] .contacts-table thead th {
+  background-color: #2d221d !important;
+  color: #f5ede3 !important;
+  border-bottom-color: #554137 !important;
+}
+
+[data-theme="dark"] .contacts-table th,
+[data-theme="dark"] .contacts-table td {
+  border-bottom-color: #3d2f28 !important;
+  color: #f5ede3 !important;
+}
+
+[data-theme="dark"] .contacts-table tr.staff-row:hover {
+  background-color: rgba(201, 138, 44, 0.15) !important;
+}
+
+[data-theme="dark"] .contacts-table tr.active-row {
+  background-color: rgba(139, 58, 43, 0.25) !important;
+}
+
+[data-theme="dark"] .emp-web-link {
+  color: #e6b15c !important;
+}
+
+[data-theme="dark"] .emp-web-link:hover {
+  color: #f9d784 !important;
+}
+
+[data-theme="dark"] .btn-page {
+  background-color: #2d221d !important;
+  border-color: #4a382e !important;
+  color: #f5ede3 !important;
+}
+
+[data-theme="dark"] .btn-page.active {
+  background-color: var(--color-primary) !important;
+  color: #ffffff !important;
+}
+
+[data-theme="dark"] .btn-reset {
+  border-color: #554137 !important;
+  color: #baa79c !important;
+}
+
+[data-theme="dark"] .selected-details-card {
+  background-color: #1a1412 !important;
+  border-color: #3d2f28 !important;
+}
+
+[data-theme="dark"] .bonus-announcement-card {
+  background: linear-gradient(135deg, rgba(201, 138, 44, 0.2), rgba(139, 58, 43, 0.15)) !important;
+  border-color: var(--color-secondary) !important;
+}
+
+[data-theme="dark"] .bonus-recipients {
+  background-color: rgba(201, 138, 44, 0.3) !important;
+  color: #f9d784 !important;
+}
+
+
 

@@ -1,71 +1,191 @@
 {% extends 'core/base.html' %}
+{% load static %}
+
 {% block title %}Contacts — Pastry Shop{% endblock %}
 
 {% block content %}
 <div class="contacts-page">
-<h1>Contact Us</h1>
+    <h1>Contact Us</h1>
 
-<div class="contacts-layout">
-    <section class="store-info-card" aria-label="Store information">
-        <h2>Flagship Store</h2>
-        <address class="store-address">
-            <strong class="store-name">Pastry Shop</strong><br>
-            123 Baker Street, London, UK<br>
-            Phone: <a href="tel:+375291234567">+375 (29) 123-45-67</a><br>
-            Email: <a href="mailto:hello@pastryshop.example.com">hello@pastryshop.example.com</a><br>
-            <span class="store-hours">Opening hours: Monday&ndash;Saturday,
-            <time datetime="07:00">07:00</time>&ndash;<time datetime="20:00">20:00</time></span>
-        </address>
-    </section>
+    <div class="contacts-layout">
+        <section class="store-info-card" aria-label="Store information">
+            <h2>Flagship Store</h2>
+            <address class="store-address">
+                <strong class="store-name">Pastry Shop</strong><br>
+                123 Baker Street, London, UK<br>
+                Phone: <a href="tel:+375291234567">+375 (29) 123-45-67</a><br>
+                Email: <a href="mailto:hello@pastryshop.example.com">hello@pastryshop.example.com</a><br>
+                <span class="store-hours">Opening hours: Monday&ndash;Saturday,
+                <time datetime="07:00">07:00</time>&ndash;<time datetime="20:00">20:00</time></span>
+            </address>
+        </section>
 
-    <section aria-label="Map" class="store-map-card">
-        <h2>Find Us</h2>
-        <div class="map-container">
-            <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2482.891704627025!2d-0.15777852353720893!3d51.52369477181686!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x48761accd4d9cc93%3A0x79e7a96a4a2f8e29!2sBaker%20St%2C%20London!5e0!3m2!1sen!2suk!4v1700000000000!5m2!1sen!2suk"
-                width="600"
-                height="400"
-                title="Pastry Shop location — 123 Baker Street, London"
-                loading="lazy"
-                referrerpolicy="no-referrer-when-downgrade"
-                allowfullscreen
-                class="map-iframe">
-            </iframe>
-        </div>
-    </section>
-</div>
-
-<section aria-label="Our team" class="team-section">
-    <h2>Our Team</h2>
-    <ul class="team-flex-container">
-    {% for employee in employees %}
-        <li class="employee-card" itemscope itemtype="https://schema.org/Person">
-            {% if employee.photo %}
-            <figure class="employee-figure">
-                <img src="{{ employee.photo.url }}"
-                     alt="{{ employee.user.get_full_name|default:employee.user.username }}"
-                     width="120"
-                     srcset="{{ employee.photo_small.url }} 120w, {{ employee.photo_medium.url }} 240w"
-                     sizes="120px"
-                     itemprop="image"
-                     class="employee-photo">
-                <figcaption>{{ employee.user.get_full_name|default:employee.user.username }}</figcaption>
-            </figure>
-            {% endif %}
-            <div class="employee-info">
-                <h3 itemprop="name" class="employee-name">{{ employee.user.get_full_name|default:employee.user.username }}</h3>
-                <p class="employee-position"><strong>Position:</strong> <span itemprop="jobTitle">{{ employee.position }}</span></p>
-                <address class="employee-contact">
-                    <strong>Contact:</strong> {{ employee.contact_details }}<br>
-                    <strong>Email:</strong>
-                    <a href="mailto:{{ employee.user.email }}"><span itemprop="email">{{ employee.user.email }}</span></a>
-                </address>
+        <section aria-label="Map" class="store-map-card">
+            <h2>Find Us</h2>
+            <div class="map-container">
+                <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2482.891704627025!2d-0.15777852353720893!3d51.52369477181686!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x48761accd4d9cc93%3A0x79e7a96a4a2f8e29!2sBaker%20St%2C%20London!5e0!3m2!1sen!2suk!4v1700000000000!5m2!1sen!2suk"
+                    width="600"
+                    height="400"
+                    title="Pastry Shop location — 123 Baker Street, London"
+                    loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade"
+                    allowfullscreen
+                    class="map-iframe">
+                </iframe>
             </div>
-        </li>
-    {% empty %}
-        <li class="no-team">No team members listed yet.</li>
-    {% endfor %}
-    </ul>
-</section>
+        </section>
+    </div>
+
+    {% if request.user.is_authenticated and request.user.role == 'ADMIN' or request.user.is_superuser %}
+        <!-- Admin-Only Interactive Contacts Directory (LR3 Task 3) -->
+        <section id="contacts-admin-container" aria-label="Staff directory management" class="admin-contacts-section">
+            <div class="contacts-header-row">
+                <h2>Staff Directory (Admin Management)</h2>
+                <div class="admin-actions">
+                    <button type="button" id="toggle-add-employee-btn" class="btn btn-create">+ Add Employee</button>
+                    <button type="button" id="award-bonus-btn" class="btn btn-bonus">🏆 Award Bonus</button>
+                </div>
+            </div>
+
+            <!-- Toolbar: Live Search & Filters -->
+            <div class="contacts-toolbar">
+                <div class="search-box">
+                    <input type="search" id="contacts-search-input" placeholder="Search by name, position, phone, email, URL..." class="search-input" />
+                    <button type="button" id="contacts-search-btn" class="btn btn-filter">Search</button>
+                    <button type="button" id="contacts-reset-btn" class="btn btn-reset">Reset</button>
+                </div>
+            </div>
+
+            <!-- Preloader (Infinity preloader from LR2) -->
+            <div id="contacts-preloader" class="preloader-container" style="display: none;" aria-live="polite">
+                <svg class="preloader-infinity" viewBox="0 0 100 50" width="80" height="40" role="img" aria-label="Infinity Preloader">
+                    <path class="preloader-track" d="M 25,25 C 25,12 38,12 50,25 C 62,38 75,38 75,25 C 75,12 62,12 50,25 C 38,38 25,38 25,25 Z" />
+                    <path class="preloader-trace" d="M 25,25 C 25,12 38,12 50,25 C 62,38 75,38 75,25 C 75,12 62,12 50,25 C 38,38 25,38 25,25 Z" />
+                </svg>
+                <span class="preloader-text">Loading staff records...</span>
+            </div>
+
+            <!-- Dropdown Add Employee Form -->
+            <div id="add-employee-panel" class="add-employee-card" style="display: none;">
+                <h3>Add New Staff Member</h3>
+                <p class="form-instructions">Fill in all required fields. Photo file upload is supported. Phone and URL formats are validated in real-time.</p>
+                <form id="add-employee-form" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="new-emp-firstname">First Name: *</label>
+                            <input type="text" id="new-emp-firstname" name="first_name" required placeholder="e.g. Claire" />
+                        </div>
+                        <div class="form-group">
+                            <label for="new-emp-lastname">Last Name: *</label>
+                            <input type="text" id="new-emp-lastname" name="last_name" required placeholder="e.g. Bennett" />
+                        </div>
+                        <div class="form-group">
+                            <label for="new-emp-position">Job Title / Duties: *</label>
+                            <input type="text" id="new-emp-position" name="position" required placeholder="e.g. Head Pastry Chef" />
+                        </div>
+                        <div class="form-group">
+                            <label for="new-emp-email">Email Address: *</label>
+                            <input type="email" id="new-emp-email" name="email" required placeholder="claire.bennett@pastryshop.example.com" />
+                        </div>
+                        <div class="form-group">
+                            <label for="new-emp-dob">Date of Birth: *</label>
+                            <input type="date" id="new-emp-dob" name="date_of_birth" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="new-emp-phone">Phone Number: *</label>
+                            <input type="text" id="new-emp-phone" name="phone" required placeholder="+375 (29) 111-22-33 or 80291112233" />
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="new-emp-url">Personal Page / Website URL: *</label>
+                            <input type="text" id="new-emp-url" name="url" required placeholder="https://pastryshop.example.com/team/claire.html" />
+                            <small class="field-hint">Criteria: Must begin with http:// or https:// and end with .php or .html</small>
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="new-emp-photo">Profile Photo Upload:</label>
+                            <input type="file" id="new-emp-photo" name="photo" accept="image/*" />
+                        </div>
+                    </div>
+
+                    <!-- Dynamic Real-time Validation Feedback -->
+                    <div id="validation-feedback" class="validation-feedback" style="display: none;"></div>
+
+                    <div class="form-actions">
+                        <button type="submit" id="submit-add-employee-btn" class="btn btn-create" disabled>Add to Table</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Interactive Table Container -->
+            <div class="table-responsive">
+                <table id="contacts-table" class="contacts-table">
+                    <thead>
+                        <tr>
+                            <th class="col-checkbox"><input type="checkbox" id="select-all-checkbox" title="Select all on this page" /></th>
+                            <th class="col-photo">Photo</th>
+                            <th data-sort="full_name" class="sortable">Full Name <span class="sort-icon"></span></th>
+                            <th data-sort="position" class="sortable">Position <span class="sort-icon"></span></th>
+                            <th data-sort="phone" class="sortable">Phone <span class="sort-icon"></span></th>
+                            <th data-sort="email" class="sortable">Email <span class="sort-icon"></span></th>
+                            <th data-sort="url" class="sortable">Website URL <span class="sort-icon"></span></th>
+                        </tr>
+                    </thead>
+                    <tbody id="contacts-table-body">
+                        <!-- Populated by contacts_table.js -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Client-side Pagination (Max 3 items per page) -->
+            <div id="contacts-pagination" class="contacts-pagination"></div>
+
+            <!-- Selected Employee Detailed Card (Displayed upon clicking a row) -->
+            <div id="selected-employee-details" class="selected-details-card" style="display: none;"></div>
+
+            <!-- Bonus Award Announcement Block (Displayed upon clicking "Award Bonus") -->
+            <div id="bonus-announcement-card" class="bonus-announcement-card" style="display: none;"></div>
+        </section>
+
+        <script src="{% static 'js/contacts_table.js' %}"></script>
+    {% else %}
+        <!-- Regular Visitor Team Display (Cards with Links) -->
+        <section aria-label="Our team" class="team-section">
+            <h2>Our Team</h2>
+            <ul class="team-flex-container">
+            {% for employee in employees %}
+                <li class="employee-card" itemscope itemtype="https://schema.org/Person">
+                    {% if employee.photo %}
+                    <figure class="employee-figure">
+                        <img src="{{ employee.photo.url }}"
+                             alt="{{ employee.user.get_full_name|default:employee.user.username }}"
+                             width="120"
+                             srcset="{{ employee.photo_small.url }} 120w, {{ employee.photo_medium.url }} 240w"
+                             sizes="120px"
+                             itemprop="image"
+                             class="employee-photo">
+                        <figcaption>{{ employee.user.get_full_name|default:employee.user.username }}</figcaption>
+                    </figure>
+                    {% endif %}
+                    <div class="employee-info">
+                        <h3 itemprop="name" class="employee-name">{{ employee.user.get_full_name|default:employee.user.username }}</h3>
+                        <p class="employee-position"><strong>Position:</strong> <span itemprop="jobTitle">{{ employee.position }}</span></p>
+                        <address class="employee-contact">
+                            <strong>Contact:</strong> {{ employee.contact_details }}<br>
+                            <strong>Email:</strong>
+                            <a href="mailto:{{ employee.user.email }}"><span itemprop="email">{{ employee.user.email }}</span></a>
+                            {% if employee.url %}
+                                <br><strong>Website:</strong>
+                                <a href="{{ employee.url }}" target="_blank" rel="noopener noreferrer" class="emp-web-link">View Profile &rarr;</a>
+                            {% endif %}
+                        </address>
+                    </div>
+                </li>
+            {% empty %}
+                <li class="no-team">No team members listed yet.</li>
+            {% endfor %}
+            </ul>
+        </section>
+    {% endif %}
 </div>
 {% endblock %}
