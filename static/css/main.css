@@ -8649,6 +8649,72 @@ td:empty::after {
   color: #2ecc71;
 }
 
+/* ==========================================================================
+   LR3 Task 11: Full-Page Scroll-Driven Flying Pastries (Variant 24)
+   ========================================================================== */
+
+.fullpage-pastry-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none; /* Allows user to interact seamlessly with page elements */
+  z-index: 50;
+  overflow: hidden;
+}
+
+.flying-pastry {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: inline-block;
+  font-size: 3.25rem;
+  line-height: 1;
+  user-select: none;
+  pointer-events: none;
+  will-change: transform;
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.18));
+  transition: transform 0.04s linear;
+}
+
+/* Dark theme enhanced shadow */
+[data-theme="dark"] .flying-pastry {
+  filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.65));
+}
+
+/* Floating telemetry badge in corner */
+.scroll-telemetry-badge {
+  position: fixed;
+  bottom: 1.25rem;
+  right: 1.25rem;
+  z-index: 100;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.95rem;
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  font-size: 0.82rem;
+  font-family: var(--font-mono);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+  backdrop-filter: blur(8px);
+  opacity: 0.94;
+  user-select: none;
+  pointer-events: auto;
+}
+
+.telemetry-badge-label {
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.scroll-telemetry-badge .telemetry-dir {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
 
 
 

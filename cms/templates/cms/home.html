@@ -164,6 +164,25 @@
     {% endif %}
 </section>
 
+{% comment %}Full-Page Scroll-Driven Pastries Animation (LR3 Item 11, Variant 24){% endcomment %}
+<div id="fullpagePastryContainer" class="fullpage-pastry-overlay" aria-hidden="true">
+    <span class="flying-pastry" data-start-x="8" data-start-y="15" data-delta-x="60" data-delta-y="65" data-rot="0.8" data-scale-amp="0.4" data-base-scale="1.1" title="Chocolate Chip Cookie">🍪</span>
+    <span class="flying-pastry" data-start-x="82" data-start-y="12" data-delta-x="-65" data-delta-y="70" data-rot="-0.7" data-scale-amp="0.5" data-base-scale="1.3" title="Butter Croissant">🥐</span>
+    <span class="flying-pastry" data-start-x="12" data-start-y="55" data-delta-x="70" data-delta-y="-40" data-rot="0.9" data-scale-amp="0.35" data-base-scale="1.0" title="Berry Cupcake">🧁</span>
+    <span class="flying-pastry" data-start-x="78" data-start-y="70" data-delta-x="-55" data-delta-y="-50" data-rot="-1.0" data-scale-amp="0.45" data-base-scale="1.2" title="Glazed Doughnut">🍩</span>
+    <span class="flying-pastry" data-start-x="48" data-start-y="10" data-delta-x="35" data-delta-y="75" data-rot="1.1" data-scale-amp="0.4" data-base-scale="1.15" title="Artisan Pie">🥧</span>
+    <span class="flying-pastry" data-start-x="88" data-start-y="40" data-delta-x="-70" data-delta-y="45" data-rot="0.6" data-scale-amp="0.3" data-base-scale="1.05" title="Golden Pretzel">🥨</span>
+    <span class="flying-pastry" data-start-x="20" data-start-y="80" data-delta-x="55" data-delta-y="-60" data-rot="-0.85" data-scale-amp="0.5" data-base-scale="1.25" title="Layer Cake">🍰</span>
+    <span class="flying-pastry" data-start-x="62" data-start-y="85" data-delta-x="-40" data-delta-y="-65" data-rot="1.2" data-scale-amp="0.35" data-base-scale="0.95" title="Caramel Pudding">🍮</span>
+</div>
+
+<aside class="scroll-telemetry-badge" id="scrollTelemetryBadge" aria-label="Scroll animation telemetry">
+    <span class="telemetry-badge-label">✨ Variant 24 Animation:</span>
+    <span id="scrollPosDisplay">0px</span>
+    <span class="telemetry-separator">|</span>
+    <span id="scrollDirDisplay" class="telemetry-dir">Static</span>
+</aside>
+
 {% comment %}Product catalog preview{% endcomment %}
 <section id="catalog-preview" aria-label="Catalog preview" class="catalog-preview-section">
     <div class="preview-header">
@@ -354,4 +373,5 @@
 
 {% block extra_js %}
 <script src="{% static 'js/slider.js' %}"></script>
+<script src="{% static 'js/scroll_animations.js' %}"></script>
 {% endblock %}
